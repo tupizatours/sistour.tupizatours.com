@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql:8.0
+    volumes:
+      - ./mysql:/var/lib/mysql
+    ports:
+      - "3307:3306"  # Cambia 3306 -> 3307 en la máquina host
+    restart: always
+    environment:
+      - MYSQL_DATABASE=tupitcue_tours
+      - MYSQL_ROOT_PASSWORD=Addconsulta2020
+    networks:
+      - tupiza_network
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    depends_on:
+      - mysql
+    ports:
+      - "8080:80"  # Accederás a phpMyAdmin en http://localhost:8080
+    environment:
+      - PMA_HOST=mysql
+      - PMA_PORT=3306  # No cambiar, porque dentro del contenedor MySQL sigue en 3306
+      - MYSQL_ROOT_PASSWORD=Addconsulta2020
+
+  app:
+    depends_on:
+      - mysql
+    container_name: tupiza_app
+    build: .
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ./public:/var/www/html/public
+      - ./storage:/var/www/html/storage
+      - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    env_file:
+      - .env
+    networks:
+      - tupiza_network
+    restart: always
+    command: sh -c "chmod -R 775 storage bootstrap/cache && php artisan serve --host=0.0.0.0 --port=8000"
+    ports:
+      - "8000:8000"
+
+networks:
+  tupiza_network:
