@@ -183,7 +183,7 @@
                         @if($reserva->turistas->first()->file)
                             <div class="row">
                                 <div class="pago_cont">
-                                    <img src="{{ asset('public/files_documentos') }}/{{ $reserva->turistas->first()->file }}" class="img-fluid" alt="...">
+                                    <img src="{{ url('files_documentos/'.$reserva->turistas->first()->file) }}" class="img-fluid" alt="Pasaporte">
                                 </div>
                             </div>
                         @endif

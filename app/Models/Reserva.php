@@ -41,3 +41,5 @@ class Reserva extends Model
         return $this->hasMany('App\Models\Reserva\Resercliente', 'reserva_id', 'id');
     }
 }
+
+

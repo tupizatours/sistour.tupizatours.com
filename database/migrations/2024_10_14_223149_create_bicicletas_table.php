@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('propietario_id')->unsigned()->index();
             $table->foreign('propietario_id')->references('id')->on('propietarios')->onDelete('cascade');
-
+            $table->string('nombre')->nullable();
             $table->string('costo')->nullable();
             $table->string('venta')->nullable();
             $table->string('estatus')->nullable();
