@@ -552,7 +552,7 @@
 
                                     <dl class="col-md-12 row tickets_cont" id="tickets_cont" style="display: none;">
                                         <dt class="col-sm-12">
-                                            <span class="btn btn-inverse-success mb-3 col-md-12">Tickers</span>
+                                            <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
                                         </dt>
 
                                         <dt class="col-sm-5" id="tic_name"></dt>
