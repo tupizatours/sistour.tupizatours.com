@@ -196,7 +196,6 @@
                     $accesorios = Accesorio::whereIn('id', $accesorio_ids)->get();
                     $turistas = Turista::whereIn('id', $turista_ids)->get();
                     $hoteles = Hotel::whereIn('id', $hotel_ids)->with('habitaciones')->get();
-                    echo $hoteles;
 
                     $hotelesSeleccionados = json_decode($tour->hoteles, true);
                 ?>
@@ -381,28 +380,36 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <label for="alimentacion" class="form-label">Es importante subir una imagen del documento de identidad para su seguridad y la nuestra. <strong>(campo requerido *)</strong></label>
-                                            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-                                            <label for="file-upload" id="file-drag">
-                                                <img id="file-image" src="#" alt="Preview" class="hidden">
-                                                <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
-                                                <div id="pdf-archivo" style="display: none;"></div>
-                                                <div id="start">
-                                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                                    <div id="pdf-upload">Selecciona el archivo a cargar</div>
-                                                    <div id="notimage" class="hidden">Selecciona una imagen</div>
-                                                    <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
-                                                </div>
-
-                                                <div id="response" class="hidden">
-                                                    <div id="messages"></div>
-                                                    
-                                                    <progress class="progress" id="file-progress" value="0">
-                                                        <span>0</span>%
-                                                    </progress>
-                                                </div>
+                                            <label for="file-upload" class="form-label">
+                                                Es importante subir una imagen del documento de identidad para su seguridad y la nuestra.
+                                                <strong>(campo requerido *)</strong>
                                             </label>
+                                        
+                                            <!-- Input para cargar una nueva imagen -->
+                                            <input 
+                                                class="form-control form-control-solid" 
+                                                id="file-upload" 
+                                                name="file" 
+                                                type="file" 
+                                                accept=".pdf, .doc, .docx, image/*"
+                                                {{ $rescli->file ? '' : 'required' }} 
+                                            />
+                                                    
+                                            <!-- Mostrar la imagen existente si hay una guardada -->
+                                            @if(!empty($rescli->file))
+                                                @php
+                                                    $filePath = url("files_documentos/$rescli->file"); // Cambia asset() por url()
+                                                    $extension = pathinfo($rescli->file, PATHINFO_EXTENSION);
+                                                @endphp
+                                            
+                                                <div id="preview-container">
+                                                    @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
+                                                        <img id="file-image" src="{{ $filePath }}" alt="Documento de identidad" style="max-width: 300px; display: block;">
+                                                    @elseif($extension === 'pdf')
+                                                        <iframe id="pdf-preview" src="{{ $filePath }}" width="100%" height="500px" style="display: block;"></iframe>
+                                                    @endif
+                                                </div>
+                                            @endif
                                         </div>
 
                                         <div class="col-md-12">

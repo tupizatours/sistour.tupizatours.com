@@ -374,31 +374,41 @@ Agregar turista
                                 <label for="nota" class="form-label">Nota adicional</label>
                                 <input type="text" class="form-control" id="nota" name="nota" />
                             </div>
-
                             <div class="col-md-12">
-                                <label for="alimentacion" class="form-label">Es importante subir una imagen del documento de identidad para su seguridad y la nuestra. <strong>(campo requerido *)</strong></label>
-                                <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-                                <label for="file-upload" id="file-drag">
-                                    <img id="file-image" src="#" alt="Preview" class="hidden">
-                                    <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
-
-                                    <div id="start">
-                                        <i class="fa fa-download" aria-hidden="true"></i>
-                                        <div id="pdf-upload">Selecciona el archivo a cargar</div>
-                                        <div id="notimage" class="hidden">Selecciona una imagen</div>
-                                        <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
-                                    </div>
-
-                                    <div id="response" class="hidden">
-                                        <div id="messages"></div>
-
-                                        <progress class="progress" id="file-progress" value="0">
-                                            <span>0</span>%
-                                        </progress>
-                                    </div>
+                                <label for="file-upload" class="form-label">
+                                    Es importante subir una imagen del documento de identidad para su seguridad y la nuestra.
+                                    <strong>(campo requerido *)</strong>
                                 </label>
+                            
+                                <!-- Input para cargar una nueva imagen -->
+                                <input 
+                                    class="form-control form-control-solid" 
+                                    id="file-upload" 
+                                    name="file" 
+                                    type="file" 
+                                    accept=".pdf, .doc, .docx, image/*"
+                                    {{ $rescli->file ? '' : 'required' }} 
+                                />
+
+                                {{ $rescli->file }}
+                            
+                                <!-- Mostrar la imagen existente si hay una guardada -->
+                                @if(!empty($rescli->file))
+                                    @php
+                                        $filePath = url("files_documentos/$rescli->file"); // Cambia asset() por url()
+                                        $extension = pathinfo($rescli->file, PATHINFO_EXTENSION);
+                                    @endphp
+                                
+                                    <div id="preview-container">
+                                        @if(in_array($extension, ['jpg', 'jpeg', 'png', 'gif']))
+                                            <img id="file-image" src="{{ $filePath }}" alt="Documento de identidad" style="max-width: 300px; display: block;">
+                                        @elseif($extension === 'pdf')
+                                            <iframe id="pdf-preview" src="{{ $filePath }}" width="100%" height="500px" style="display: block;"></iframe>
+                                        @endif
+                                    </div>
+                                @endif
                             </div>
+                                
 
                             <div class="col-md-12">
                                 <div class="d-flex align-items-center gap-2">
@@ -1203,5 +1213,50 @@ Agregar turista
         document.getElementById('segunda_fase').style.display = "none"; // Oculta la sección actual
         document.getElementById('primera_fase').style.display = "block";
     }
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var fileUpload = document.getElementById("file-upload");
+        var fileImage = document.getElementById("file-image");
+        var pdfPreview = document.getElementById("pdf-preview");
+        var previewContainer = document.getElementById("preview-container");
+
+        if (fileImage) {
+            fileImage.style.display = "block";
+        }
+
+        if (pdfPreview) {
+            pdfPreview.style.display = "block";
+        }
+
+        fileUpload.addEventListener("change", function(event) {
+            var file = event.target.files[0];
+
+            if (file) {
+                var fileReader = new FileReader();
+                var fileExtension = file.name.split('.').pop().toLowerCase();
+
+                if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                    fileReader.onload = function(e) {
+                        fileImage.src = e.target.result;
+                        fileImage.style.display = "block";
+                        pdfPreview.style.display = "none";
+                        previewContainer.style.display = "block";
+                    };
+                    fileReader.readAsDataURL(file);
+                } else if (fileExtension === 'pdf') {
+                    fileReader.onload = function(e) {
+                        pdfPreview.src = e.target.result;
+                        pdfPreview.style.display = "block";
+                        fileImage.style.display = "none";
+                        previewContainer.style.display = "block";
+                    };
+                    fileReader.readAsDataURL(file);
+                }
+            }
+        });
+    });
+
+
 </script>
 @endsection

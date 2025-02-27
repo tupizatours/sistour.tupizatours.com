@@ -173,66 +173,74 @@ class RescliController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if($request->pagina == "file_panel"){
+        if ($request->pagina == "file_panel") {
             $alergias = json_encode($request->alergias);
             $alimentacion = json_encode($request->alimentacion);
-            
+    
             $tickets = json_decode($request->input('tickets_seleccionados'), true);
             $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
             $accessories = json_decode($request->input('accesorios_seleccionados'), true);
             $services = json_decode($request->input('servicios_seleccionados'), true);
-
-            if($imagen = $request->File('file')) {
+    
+            // Buscar el registro actual
+            $in = Resercliente::find($id);
+    
+            // Si no se sube una nueva imagen, mantener la imagen anterior
+            $fotoQr = $in->file;
+    
+            if ($imagen = $request->file('file')) {
                 $rutaGuardarmg = 'files_documentos';
-                $nombreOriginal = $imagen->getClientOriginalName();
+                $nombreOriginal = time() . '_' . $imagen->getClientOriginalName(); // Agregar timestamp para evitar conflictos
                 $extension = $imagen->getClientOriginalExtension();
     
+                // Verificar si existe una imagen anterior y eliminarla
+                if ($in->file && file_exists(public_path("$rutaGuardarmg/{$in->file}"))) {
+                    unlink(public_path("$rutaGuardarmg/{$in->file}"));
+                }
+    
                 if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                    // Procesar imagen
+                    // Procesar y redimensionar imagen
                     $imagenResized = Image::make($imagen)->fit(300, 300);
-                    $imagenResized->save(public_path($rutaGuardarmg . '/' . $nombreOriginal));
-                } elseif ($extension === 'pdf') {
-                    // Guardar directamente el PDF
+                    $imagenResized->save(public_path("$rutaGuardarmg/$nombreOriginal"));
+                } elseif ($extension === 'pdf' || in_array($extension, ['doc', 'docx'])) {
+                    // Guardar directamente archivos PDF o Word
                     $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
                 }
     
-                $fotoQr = "$nombreOriginal";
+                // Guardar el nuevo nombre en la base de datos
+                $fotoQr = $nombreOriginal;
             }
-
+    
+            // Datos a actualizar
             $rs = [
-                'pre_per'           => $request->pre_uni,
-                //'subtotal'          => $request->pre_tot,
-                'total'             => $request->tour_total,
-                'nombres'           => $request->nombres,
-                'apellidos'         => $request->apellidos,
-                'edad'              => $request->edad,
-                'nacionalidad'      => $request->nacionalidad,
-                'documento'         => $request->documento,
-                'celular'           => $request->celular,
-                'sexo'              => $request->sexo,
-                'correo'            => $request->email,
-                'alergias'          => $alergias,
-                'alimentacion'      => $alimentacion,
-                'nota'              => $request->nota,
-                'file'              => $fotoQr,
-                'tickets'           => $tickets,
-                'habitaciones'      => $rooms,
-                'accesorios'        => $accessories,
-                'servicios'         => $services,
+                'pre_per'      => $request->pre_uni,
+                'total'        => $request->tour_total,
+                'nombres'      => $request->nombres,
+                'apellidos'    => $request->apellidos,
+                'edad'         => $request->edad,
+                'nacionalidad' => $request->nacionalidad,
+                'documento'    => $request->documento,
+                'celular'      => $request->celular,
+                'sexo'         => $request->sexo,
+                'correo'       => $request->email,
+                'alergias'     => $alergias,
+                'alimentacion' => $alimentacion,
+                'nota'         => $request->nota,
+                'file'         => $fotoQr, // Mantener o actualizar la imagen
+                'tickets'      => $tickets,
+                'habitaciones' => $rooms,
+                'accesorios'   => $accessories,
+                'servicios'    => $services,
             ];
-
-            $data = $request->all();
-            $tour_id = $request->tour_id;
-
-            //$response = \Mail::to('danielmayurilevano@gmail.com')->send(new ReservaTour($data, $tour_id));
-
-            $in = Resercliente::find($id);
+    
+            // Actualizar registro en la base de datos
             $in->update($rs);
-
-            return redirect('ventas/reservas/'.$request->reserva_id)->with('success','Nueva Cotización agregada.');
+    
+            return redirect('ventas/reservas/' . $request->reserva_id)
+                ->with('success', 'Reserva actualizada correctamente.');
         }
     }
-
+    
     /**
      * Remove the specified resource from storage.
      */

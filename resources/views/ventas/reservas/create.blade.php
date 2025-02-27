@@ -555,7 +555,7 @@
                                             <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
                                         </dt>
 
-                                        <dt class="col-sm-5" id="tic_name"></dt>
+                                        <dt class="col-sm-5" id="tic_name"></dt>    
                                         <dd class="col-sm-7 text-right" id="tic_pre"></dd>
                                     </dl>
 
