@@ -398,7 +398,7 @@
                                             <!-- Mostrar la imagen existente si hay una guardada -->
                                             @if(!empty($rescli->file))
                                                 @php
-                                                    $filePath = url("files_documentos/$rescli->file"); // Cambia asset() por url()
+                                                    $filePath = asset("files_documentos/$rescli->file"); // Cambia a)sset( por url()
                                                     $extension = pathinfo($rescli->file, PATHINFO_EXTENSION);
                                                 @endphp
                                             
