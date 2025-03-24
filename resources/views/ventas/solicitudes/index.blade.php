@@ -77,7 +77,7 @@
                                     $newDate = date("Y-m-d", strtotime($originalDate));
                                 @endphp
 
-                                @if($reserva->turistas->first()->esPrincipal == "1")
+                                @if($reserva->turistas->isNotEmpty() && $reserva->turistas->first()->esPrincipal == "1")
                                     <tr>
                                         <td>{{ $reserva->codigo }}</td>
                                         <td>{{ $reserva->tour->titulo }}</td>
