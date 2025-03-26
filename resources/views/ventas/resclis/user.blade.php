@@ -378,7 +378,7 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <div class="d-flex align-items-center gap-2">
+                                            <div class="d-flex justify-content-center gap-2">
                                                 <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="primera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
                                                 <a href="javascript:;" class="btn btn-primary continuar col-md-6" data-next="tercera_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
                                             </div>
