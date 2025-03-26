@@ -190,72 +190,81 @@ class RescliController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if ($request->pagina == "file_panel") {
-            $alergias = json_encode($request->alergias);
-            $alimentacion = json_encode($request->alimentacion);
-    
-            $tickets = json_decode($request->input('tickets_seleccionados'), true);
-            $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
-            $accessories = json_decode($request->input('accesorios_seleccionados'), true);
-            $services = json_decode($request->input('servicios_seleccionados'), true);
-    
-            // Buscar el registro actual
-            $in = Resercliente::find($id);
-    
-            // Si no se sube una nueva imagen, mantener la imagen anterior
-            $fotoQr = $in->file;
-    
-            if ($imagen = $request->file('file')) {
-                $rutaGuardarmg = 'files_documentos';
-                $nombreOriginal = time() . '_' . $imagen->getClientOriginalName(); // Agregar timestamp para evitar conflictos
-                $extension = $imagen->getClientOriginalExtension();
-    
-                // Verificar si existe una imagen anterior y eliminarla
-                if ($in->file && file_exists(public_path("$rutaGuardarmg/{$in->file}"))) {
-                    unlink(public_path("$rutaGuardarmg/{$in->file}"));
-                }
-    
-                if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                    // Procesar y redimensionar imagen
-                    $imagenResized = Image::make($imagen)->fit(300, 300);
-                    $imagenResized->save(public_path("$rutaGuardarmg/$nombreOriginal"));
-                } elseif ($extension === 'pdf' || in_array($extension, ['doc', 'docx'])) {
-                    // Guardar directamente archivos PDF o Word
-                    $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
-                }
-    
-                // Guardar el nuevo nombre en la base de datos
-                $fotoQr = $nombreOriginal;
+        $alergias = json_encode($request->alergias);
+        $alimentacion = json_encode($request->alimentacion);
+
+        $tickets = json_decode($request->input('tickets_seleccionados'), true);
+        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
+        $accessories = json_decode($request->input('accesorios_seleccionados'), true);
+        $services = json_decode($request->input('servicios_seleccionados'), true);
+
+        // Buscar el registro actual
+        $in = Resercliente::find($id);
+
+        // Si no se sube una nueva imagen, mantener la imagen anterior
+        $fotoQr = $in->file;
+
+        if ($imagen = $request->file('file')) {
+            $rutaGuardarmg = 'files_documentos';
+            $nombreOriginal = time() . '_' . $imagen->getClientOriginalName(); // Agregar timestamp para evitar conflictos
+            $extension = $imagen->getClientOriginalExtension();
+
+            // Verificar si existe una imagen anterior y eliminarla
+            if ($in->file && file_exists(public_path("$rutaGuardarmg/{$in->file}"))) {
+                unlink(public_path("$rutaGuardarmg/{$in->file}"));
             }
-    
-            // Datos a actualizar
-            $rs = [
-                'pre_per'      => $request->pre_uni,
-                'total'        => $request->tour_total,
-                'nombres'      => $request->nombres,
-                'apellidos'    => $request->apellidos,
-                'edad'         => $request->edad,
-                'nacionalidad' => $request->nacionalidad,
-                'documento'    => $request->documento,
-                'celular'      => $request->celular,
-                'sexo'         => $request->sexo,
-                'correo'       => $request->email,
-                'alergias'     => $alergias,
-                'alimentacion' => $alimentacion,
-                'nota'         => $request->nota,
-                'file'         => $fotoQr, // Mantener o actualizar la imagen
-                'tickets'      => $tickets,
-                'habitaciones' => $rooms,
-                'accesorios'   => $accessories,
-                'servicios'    => $services,
-            ];
-    
-            // Actualizar registro en la base de datos
-            $in->update($rs);
-    
+
+            if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                // Procesar y redimensionar imagen
+                $imagenResized = Image::make($imagen)->fit(300, 300);
+                $imagenResized->save(public_path("$rutaGuardarmg/$nombreOriginal"));
+            } elseif ($extension === 'pdf' || in_array($extension, ['doc', 'docx'])) {
+                // Guardar directamente archivos PDF o Word
+                $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
+            }
+
+            // Guardar el nuevo nombre en la base de datos
+            $fotoQr = $nombreOriginal;
+
+            // Si el origen es externo (user.blade.php)
+            if ($request->pagina == "user_external") {
+                return redirect()->route('venresclis.confirmacion-user.blade.', ['nombre' => $request->nombres])
+                    ->with('success', 'Registro exitoso');
+            }
+
+            // Si es desde admin u otro flujo
             return redirect('ventas/reservas/' . $request->reserva_id)
                 ->with('success', 'Reserva actualizada correctamente.');
+
         }
+
+        // Datos a actualizar
+        $rs = [
+            'pre_per'      => $request->pre_uni,
+            'total'        => $request->tour_total,
+            'nombres'      => $request->nombres,
+            'apellidos'    => $request->apellidos,
+            'edad'         => $request->edad,
+            'nacionalidad' => $request->nacionalidad,
+            'documento'    => $request->documento,
+            'celular'      => $request->celular,
+            'sexo'         => $request->sexo,
+            'correo'       => $request->email,
+            'alergias'     => $alergias,
+            'alimentacion' => $alimentacion,
+            'nota'         => $request->nota,
+            'file'         => $fotoQr, // Mantener o actualizar la imagen
+            'tickets'      => $tickets,
+            'habitaciones' => $rooms,
+            'accesorios'   => $accessories,
+            'servicios'    => $services,
+        ];
+
+        // Actualizar registro en la base de datos
+        $in->update($rs);
+
+        return redirect('ventas/reservas/' . $request->reserva_id)
+            ->with('success', 'Reserva actualizada correctamente.');
     }
     
     /**

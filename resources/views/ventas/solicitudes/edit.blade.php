@@ -305,11 +305,6 @@
 
                                     $pag_tot = $total - (($canPer > 1 ? ($canPer - 1) : 0) * $prePer);
 
-                                    echo "<pre>", $prePer, " ", $canPer, " ",  $total, "</pre>";
-
-
-                                    echo "<pre>",  $pag_tot , "</pre>";
-
                                 @endphp
 
                                 <div class="col-md-4">
