@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="text-center mb-4">
-                        <h5 class="mb-0">Sistema de Tours 1</h5>
+                        <h5 class="mb-0">Sistema de Tours</h5>
                         <p class="mb-0">Ingresa tus datos para ingresar al administrador</p>
                     </div>
 
