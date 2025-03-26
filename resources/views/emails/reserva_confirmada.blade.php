@@ -97,7 +97,6 @@
                         <ul>
                             @foreach($data['turistas_adicionales'] as $index => $turista)
                                 <li>
-                                    {{ $turista['nombre'] }} {{ $turista['apellido'] }}
                                     <a href="{{ $turista['link'] }}" class="button">
                                         Completar Datos {{ $index + 1 }}
                                     </a>

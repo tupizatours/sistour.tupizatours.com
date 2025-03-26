@@ -204,7 +204,12 @@
                                                 <td>
                                                     @if($rescli->esPrincipal)
                                                         @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
+                                                            $prePer = floatval($reserva->pre_per ?? 0);
+
+                                                            $canPer = intval($reserva->can_per ?? 0);
+                                                            $total = floatval($reserva->total ?? 0);
+
+                                                            $pag_tot = $total - (($canPer > 1 ? ($canPer - 1) : 0) * $prePer);
                                                         @endphp
                                                         {{ 'Bs. '.number_format($pag_tot, 2, '.', ',') }}
                                                     @else
