@@ -270,7 +270,7 @@
                                     <div class="col-md-12">
                                         <div class="d-flex align-items-center gap-2">                                        
                                             <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
-                                            <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>                                   
+                                            <a href="javascript:;" class="btn btn-primary continuar col-md-6" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>                                   
                                         </div>
                                     </div>
                                 </div>
