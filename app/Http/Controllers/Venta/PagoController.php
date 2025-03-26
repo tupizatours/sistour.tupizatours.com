@@ -117,6 +117,8 @@ class PagoController extends Controller
         }
 
         // 🔹 Enviar correo de confirmación de pago
+        if ($request->origen !== 'resclis') {
+
         $data = [
             'nombre' => $rescli->nombre,
             'apellidos' => $rescli->apellido,
@@ -133,6 +135,7 @@ class PagoController extends Controller
 
         // Enviar el correo
         Mail::to($rescli->correo)->send(new ReservaConfirmada($data));
+        }
         return redirect('ventas/reservas/' . $request->reserva_id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
