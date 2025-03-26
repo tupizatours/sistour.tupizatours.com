@@ -201,21 +201,7 @@
                                                 <td>{{ $rescli->celular }}</td>
                                                 <td>{{ $rescli->correo }}</td>
                                                 
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $prePer = floatval($reserva->pre_per ?? 0);
-
-                                                            $canPer = intval($reserva->can_per ?? 0);
-                                                            $total = floatval($reserva->total ?? 0);
-
-                                                            $pag_tot = $total - (($canPer > 1 ? ($canPer - 1) : 0) * $prePer);
-                                                        @endphp
-                                                        {{ 'Bs. '.number_format($pag_tot, 2, '.', ',') }}
-                                                    @else
-                                                        {{ 'Bs. '.number_format($rescli->total, 2, '.', ',') }}
-                                                    @endif
-                                                </td>
+                                                <td>{{ 'Bs. '.number_format($rescli->total, 2, '.', ',') }}</td>
                                     
                                                 <!-- ✅ Mostrar Pagado: Solo suma pagos activos -->
                                                 <td>{{ 'Bs. '.number_format($sumaMonto, 2, '.', ',') }}</td>
