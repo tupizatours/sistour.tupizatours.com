@@ -266,9 +266,12 @@
 
                                     <hr>
 
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
-                                        <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+
+                                    <div class="col-md-12">
+                                        <div class="d-flex align-items-center gap-2">                                        
+                                            <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
+                                            <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>                                   
+                                        </div>
                                     </div>
                                 </div>
 
@@ -516,13 +519,13 @@
                                         </div>
                                     </div>
 
-¡                                    <div class="col-md-12">
+                                    <div class="col-md-12">
                                         <div class="d-flex justify-content-center gap-2">
                                             <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="segunda_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
                                             <a href="javascript:;" class="btn btn-primary continuar col-md-6" data-next="cuarta_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
                                         </div>
                                     </div>
-¡                                </div>
+                                </div>
 
                                 <div class="card-body pt-5 pb-5 p-4 fase" id="cuarta_fase" style="display: none;">
                                     <ul class="nav nav-tabs nav-primary" role="tablist">
@@ -615,8 +618,9 @@
                                         </div>
                                     </div>
 
+                                    
                                     <div class="col-md-12">
-                                        <div class="d-flex align-items-center gap-2">
+                                        <div class="d-flex justify-content-center gap-2">
                                             <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="tercera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
                                             <button type="submit" class="btn btn-success col-md-6">Reservar</button>
                                         </div>
