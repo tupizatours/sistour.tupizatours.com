@@ -53,4 +53,7 @@ packages/
 # Debug Files
 npm-debug.log
 yarn-error.log
+deploy.sh
+
+/mysql
 
