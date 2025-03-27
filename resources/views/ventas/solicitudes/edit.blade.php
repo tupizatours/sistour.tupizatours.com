@@ -304,7 +304,6 @@
                                     $total = floatval($reserva->total ?? 0);
 
                                     $pag_tot = $total - (($canPer > 1 ? ($canPer - 1) : 0) * $prePer);
-
                                 @endphp
 
                                 <div class="col-md-4">

@@ -228,8 +228,7 @@ class RescliController extends Controller
 
             // Si el origen es externo (user.blade.php)
             if ($request->pagina == "user_external") {
-                return redirect()->route('venresclis.confirmacion-user.blade.', ['nombre' => $request->nombres])
-                    ->with('success', 'Registro exitoso');
+                return view('ventas.resclis.confirmacion-user', ['nombre' => $request->nombres]);
             }
 
             // Si es desde admin u otro flujo
