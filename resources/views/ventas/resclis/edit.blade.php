@@ -542,7 +542,6 @@
                                                                                 data-tit="{{ $hotel->titulo }}"
                                                                                 @if($habitacion->id == $habitSeleccionada) checked @endif
                                                                             />
-
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
                                                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
