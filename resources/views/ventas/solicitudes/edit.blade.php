@@ -45,7 +45,7 @@
                         @endphp
 
                         <h6 class="card-infos">
-                            Fecha de solicitud <b>{{ $newDate }}</b>
+                            Fecha de solicitud <b>{{\Carbon\Carbon::parse($reserva->created_at)->format('d-m-Y')}}</b>
                         </h6>
                         @php
                             $originalDate = $reserva->fecha;

@@ -92,6 +92,14 @@
         @endforeach
     </div>
 
+
+    @if(!empty($cliente->total))
+    <div class="section">
+        <h4>Total</h4>
+        <p class="fw-bold">{{ $cliente->total }}</p>
+    </div>
+    @endif
+
     @if(!empty($cliente->nota))
     <div class="section">
         <h4>Nota Adicional</h4>

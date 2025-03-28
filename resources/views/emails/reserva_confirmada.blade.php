@@ -65,6 +65,8 @@
         }
         li {
             list-style: none;
+            margin: 0;
+            text-transform: center;
         }
         @media only screen and (max-width: 640px) {
             .container {

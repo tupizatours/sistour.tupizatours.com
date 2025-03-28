@@ -50,7 +50,7 @@
                     
                     <div class="card-body">
                         <h6 class="card-title mb-4 text-uppercase">
-                            <b>Salida del tour: {{ $reserva->fecha }}</b>
+                            <b>Salida del tour: {{\Carbon\Carbon::parse($reserva->fecha)->format('d-m-Y')}}</b>
                         </h6>
 
                         <div class="row mt-4">
