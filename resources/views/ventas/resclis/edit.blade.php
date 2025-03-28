@@ -428,7 +428,7 @@
                                             <div id="preview-container">
                                                 @if(!empty($rescli->file))
                                                     @php
-                                                        $filePath = asset("files_documentos/$rescli->file");
+                                                        $filePath = asset("public/files_documentos/$rescli->file");
                                                         $extension = pathinfo($rescli->file, PATHINFO_EXTENSION);
                                                         $fileName = pathinfo($rescli->file, PATHINFO_BASENAME);
                                                     @endphp
