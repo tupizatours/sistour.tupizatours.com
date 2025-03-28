@@ -660,7 +660,7 @@
 
                                     <dl class="col-md-12 row tickets_cont" id="tickets_cont" style="display: none;">
                                         <dt class="col-sm-12">
-                                            <span class="btn btn-inverse-success mb-3 col-md-12">Tickers</span>
+                                            <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
                                         </dt>
 
                                         <dt class="col-sm-5" id="tic_name"></dt>
@@ -1055,143 +1055,58 @@
             });
         });
     </script>
-
     <script>
         // File Upload
-        // 
-        function ekUpload(){
+        function ekUpload() {
             function Init() {
-
                 console.log("Upload Initialised");
 
-                var fileSelect    = document.getElementById('file-upload'),
-                    fileDrag      = document.getElementById('file-drag'),
-                    submitButton  = document.getElementById('submit-button');
+                const fileSelect = document.getElementById('file-upload');
 
-                fileSelect.addEventListener('change', fileSelectHandler, false);
-
-                // Is XHR2 available?
-                var xhr = new XMLHttpRequest();
-                if (xhr.upload) {
-                // File Drop
-                fileDrag.addEventListener('dragover', fileDragHover, false);
-                fileDrag.addEventListener('dragleave', fileDragHover, false);
-                fileDrag.addEventListener('drop', fileSelectHandler, false);
+                if (fileSelect) {
+                    fileSelect.addEventListener('change', fileSelectHandler, false);
+                } else {
+                    console.error("Elemento #file-upload no encontrado.");
                 }
-            }
-
-            function fileDragHover(e) {
-                var fileDrag = document.getElementById('file-drag');
-
-                e.stopPropagation();
-                e.preventDefault();
-
-                fileDrag.className = (e.type === 'dragover' ? 'hover' : 'modal-body file-upload');
             }
 
             function fileSelectHandler(e) {
-                // Fetch FileList object
-                var files = e.target.files || e.dataTransfer.files;
+                const file = e.target.files[0];
+                if (!file) return;
 
-                // Cancel event and hover styling
-                fileDragHover(e);
+                const previewContainer = document.getElementById('preview-container');
+                previewContainer.innerHTML = ''; // Limpiar contenido previo
 
-                // Process all File objects
-                for (var i = 0, f; f = files[i]; i++) {
-                parseFile(f);
-                uploadFile(f);
-                }
-            }
-
-            // Output
-            function output(msg) {
-                // Response
-                var m = document.getElementById('messages');
-                m.innerHTML = msg;
-            }
-
-            function parseFile(file) {
-                var fileName = file.name.toLowerCase();
-                var isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
-                var isPDF = /\.pdf$/i.test(fileName);
+                const fileName = file.name.toLowerCase();
+                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
+                const isPDF = /\.pdf$/i.test(fileName);
 
                 if (isImage) {
-                    // Mostrar imagen
-                    document.getElementById('file-image').classList.remove("hidden");
-                    document.getElementById('file-image').src = URL.createObjectURL(file);
-                    document.getElementById('pdf-preview').classList.add("hidden");
+                    // Previsualización de imagen centrada
+                    const imgElement = document.createElement('img');
+                    imgElement.src = URL.createObjectURL(file);
+                    imgElement.style.maxWidth = '300px';
+                    imgElement.style.height = 'auto';
+                    imgElement.style.display = 'block';
+                    imgElement.style.margin = 'auto'; // Centrar la imagen
+                    previewContainer.appendChild(imgElement);
                 } else if (isPDF) {
-                    // Mostrar PDF en iframe
-                    document.getElementById('pdf-preview').classList.remove("hidden");
-                    document.getElementById('pdf-preview').src = URL.createObjectURL(file);
-                    document.getElementById('file-image').classList.add("hidden");
+                    // Mostrar solo el nombre del archivo y botón de descarga
+                    const fileNameText = document.createElement('p');
+                    fileNameText.innerHTML = `<strong>Archivo seleccionado:</strong> ${file.name}`;
+                    previewContainer.appendChild(fileNameText);
                 } else {
-                    // Archivo no soportado
-                    document.getElementById('file-image').classList.add("hidden");
-                    document.getElementById('pdf-preview').classList.add("hidden");
                     alert('Por favor selecciona un archivo válido (imagen o PDF).');
                 }
             }
 
-            function setProgressMaxValue(e) {
-                var pBar = document.getElementById('file-progress');
-
-                if (e.lengthComputable) {
-                pBar.max = e.total;
-                }
-            }
-
-            function updateFileProgress(e) {
-                var pBar = document.getElementById('file-progress');
-
-                if (e.lengthComputable) {
-                pBar.value = e.loaded;
-                }
-            }
-
-            function uploadFile(file) {
-
-                var xhr = new XMLHttpRequest(),
-                fileInput = document.getElementById('class-roster-file'),
-                pBar = document.getElementById('file-progress'),
-                fileSizeLimit = 1024; // In MB
-                if (xhr.upload) {
-                // Check if file is less than x MB
-                if (file.size <= fileSizeLimit * 1024 * 1024) {
-                    // Progress bar
-                    pBar.style.display = 'inline';
-                    xhr.upload.addEventListener('loadstart', setProgressMaxValue, false);
-                    xhr.upload.addEventListener('progress', updateFileProgress, false);
-
-                    // File received / failed
-                    xhr.onreadystatechange = function(e) {
-                    if (xhr.readyState == 4) {
-                        // Everything is good!
-
-                        // progress.className = (xhr.status == 200 ? "success" : "failure");
-                        // document.location.reload(true);
-                    }
-                    };
-
-                    // Start upload
-                    xhr.open('POST', document.getElementById('file-upload-form').action, true);
-                    xhr.setRequestHeader('X-File-Name', file.name);
-                    xhr.setRequestHeader('X-File-Size', file.size);
-                    xhr.setRequestHeader('Content-Type', 'multipart/form-data');
-                    xhr.send(file);
-                } else {
-                    output('Please upload a smaller file (< ' + fileSizeLimit + ' MB).');
-                }
-                }
-            }
-
-            // Check for the various File API support.
-            if (window.File && window.FileList && window.FileReader) {
+            // Inicializar solo si el input de archivo existe
+            if (document.getElementById('file-upload')) {
                 Init();
-            } else {
-                document.getElementById('file-drag').style.display = 'none';
             }
         }
+
+        // Ejecutar la función al cargar la página
         ekUpload();
     </script>
 
