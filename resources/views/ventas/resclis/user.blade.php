@@ -1038,6 +1038,40 @@
     </script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileInput = document.getElementById('file-upload');
+            const imgPreview = document.getElementById('file-image');
+            const pdfPreview = document.getElementById('pdf-preview');
+            const messageBox = document.getElementById('messages');
+        
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+        
+                const fileName = file.name.toLowerCase();
+                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
+                const isPDF = /\.pdf$/i.test(fileName);
+        
+                if (isImage) {
+                    imgPreview.src = URL.createObjectURL(file);
+                    imgPreview.classList.remove("hidden");
+                    pdfPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>Imagen seleccionada:</strong> ${file.name}`;
+                } else if (isPDF) {
+                    pdfPreview.src = URL.createObjectURL(file);
+                    pdfPreview.classList.remove("hidden");
+                    imgPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>PDF seleccionado:</strong> ${file.name}`;
+                } else {
+                    imgPreview.classList.add("hidden");
+                    pdfPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>Archivo no soportado:</strong> ${file.name}`;
+                }
+            });
+        });
+    </script>
+    
+    <script>
         $(document).ready(function () {
             // Aplicar Select2 a los selectores ya generados
             $('#alergias').select2({
@@ -1055,61 +1089,6 @@
             });
         });
     </script>
-    <script>
-        // File Upload
-        function ekUpload() {
-            function Init() {
-                console.log("Upload Initialised");
-
-                const fileSelect = document.getElementById('file-upload');
-
-                if (fileSelect) {
-                    fileSelect.addEventListener('change', fileSelectHandler, false);
-                } else {
-                    console.error("Elemento #file-upload no encontrado.");
-                }
-            }
-
-            function fileSelectHandler(e) {
-                const file = e.target.files[0];
-                if (!file) return;
-
-                const previewContainer = document.getElementById('preview-container');
-                previewContainer.innerHTML = ''; // Limpiar contenido previo
-
-                const fileName = file.name.toLowerCase();
-                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
-                const isPDF = /\.pdf$/i.test(fileName);
-
-                if (isImage) {
-                    // Previsualización de imagen centrada
-                    const imgElement = document.createElement('img');
-                    imgElement.src = URL.createObjectURL(file);
-                    imgElement.style.maxWidth = '300px';
-                    imgElement.style.height = 'auto';
-                    imgElement.style.display = 'block';
-                    imgElement.style.margin = 'auto'; // Centrar la imagen
-                    previewContainer.appendChild(imgElement);
-                } else if (isPDF) {
-                    // Mostrar solo el nombre del archivo y botón de descarga
-                    const fileNameText = document.createElement('p');
-                    fileNameText.innerHTML = `<strong>Archivo seleccionado:</strong> ${file.name}`;
-                    previewContainer.appendChild(fileNameText);
-                } else {
-                    alert('Por favor selecciona un archivo válido (imagen o PDF).');
-                }
-            }
-
-            // Inicializar solo si el input de archivo existe
-            if (document.getElementById('file-upload')) {
-                Init();
-            }
-        }
-
-        // Ejecutar la función al cargar la página
-        ekUpload();
-    </script>
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const continuarButtons = document.querySelectorAll(".continuar");
