@@ -90,7 +90,6 @@
                 </table>
             @endif
         @endforeach
-    
     </div>
 
     @if(!empty($cliente->nota))
