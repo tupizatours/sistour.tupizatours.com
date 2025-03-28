@@ -328,7 +328,7 @@
 
                                         <div class="col-md-12">
                                             <label for="alergias" class="form-label">Alergias <span>*</span></label>
-                                            <select class="form-select" id="alergias" name="alergias[]" type="select" required data-placeholder="Seleccionar" multiple>
+                                            <select class="form-select" id="alergias" name="alergias[]" type="select" data-placeholder="Seleccionar" multiple>
                                                 @foreach($alergias as $alergia)
                                                     <option value="{{ $alergia->id }}">{{ $alergia->titulo }}</option>
                                                 @endforeach
@@ -337,7 +337,7 @@
 
                                         <div class="col-md-12">
                                             <label for="alimentacion" class="form-label">Tipo alimentación <span>*</span></label>
-                                            <select class="form-select" id="alimentacion" name="alimentacion[]" type="select" required data-placeholder="Seleccionar" multiple>
+                                            <select class="form-select" id="alimentacion" name="alimentacion[]" type="select" data-placeholder="Seleccionar" multiple>
                                                 @foreach($alimentos as $alimento)
                                                     <option value="{{ $alimento->id }}">{{ $alimento->titulo }}</option>
                                                 @endforeach
@@ -346,7 +346,7 @@
 
                                         <div class="col-md-12">
                                             <label for="nota" class="form-label">Nota adicional <span>*</span></label>
-                                            <input type="text" class="form-control" id="nota" name="nota" required />
+                                            <input type="text" class="form-control" id="nota" name="nota" />
                                         </div>
 
                                         <div class="col-md-12">
