@@ -171,10 +171,15 @@ class PagoController extends Controller
         return $cobro->comision;
     }
 
-
     private function generarResumenReservaPDF($reserva, $cliente)
     {
-        $habitaciones = collect(json_decode($cliente->habitaciones, true) ?? [])->map(function ($item) {
+        // Decodificar si es string, sino usar tal cual
+        $habitacionesRaw = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : $cliente->habitaciones;
+        $ticketsRaw = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : $cliente->tickets;
+        $accesoriosRaw = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : $cliente->accesorios;
+        $serviciosRaw = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : $cliente->servicios;
+    
+        $habitaciones = collect($habitacionesRaw ?? [])->map(function ($item) {
             $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id']);
             return [
                 'hotel' => $habit?->hotel->titulo ?? 'Hotel',
@@ -182,14 +187,14 @@ class PagoController extends Controller
                 'price' => $item['price'],
             ];
         });
-
-        $tickets = collect(json_decode($cliente->tickets, true) ?? []);
-        $accesorios = collect(json_decode($cliente->accesorios, true) ?? []);
-        $servicios = collect(json_decode($cliente->servicios, true) ?? []);
-
-        $alergias = \App\Models\Configuracion\Alergia::whereIn('id', json_decode($cliente->alergias ?? '[]'))->get();
-        $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', json_decode($cliente->alimentacion ?? '[]'))->get();
-
+    
+        $tickets = collect($ticketsRaw ?? []);
+        $accesorios = collect($accesoriosRaw ?? []);
+        $servicios = collect($serviciosRaw ?? []);
+    
+        $alergias = \App\Models\Configuracion\Alergia::whereIn('id', is_string($cliente->alergias) ? json_decode($cliente->alergias) : ($cliente->alergias ?? []))->get();
+        $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion) : ($cliente->alimentacion ?? []))->get();
+    
         $pdf = Pdf::loadView('pdf.reserva', compact(
             'reserva',
             'cliente',
@@ -200,13 +205,13 @@ class PagoController extends Controller
             'alergias',
             'alimentos'
         ));
-
+    
         $pdfPath = storage_path('app/public/reservas/resumen_' . $reserva->codigo . '.pdf');
         $pdf->save($pdfPath);
-
+    
         return $pdfPath;
     }
-
+    
 
     /**
      * Display the specified resource.
