@@ -235,7 +235,6 @@
                                     <input type="hidden" value="file_panel" id="pagina" name="pagina" />
                                     <input type="hidden" value="{{ $rescli->reserva->id }}" id="reserva_id" name="reserva_id">
                                     <input type="hidden" value="{{ $rescli->id }}" id="rescli_id" name="rescli_id">
-
                                     <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}" />
                                     <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}" />
                                     <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $rescli->reserva->pre_tot }}" />

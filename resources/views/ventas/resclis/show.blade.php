@@ -174,21 +174,6 @@
                 </div>		
             </div>
 
-            @php $tot_cal = 0; $restante = 0; @endphp
-
-            @if($rescli->esPrincipal == "1")
-                @php
-                    $pag_tot = $rescli->pre_per * 2;
-                    $tot_cal = $rescli->total - $pag_tot; 
-                    $restante = ($rescli->total - $pag_tot) - $tot_cal;
-                @endphp
-            @else
-                @php
-                    $tot_cal = $rescli->total;
-                    $restante = $rescli->total - $sumaMonto;
-                @endphp
-            @endif
-
             <div class="col-lg-3">
                 <div class="card">
                     <div class="card-body">

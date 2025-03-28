@@ -49,19 +49,6 @@ class Resercliente extends Model
     {
         return $this->belongsTo('App\Models\Reserva', 'reserva_id', 'id');
     }
-    public function getTotalAttribute()
-    {
-        // Obtiene el precio del tour para este turista
-        $pre_per = $this->pre_per ?? 0;
-
-        // Laravel ya maneja estos atributos como arrays, solo los sumamos
-        $serviciosAdicionales = collect($this->servicios ?: [])->sum('price');
-        $ticketsAdicionales = collect($this->tickets ?: [])->sum('price');
-        $accesoriosAdicionales = collect($this->accesorios ?: [])->sum('price');
-
-        return $pre_per + $serviciosAdicionales + $ticketsAdicionales + $accesoriosAdicionales;
-    }
-    
     public function getTotalPendienteAttribute()
     {
         // Obtiene los pagos realizados por el turista, considerando la conversión si aplica

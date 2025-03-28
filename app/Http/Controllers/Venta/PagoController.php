@@ -119,22 +119,22 @@ class PagoController extends Controller
         // 🔹 Enviar correo de confirmación de pago
         if ($request->origen !== 'resclis') {
 
-        $data = [
-            'nombre' => $rescli->nombre,
-            'apellidos' => $rescli->apellido,
-            'email' => $rescli->correo,
-            'codigo_reserva' => $reserva->codigo,
-            'monto_pagado' => number_format($request->monto, 2, '.', ''),
-            'saldo_pendiente' => number_format($nuevoSaldoPendiente, 2, '.', ''),
-            'fecha_reserva' => $reserva->fecha_reserva,
-            'cantidad_personas' => $reserva->can_per,
-            'estado' => 'Confirmada',
-            'tour_id' => $reserva->id,
-            'turistas_adicionales' => $linksTuristas, // Enviar los links
-        ];
+            $data = [
+                'nombre' => $rescli->nombre,
+                'apellidos' => $rescli->apellido,
+                'email' => $rescli->correo,
+                'codigo_reserva' => $reserva->codigo,
+                'monto_pagado' => number_format($request->monto, 2, '.', ''),
+                'saldo_pendiente' => number_format($nuevoSaldoPendiente, 2, '.', ''),
+                'fecha_reserva' => $reserva->fecha_reserva,
+                'cantidad_personas' => $reserva->can_per,
+                'estado' => 'Confirmada',
+                'tour_id' => $reserva->id,
+                'turistas_adicionales' => $linksTuristas, // Enviar los links
+            ];
 
-        // Enviar el correo
-        Mail::to($rescli->correo)->send(new ReservaConfirmada($data));
+            // Enviar el correo
+            Mail::to($rescli->correo)->send(new ReservaConfirmada($data));
         }
         return redirect('ventas/reservas/' . $request->reserva_id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
