@@ -327,7 +327,7 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <label for="alergias" class="form-label">Alergias <span>*</span></label>
+                                            <label for="alergias" class="form-label">Alergias</label>
                                             <select class="form-select" id="alergias" name="alergias[]" type="select" data-placeholder="Seleccionar" multiple>
                                                 @foreach($alergias as $alergia)
                                                     <option value="{{ $alergia->id }}">{{ $alergia->titulo }}</option>
@@ -336,7 +336,7 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <label for="alimentacion" class="form-label">Tipo alimentación <span>*</span></label>
+                                            <label for="alimentacion" class="form-label">Tipo alimentación</label>
                                             <select class="form-select" id="alimentacion" name="alimentacion[]" type="select" data-placeholder="Seleccionar" multiple>
                                                 @foreach($alimentos as $alimento)
                                                     <option value="{{ $alimento->id }}">{{ $alimento->titulo }}</option>
@@ -345,7 +345,7 @@
                                         </div>
 
                                         <div class="col-md-12">
-                                            <label for="nota" class="form-label">Nota adicional <span>*</span></label>
+                                            <label for="nota" class="form-label">Nota adicional</label>
                                             <input type="text" class="form-control" id="nota" name="nota" />
                                         </div>
 
@@ -353,30 +353,15 @@
                                             <label for="file-upload" class="form-label">
                                                 Es importante subir una imagen del documento de identidad para su seguridad y la nuestra.
                                             </label>
-
-                                            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-                                            <label for="file-upload" id="file-drag">
-                                                <img id="file-image" src="#" alt="Preview" class="hidden">
-                                                <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
-                                                
-                                                <div id="start">
-                                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                                    <div>Selecciona el archivo a cargar</div>
-                                                    <div id="notimage" class="hidden">Selecciona una imagen</div>
-                                                    <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
-                                                </div>
-
-                                                <div id="response" class="hidden">
-                                                    <div id="messages" class="mt-2 text-primary"></div>
-                                                    
-                                                    <progress class="progress" id="file-progress" value="0">
-                                                        <span>0</span>%
-                                                    </progress>
-                                                </div>
-                                            </label>
+                                        
+                                            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" />
+                                        
+                                            <div id="file-preview" class="mt-3">
+                                                <img id="file-image" src="#" alt="Vista previa" style="max-width: 100%; display: none;" />
+                                                <p id="file-name" class="text-primary mt-2" style="display: none;"></p>
+                                            </div>
                                         </div>
-
+                                         
                                         <div class="col-md-12">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="primera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
@@ -1038,38 +1023,37 @@
     </script>
 
     <script>
-        const fileInput = document.getElementById('file-upload');
-        const imgPreview = document.getElementById('file-image');
-        const pdfPreview = document.getElementById('pdf-preview');
-        const messageBox = document.getElementById('messages');
+        document.addEventListener("DOMContentLoaded", function () {
+            const fileInput = document.getElementById('file-upload');
+            const imgPreview = document.getElementById('file-image');
+            const fileNameText = document.getElementById('file-name');
 
-        fileInput.addEventListener('change', function (e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
 
-            const fileName = file.name.toLowerCase();
-            const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
-            const isPDF = /\.pdf$/i.test(fileName);
+                const fileName = file.name.toLowerCase();
+                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
+                const isPDF = /\.pdf$/i.test(fileName);
 
-            if (isImage) {
-                imgPreview.src = URL.createObjectURL(file);
-                imgPreview.classList.remove("hidden");
-                pdfPreview.classList.add("hidden");
-                messageBox.innerHTML = `<strong>Imagen seleccionada:</strong> ${file.name}`;
-            } else if (isPDF) {
-                pdfPreview.src = URL.createObjectURL(file);
-                pdfPreview.style.display = "block";  // 👈 asegúrate que se vea
-                pdfPreview.classList.remove("hidden");
-                imgPreview.class List.add("hidden");
-                messageBox.innerHTML = `<strong>PDF seleccionado:</strong> ${file.name}`;
-            } else {
-                imgPreview.classList.add("hidden");
-                pdfPreview.classList.add("hidden");
-                messageBox.innerHTML = `<strong>Archivo no soportado:</strong> ${file.name}`;
-            }
+                if (isImage) {
+                    imgPreview.src = URL.createObjectURL(file);
+                    imgPreview.style.display = "block";
+                    fileNameText.style.display = "block";
+                    fileNameText.innerHTML = `<strong>Imagen seleccionada:</strong> ${file.name}`;
+                } else if (isPDF) {
+                    imgPreview.style.display = "none";
+                    fileNameText.style.display = "block";
+                    fileNameText.innerHTML = `<strong>PDF seleccionado:</strong> ${file.name}`;
+                } else {
+                    imgPreview.style.display = "none";
+                    fileNameText.style.display = "block";
+                    fileNameText.innerHTML = `<strong>Archivo no soportado:</strong> ${file.name}`;
+                }
+            });
         });
-
     </script>
+
     
     <script>
         $(document).ready(function () {
@@ -1089,33 +1073,37 @@
             });
         });
     </script>
+    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const continuarButtons = document.querySelectorAll(".continuar");
-            const regresarButtons = document.querySelectorAll(".regresar");
-
-            continuarButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const currentSection = button.closest(".fase");
-                    const nextSectionId = button.getAttribute("data-next");
-
-                    if (nextSectionId) {
-                        currentSection.style.display = "none"; // Oculta la sección actual
-                        document.getElementById(nextSectionId).style.display = "block"; // Muestra la siguiente sección
-                    }
-                });
-            });
-
-            regresarButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const currentSection = button.closest(".fase");
-                    const prevSectionId = button.getAttribute("data-prev");
-
-                    if (prevSectionId) {
-                        currentSection.style.display = "none"; // Oculta la sección actual
-                        document.getElementById(prevSectionId).style.display = "block"; // Muestra la sección anterior
-                    }
-                });
+            const fileInput = document.getElementById('file-upload');
+            const imgPreview = document.getElementById('file-image');
+            const pdfPreview = document.getElementById('pdf-preview');
+            const messageBox = document.getElementById('messages');
+        
+            fileInput.addEventListener('change', function (e) {
+                const file = e.target.files[0];
+                if (!file) return;
+        
+                const fileName = file.name.toLowerCase();
+                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
+                const isPDF = /\.pdf$/i.test(fileName);
+        
+                if (isImage) {
+                    imgPreview.src = URL.createObjectURL(file);
+                    imgPreview.classList.remove("hidden");
+                    pdfPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>Imagen seleccionada:</strong> ${file.name}`;
+                } else if (isPDF) {
+                    pdfPreview.src = URL.createObjectURL(file);
+                    pdfPreview.classList.remove("hidden");
+                    imgPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>PDF seleccionado:</strong> ${file.name}`;
+                } else {
+                    imgPreview.classList.add("hidden");
+                    pdfPreview.classList.add("hidden");
+                    messageBox.innerHTML = `<strong>Archivo no soportado:</strong> ${file.name}`;
+                }
             });
         });
     </script>

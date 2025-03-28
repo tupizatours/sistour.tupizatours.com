@@ -255,7 +255,7 @@ class RescliController extends Controller
             $in->update($rs);
 
             if ($request->pagina == "user_external") {
-                return view('ventas.resclis.confirmacion-user', ['nombre' => $request->nombres]);
+                return view('ventas.reservas.confirmacion-user', ['nombre' => $request->nombres]);
             }
     
             return redirect('ventas/reservas/' . $request->reserva_id)
