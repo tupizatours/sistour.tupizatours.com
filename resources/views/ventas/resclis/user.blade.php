@@ -354,13 +354,18 @@
                                                 Es importante subir una imagen del documento de identidad para su seguridad y la nuestra.
                                             </label>
                                         
-                                            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" />
+                                            <div id="file-drop-zone" class="p-4 text-center border rounded" style="background-color: #f8f9fa;">
+                                                <input class="form-control d-none" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" />
+                                                
+                                                <div id="preview-container" class="mb-3">
+                                                    <img id="file-image" src="#" alt="Miniatura" style="display: none; max-height: 120px; object-fit: contain;" />
+                                                    <p id="file-name" class="text-primary mt-2" style="display: none;"></p>
+                                                </div>
                                         
-                                            <div id="file-preview" class="mt-3">
-                                                <img id="file-image" src="#" alt="Vista previa" style="max-width: 100%; display: none;" />
-                                                <p id="file-name" class="text-primary mt-2" style="display: none;"></p>
+                                                <button type="button" class="btn btn-primary" onclick="document.getElementById('file-upload').click()">Seleccionar archivo</button>
                                             </div>
                                         </div>
+                                        
                                          
                                         <div class="col-md-12">
                                             <div class="d-flex justify-content-center gap-2">
@@ -1053,7 +1058,6 @@
             });
         });
     </script>
-
     
     <script>
         $(document).ready(function () {
