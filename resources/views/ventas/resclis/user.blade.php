@@ -718,326 +718,342 @@
 @endsection
 
 @section('footer_scripts')
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const buttonMinus = document.getElementById("button-minus");
-            const buttonPlus = document.getElementById("button-plus");
-            const cantPerInput = document.getElementById("cantper");
-            const preUni = parseFloat(document.getElementById("pre_uni").value);
-            const preTot = parseFloat(document.getElementById("pre_tot").value);
-            const maxPer = parseFloat(document.getElementById("max_per").value);
-            const tourSbt = document.getElementById("tour_Sbt");
-            const tourTotal = document.getElementById("tour_total");
-            const tPrivadoCheckbox = document.getElementById("tprivado");
-            const porPreSection = document.getElementById("porpre");
-            const totPreSection = document.getElementById("totpre");
-            const maxPrecio = document.getElementById("max_precio");
-            const maxPersonas = document.getElementById("max_personas");
-            const cantPersDisplay = document.getElementById("cant_pers");
-            const fechaLimiteInput = document.getElementById("fecha_limite");
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const buttonMinus = document.getElementById("button-minus");
+        const buttonPlus = document.getElementById("button-plus");
+        const cantPerInput = document.getElementById("cantper");
+        const preUni = parseFloat(document.getElementById("pre_uni").value);
+        const preTot = parseFloat(document.getElementById("pre_tot").value);
+        const maxPer = parseFloat(document.getElementById("max_per").value);
+        const tourSbt = document.getElementById("tour_Sbt");
+        const tourTotal = document.getElementById("tour_total");
+        const tPrivadoCheckbox = document.getElementById("tprivado");
+        const porPreSection = document.getElementById("porpre");
+        const totPreSection = document.getElementById("totpre");
+        const maxPrecio = document.getElementById("max_precio");
+        const maxPersonas = document.getElementById("max_personas");
+        const cantPersDisplay = document.getElementById("cant_pers");
+        const fechaLimiteInput = document.getElementById("fecha_limite");
 
-            const createdAt = document.getElementById("created_at").value;
-            const horLim = parseInt(document.getElementById("hor_lim").value, 10);
-            const nacionalidadSelect = document.getElementById("nacionalidad");
+        const createdAt = document.getElementById("created_at").value;
+        const horLim = parseInt(document.getElementById("hor_lim").value, 10);
+        const nacionalidadSelect = document.getElementById("nacionalidad");
 
-            const ticketsCont = document.getElementById("tickets_cont");
-            const ticName = document.getElementById("tic_name");
-            const ticPre = document.getElementById("tic_pre");
+        const ticketsCont = document.getElementById("tickets_cont");
+        const ticName = document.getElementById("tic_name");
+        const ticPre = document.getElementById("tic_pre");
 
-            const accesoriosCont = document.getElementById("accesorios_cont");
-            const accName = document.getElementById("acc_name");
-            const accPre = document.getElementById("acc_pre");
+        const accesoriosCont = document.getElementById("accesorios_cont");
+        const accName = document.getElementById("acc_name");
+        const accPre = document.getElementById("acc_pre");
 
-            const serviciosCont = document.getElementById("servicios_cont");
-            const serName = document.getElementById("ser_name");
-            const serPre = document.getElementById("ser_pre");
+        const serviciosCont = document.getElementById("servicios_cont");
+        const serName = document.getElementById("ser_name");
+        const serPre = document.getElementById("ser_pre");
 
-            const habitacionesCont = document.getElementById("habitaciones_cont");
-            const habName = document.getElementById("hab_name");
-            const habPre = document.getElementById("hab_pre");
+        const habitacionesCont = document.getElementById("habitaciones_cont");
+        const habName = document.getElementById("hab_name");
+        const habPre = document.getElementById("hab_pre");
 
-            const checkboxesTickets = document.querySelectorAll("input[type='checkbox'][id^='ticket_']");
-            const checkboxesAccesorios = document.querySelectorAll("input[type='checkbox'][id^='accesorio_']");
-            const checkboxesServicios = document.querySelectorAll("input[type='checkbox'][id^='turista_']");
-            const checkboxesHabitaciones = document.querySelectorAll("input[type='radio'][id^='form_habi_']");
+        const checkboxesTickets = document.querySelectorAll("input[type='checkbox'][id^='ticket_']");
+        const checkboxesAccesorios = document.querySelectorAll("input[type='checkbox'][id^='accesorio_']");
+        const checkboxesServicios = document.querySelectorAll("input[type='checkbox'][id^='turista_']");
+        const checkboxesHabitaciones = document.querySelectorAll("input[type='checkbox'][id^='form_habi_']");
 
-            let totalTickets = 0;
-            let totalAccesorios = 0;
-            let totalServicios = 0;
-            let totalHabitaciones = 0;
-
-            // Selecciona todos los checkboxes de tickets al cambiar el checkbox de "Seleccionar todos"
-            document.getElementById('select_all_tickets').addEventListener('change', function() {
-                const checkboxes = document.querySelectorAll('.ticket-checkbox');
-                checkboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
-                });
-                updateCheckboxTotal();
-            });   
-
-            // Función para manejar el cambio en el select de nacionalidad
-            function handleNacionalidadChange() {
-                const selectedValue = nacionalidadSelect.value;
-                const seccionesMexico = document.querySelectorAll(".seccion-mexico");
-                const seccionesOtros = document.querySelectorAll(".seccion-otros");
-
-                seccionesMexico.forEach(seccion => {
-                    seccion.classList.toggle("hidden", selectedValue !== "BO");
-                });
-                seccionesOtros.forEach(seccion => {
-                    seccion.classList.toggle("hidden", selectedValue === "BO");
-                });
-
-                // Recalcula el total de tickets al cambiar la nacionalidad
-                updateCheckboxTotal();
-            }
-
-            nacionalidadSelect.addEventListener("change", handleNacionalidadChange);
-
-            // Función para actualizar el total de los tickets seleccionados
-            function updateCheckboxTotal() {
-                totalTickets = 0;
-                let names = "";
-                let prices = "";
-
-                checkboxesTickets.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const price = parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.nac : checkbox.dataset.ext) || 0;
-                        totalTickets += price;
-
-                        names += `${checkbox.dataset.name}<br>`;
-                        prices += `Bs. ${price.toFixed(2)}<br>`;
-                    }
-                });
-
-                if (totalTickets > 0) {
-                    ticketsCont.style.display = "inline-flex";
-                    ticName.innerHTML = names;
-                    ticPre.innerHTML = prices;
-                } else {
-                    ticketsCont.style.display = "none";
-                }
-
-                updateTotal(); // Llama a updateTotal() para actualizar el subtotal
-            }
-
-            // Función para actualizar el total de accesorios seleccionados
-            function updateAccessoryTotal() {
-                totalAccesorios = 0;
-                let accessoryNames = "";
-                let accessoryPrices = "";
-
-                checkboxesAccesorios.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const price = parseFloat(checkbox.dataset.aprecio) || 0;
-                        totalAccesorios += price;
-
-                        accessoryNames += `${checkbox.dataset.aname}<br>`;
-                        accessoryPrices += `Bs. ${price.toFixed(2)}<br>`;
-                    }
-                });
-
-                if (totalAccesorios > 0) {
-                    accesoriosCont.style.display = "inline-flex";
-                    accName.innerHTML = accessoryNames;
-                    accPre.innerHTML = accessoryPrices;
-                } else {
-                    accesoriosCont.style.display = "none";
-                }
-
-                updateTotal();
-            }
-
-            // Función para actualizar el total de servicios seleccionados
-            function updateServicioTotal() {
-                totalServicios = 0;
-                let servicioNames = "";
-                let servicioPrices = "";
-
-                checkboxesServicios.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const price = parseFloat(checkbox.dataset.sprecio) || 0;
-                        totalServicios += price;
-
-                        servicioNames += `${checkbox.dataset.sname}<br>`;
-                        servicioPrices += `Bs. ${price.toFixed(2)}<br>`;
-                    }
-                });
-
-                if (totalServicios > 0) {
-                    serviciosCont.style.display = "inline-flex";
-                    serName.innerHTML = servicioNames;
-                    serPre.innerHTML = servicioPrices;
-                } else {
-                    serviciosCont.style.display = "none";
-                }
-
-                updateTotal(); // Llama a updateTotal() para actualizar el subtotal
-            }
-
-            // Función para actualizar el total de habitaciones seleccionadas
-            function updateHabitacionTotal() {
-                totalHabitaciones = 0;
-                let names = "";
-                let prices = "";
-
-                checkboxesHabitaciones.forEach(checkbox => {
-                    if (checkbox.checked) {
-                        const price = parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.hnac : checkbox.dataset.hext) || 0;
-                        totalHabitaciones += price;
-
-                        names += `${checkbox.dataset.name}<br>`;
-                        prices += `Bs. ${price.toFixed(2)}<br>`;
-                    }
-                });
-
-                if (totalHabitaciones > 0) {
-                    habitacionesCont.style.display = "inline-flex";
-                    habName.innerHTML = names;
-                    habPre.innerHTML = prices;
-                } else {
-                    habitacionesCont.style.display = "none";
-                }
-
-                updateTotal();
-            }
-
-            // Función para calcular y actualizar el total acumulado en tourSbt
-            function updateTotal() {
-                const cantidad = parseInt(cantPerInput.value) || 0;
-                const subtotal = cantidad * preUni;
-                const totalSum = subtotal + totalTickets + totalAccesorios + totalServicios + totalHabitaciones; // Incluye totalHabitaciones
-
-                tourSbt.innerText = `Bs. ${totalSum.toFixed(2)}`;
-                tourTotal.value = `${totalSum.toFixed(2)}`;
-            }
-
-            // Eventos para los checkboxes de tickets y accesorios
-            checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateCheckboxTotal));
-            checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateAccessoryTotal));
-            checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateServicioTotal));
-            checkboxesHabitaciones.forEach(checkbox => checkbox.addEventListener("change", updateHabitacionTotal));
-
-            // Límite de fechas basado en createdAt y horLim
-            const createdAtDate = new Date(createdAt);
-            const fechaDisponible = new Date(createdAtDate);
-            fechaDisponible.setHours(fechaDisponible.getHours() + horLim);
-
-            // Configura la fecha mínima como la fecha disponible (días y horas añadidos)
-            fechaLimiteInput.min = fechaDisponible.toISOString().split("T")[0];
-
-            // Si la fecha mínima es mayor que la fecha actual, restringe la selección
-            const currentDate = new Date();
-            if (currentDate > fechaDisponible) {
-                fechaLimiteInput.value = fechaDisponible.toISOString().split("T")[0];
-            }
-
-            // Actualiza el subtotal en base a la cantidad seleccionada
-            function updateSubtotal() {
-                const cantidad = parseInt(cantPerInput.value) || 0;
-                const subtotal = cantidad * preUni;
-                tourSbt.innerText = `Bs. ${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
-                tourTotal.value = `${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
-                cantPersDisplay.innerText = `${cantidad} ${cantidad === 1 ? 'persona' : 'personas'}`;
-            }
-
-            // Eventos de los botones de cantidad
-            buttonPlus.addEventListener("click", function() {
-                let cantidad = parseInt(cantPerInput.value) || 1;
-                if (cantidad < maxPer) {
-                    cantidad++;
-                    cantPerInput.value = cantidad;
-                    updateSubtotal();
-                }
+        let totalTickets = 0;
+        let totalAccesorios = 0;
+        let totalServicios = 0;
+        let totalHabitaciones = 0;
+        // Selecciona todos los checkboxes de tickets al cambiar el checkbox de "Seleccionar todos"
+        document.getElementById('select_all_tickets').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.ticket-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
             });
-
-            buttonMinus.addEventListener("click", function() {
-                let cantidad = parseInt(cantPerInput.value) || 1;
-                if (cantidad > 1) {
-                    cantidad--;
-                    cantPerInput.value = cantidad;
-                    updateSubtotal();
-                }
-            });
-
-            // Modo privado
-            tPrivadoCheckbox.addEventListener("change", function() {
-                if (tPrivadoCheckbox.checked) {
-                    buttonMinus.disabled = true;
-                    buttonPlus.disabled = true;
-                    porPreSection.style.display = "none";
-                    totPreSection.style.display = "inline-flex";
-                    maxPrecio.innerText = 'Bs. ' + preTot.toFixed(2);
-                    maxPersonas.innerText = maxPer.toFixed(0) + ' personas';
-                    tourSbt.innerText = 'Bs. ' + preTot.toFixed(2);
-                    tourTotal.value = preTot.toFixed(2);
-                } else {
-                    buttonMinus.disabled = false;
-                    buttonPlus.disabled = false;
-                    porPreSection.style.display = "inline-flex";
-                    totPreSection.style.display = "none";
-                    updateSubtotal();
-                }
-            });
-
-            function updateSelectedItems() {
-                // Tickets seleccionados
-                const selectedTickets = Array.from(checkboxesTickets)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => ({
-                        id: checkbox.value,
-                        name: checkbox.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.nac : checkbox.dataset.ext)
-                    }));
-                document.getElementById("tickets_seleccionados").value = JSON.stringify(selectedTickets);
-
-                // Habitaciones seleccionadas
-                const selectedRooms = Array.from(checkboxesHabitaciones)
-                    .filter(radio => radio.checked)
-                    .map(radio => ({
-                        id: radio.value,
-                        name: radio.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
-                    }));
-                document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
-
-                // Accesorios seleccionados
-                const selectedAccessories = Array.from(checkboxesAccesorios)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => ({
-                        id: checkbox.value,
-                        name: checkbox.dataset.aname,
-                        price: parseFloat(checkbox.dataset.aprecio)
-                    }));
-                document.getElementById("accesorios_seleccionados").value = JSON.stringify(selectedAccessories);
-
-                // Servicios seleccionados
-                const selectedServices = Array.from(checkboxesServicios)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => ({
-                        id: checkbox.value,
-                        name: checkbox.dataset.sname,
-                        price: parseFloat(checkbox.dataset.sprecio)
-                    }));
-                document.getElementById("servicios_seleccionados").value = JSON.stringify(selectedServices);
-            }
-
-            // Llama a updateSelectedItems() cada vez que haya un cambio
-            checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
-            checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
-            checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
-            checkboxesHabitaciones.forEach(radio => radio.addEventListener("change", updateSelectedItems));
-
-            // Actualiza los valores al cargar la página
-            document.addEventListener("DOMContentLoaded", updateSelectedItems);
-
-            handleNacionalidadChange();
             updateCheckboxTotal();
-            updateAccessoryTotal();
-            updateServicioTotal();
-        });
-    </script>
+        });            
 
+        // Selecciona todos los checkboxes de habitaciones al cambiar el checkbox de "Seleccionar todos"
+        const habitacionCheckboxes = document.querySelectorAll(".habitacion-checkbox");
+        habitacionCheckboxes.forEach(checkbox => {
+            checkbox.addEventListener("change", function() {
+                const name = this.name;
+                if (this.checked) {
+                    habitacionCheckboxes.forEach(otherCheckbox => {
+                        if (otherCheckbox !== this && otherCheckbox.name === name) {
+                            otherCheckbox.checked = false;
+                        }
+                    });
+                }
+            });
+        });             
+
+        // Función para manejar el cambio en el select de nacionalidad
+        function handleNacionalidadChange() {
+            const selectedValue = nacionalidadSelect.value;
+            const seccionesMexico = document.querySelectorAll(".seccion-mexico");
+            const seccionesOtros = document.querySelectorAll(".seccion-otros");
+
+            seccionesMexico.forEach(seccion => {
+                seccion.classList.toggle("hidden", selectedValue !== "BO");
+            });
+            seccionesOtros.forEach(seccion => {
+                seccion.classList.toggle("hidden", selectedValue === "BO");
+            });
+
+            // Recalcula el total de tickets al cambiar la nacionalidad
+            updateCheckboxTotal();
+        }
+
+        nacionalidadSelect.addEventListener("change", handleNacionalidadChange);
+
+        // Función para actualizar el total de los tickets seleccionados
+        function updateCheckboxTotal() {
+            totalTickets = 0;
+            let names = "";
+            let prices = "";
+
+            checkboxesTickets.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const price = parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.nac : checkbox.dataset.ext) || 0;
+                    totalTickets += price;
+
+                    names += `${checkbox.dataset.name}<br>`;
+                    prices += `Bs. ${price.toFixed(2)}<br>`;
+                }
+            });
+
+            if (totalTickets > 0) {
+                ticketsCont.style.display = "inline-flex";
+                ticName.innerHTML = names;
+                ticPre.innerHTML = prices;
+            } else {
+                ticketsCont.style.display = "none";
+            }
+
+            updateTotal(); // Llama a updateTotal() para actualizar el subtotal
+        }
+
+        // Función para actualizar el total de accesorios seleccionados
+        function updateAccessoryTotal() {
+            totalAccesorios = 0;
+            let accessoryNames = "";
+            let accessoryPrices = "";
+
+            checkboxesAccesorios.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const price = parseFloat(checkbox.dataset.aprecio) || 0;
+                    totalAccesorios += price;
+
+                    accessoryNames += `${checkbox.dataset.aname}<br>`;
+                    accessoryPrices += `Bs. ${price.toFixed(2)}<br>`;
+                }
+            });
+
+            if (totalAccesorios > 0) {
+                accesoriosCont.style.display = "inline-flex";
+                accName.innerHTML = accessoryNames;
+                accPre.innerHTML = accessoryPrices;
+            } else {
+                accesoriosCont.style.display = "none";
+            }
+
+            updateTotal();
+        }
+
+        // Función para actualizar el total de servicios seleccionados
+        function updateServicioTotal() {
+            totalServicios = 0;
+            let servicioNames = "";
+            let servicioPrices = "";
+
+            checkboxesServicios.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const price = parseFloat(checkbox.dataset.sprecio) || 0;
+                    totalServicios += price;
+
+                    servicioNames += `${checkbox.dataset.sname}<br>`;
+                    servicioPrices += `Bs. ${price.toFixed(2)}<br>`;
+                }
+            });
+
+            if (totalServicios > 0) {
+                serviciosCont.style.display = "inline-flex";
+                serName.innerHTML = servicioNames;
+                serPre.innerHTML = servicioPrices;
+            } else {
+                serviciosCont.style.display = "none";
+            }
+
+            updateTotal(); // Llama a updateTotal() para actualizar el subtotal
+        }
+
+        // Función para actualizar el total de habitaciones seleccionadas
+        function updateHabitacionTotal() {
+            totalHabitaciones = 0;
+            let names = "";
+            let prices = "";
+
+            checkboxesHabitaciones.forEach(checkbox => {
+                if (checkbox.checked) {
+                    const hotelName = checkbox.dataset.tit; // Asegúrate de usar el dataset.tit
+                    const roomName = checkbox.dataset.name;
+                    const price = parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.hnac : checkbox.dataset.hext) || 0;
+
+                    totalHabitaciones += price;
+
+                    names += `${hotelName}: ${roomName}<br>`;
+                    prices += `Bs. ${price.toFixed(2)}<br>`;
+                }
+            });
+
+            if (totalHabitaciones > 0) {
+                habitacionesCont.style.display = "inline-flex";
+                habName.innerHTML = names;
+                habPre.innerHTML = prices;
+            } else {
+                habitacionesCont.style.display = "none";
+            }
+
+            updateTotal(); // Asegúrate de actualizar el total
+        }
+
+        // Función para calcular y actualizar el total acumulado en tourSbt
+        function updateTotal() {
+            const cantidad = parseInt(cantPerInput.value) || 0;
+            const subtotal = cantidad * preUni;
+            const totalSum = subtotal + totalTickets + totalAccesorios + totalServicios + totalHabitaciones; // Incluye totalHabitaciones
+
+            tourSbt.innerText = `Bs. ${totalSum.toFixed(2)}`;
+            tourTotal.value = `${totalSum.toFixed(2)}`;
+        }
+
+        // Eventos para los checkboxes de tickets y accesorios
+        checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateCheckboxTotal));
+        checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateAccessoryTotal));
+        checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateServicioTotal));
+        checkboxesHabitaciones.forEach(checkbox => checkbox.addEventListener("change", updateHabitacionTotal));
+
+        // Límite de fechas basado en createdAt y horLim
+        const createdAtDate = new Date(createdAt);
+        const fechaDisponible = new Date(createdAtDate);
+        fechaDisponible.setHours(fechaDisponible.getHours() + horLim);
+
+        // Configura la fecha mínima como la fecha disponible (días y horas añadidos)
+        fechaLimiteInput.min = fechaDisponible.toISOString().split("T")[0];
+
+        // Si la fecha mínima es mayor que la fecha actual, restringe la selección
+        const currentDate = new Date();
+        if (currentDate > fechaDisponible) {
+            fechaLimiteInput.value = fechaDisponible.toISOString().split("T")[0];
+        }
+
+        // Actualiza el subtotal en base a la cantidad seleccionada
+        function updateSubtotal() {
+            const cantidad = parseInt(cantPerInput.value) || 0;
+            const subtotal = cantidad * preUni;
+            tourSbt.innerText = `Bs. ${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
+            tourTotal.value = `${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
+            cantPersDisplay.innerText = `${cantidad} ${cantidad === 1 ? 'persona' : 'personas'}`;
+        }
+
+        // Eventos de los botones de cantidad
+        buttonPlus.addEventListener("click", function() {
+            let cantidad = parseInt(cantPerInput.value) || 1;
+            if (cantidad < maxPer) {
+                cantidad++;
+                cantPerInput.value = cantidad;
+                updateSubtotal();
+            }
+        });
+
+        buttonMinus.addEventListener("click", function() {
+            let cantidad = parseInt(cantPerInput.value) || 1;
+            if (cantidad > 1) {
+                cantidad--;
+                cantPerInput.value = cantidad;
+                updateSubtotal();
+            }
+        });
+
+        // Modo privado
+        tPrivadoCheckbox.addEventListener("change", function() {
+            if (tPrivadoCheckbox.checked) {
+                buttonMinus.disabled = true;
+                buttonPlus.disabled = true;
+                porPreSection.style.display = "none";
+                totPreSection.style.display = "inline-flex";
+                maxPrecio.innerText = 'Bs. ' + preTot.toFixed(2);
+                maxPersonas.innerText = maxPer.toFixed(0) + ' personas';
+                tourSbt.innerText = 'Bs. ' + preTot.toFixed(2);
+                tourTotal.value = preTot.toFixed(2);
+            } else {
+                buttonMinus.disabled = false;
+                buttonPlus.disabled = false;
+                porPreSection.style.display = "inline-flex";
+                totPreSection.style.display = "none";
+                updateSubtotal();
+            }
+        });
+
+        function updateSelectedItems() {
+            // Tickets seleccionados
+            const selectedTickets = Array.from(checkboxesTickets)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => ({
+                    id: checkbox.value,
+                    name: checkbox.dataset.name,
+                    price: parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.nac : checkbox.dataset.ext)
+                }));
+            document.getElementById("tickets_seleccionados").value = JSON.stringify(selectedTickets);
+
+            // Habitaciones seleccionadas
+            const selectedRooms = Array.from(checkboxesHabitaciones)
+                .filter(radio => radio.checked)
+                .map(radio => ({
+                    id: radio.value,
+                    name: radio.dataset.name,
+                    price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
+                }));
+            document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
+
+            // Accesorios seleccionados
+            const selectedAccessories = Array.from(checkboxesAccesorios)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => ({
+                    id: checkbox.value,
+                    name: checkbox.dataset.aname,
+                    price: parseFloat(checkbox.dataset.aprecio)
+                }));
+            document.getElementById("accesorios_seleccionados").value = JSON.stringify(selectedAccessories);
+
+            // Servicios seleccionados
+            const selectedServices = Array.from(checkboxesServicios)
+                .filter(checkbox => checkbox.checked)
+                .map(checkbox => ({
+                    id: checkbox.value,
+                    name: checkbox.dataset.sname,
+                    price: parseFloat(checkbox.dataset.sprecio)
+                }));
+            document.getElementById("servicios_seleccionados").value = JSON.stringify(selectedServices);
+        }
+
+        // Llama a updateSelectedItems() cada vez que haya un cambio
+        checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
+        checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
+        checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
+        checkboxesHabitaciones.forEach(radio => radio.addEventListener("change", updateSelectedItems));
+
+        // Actualiza los valores al cargar la página
+        document.addEventListener("DOMContentLoaded", updateSelectedItems);
+
+        handleNacionalidadChange();
+        updateCheckboxTotal();
+        updateAccessoryTotal();
+        updateServicioTotal();
+    });
+</script>
     <script>
         $(document).ready(function () {
             // Aplicar Select2 a los selectores ya generados
