@@ -97,7 +97,7 @@
                         <p><strong>Estado:</strong> {{ $data['estado'] }}</p>
                     </div>
 
-                    @if(count($data['turistas_adicionales']) > 0)
+                    @if(count($data['turistas_adicionales']) > 0 && $data['pagina'] != 'resclis')
                         <p>Los siguientes turistas adicionales deben completar sus datos:</p>
                         <ul>
                             @foreach($data['turistas_adicionales'] as $index => $turista)

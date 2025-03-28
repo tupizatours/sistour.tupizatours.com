@@ -134,6 +134,7 @@ class PagoController extends Controller
             'estado' => 'Confirmada',
             'tour_id' => $reserva->id,
             'turistas_adicionales' => $linksTuristas,
+            'pagina' => $$request->pagina,
         ];
 
         try {

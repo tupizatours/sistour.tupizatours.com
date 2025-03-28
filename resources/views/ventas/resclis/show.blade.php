@@ -183,7 +183,7 @@
                             <input type="hidden" value="{{ $rescli->reserva_id }}" id="reserva_id" name="reserva_id">
                             <input type="hidden" value="{{ $rescli->id }}" id="rescli_id" name="rescli_id">
                             <input type="hidden" value="{{ Auth::user()->id }}" id="user_id" name="user_id">
-                            <input type="hidden" name="origen" value="resclis">
+                            <input type="hidden" name="pagina" value="resclis">
 
 
                             <div class="row g-3">
