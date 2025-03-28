@@ -173,28 +173,43 @@ class PagoController extends Controller
 
     private function generarResumenReservaPDF($reserva, $cliente)
     {
-        // Decodificar si es string, sino usar tal cual
-        $habitacionesRaw = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : $cliente->habitaciones;
-        $ticketsRaw = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : $cliente->tickets;
-        $accesoriosRaw = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : $cliente->accesorios;
-        $serviciosRaw = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : $cliente->servicios;
+        // Decodificar o usar directamente si ya es array
+        $habitacionesRaw = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : ($cliente->habitaciones ?? []);
+        $ticketsRaw = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : ($cliente->tickets ?? []);
+        $accesoriosRaw = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : ($cliente->accesorios ?? []);
+        $serviciosRaw = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : ($cliente->servicios ?? []);
     
-        $habitaciones = collect($habitacionesRaw ?? [])->map(function ($item) {
-            $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id']);
+        // Habitaciones con hotel
+        $habitaciones = collect($habitacionesRaw)->map(function ($item) {
+            $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id'] ?? 0);
             return [
-                'hotel' => $habit?->hotel->titulo ?? 'Hotel',
-                'name' => $item['name'],
-                'price' => $item['price'],
+                'hotel' => $habit?->hotel?->titulo ?? 'Hotel no especificado',
+                'name'  => $item['name'] ?? 'Habitación',
+                'price' => $item['price'] ?? 0,
             ];
         });
     
-        $tickets = collect($ticketsRaw ?? []);
+        // Resto como colecciones limpias
+        $tickets    = collect($ticketsRaw ?? []);
         $accesorios = collect($accesoriosRaw ?? []);
-        $servicios = collect($serviciosRaw ?? []);
+        $servicios  = collect($serviciosRaw ?? []);
     
-        $alergias = \App\Models\Configuracion\Alergia::whereIn('id', is_string($cliente->alergias) ? json_decode($cliente->alergias) : ($cliente->alergias ?? []))->get();
-        $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion) : ($cliente->alimentacion ?? []))->get();
+        // Alergias y alimentación
+        $alergias = collect();
+        $alimentos = collect();
     
+        $alergiaIds = is_string($cliente->alergias) ? json_decode($cliente->alergias, true) : ($cliente->alergias ?? []);
+        $alimentacionIds = is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion, true) : ($cliente->alimentacion ?? []);
+    
+        if (is_array($alergiaIds) && !empty($alergiaIds)) {
+            $alergias = \App\Models\Configuracion\Alergia::whereIn('id', $alergiaIds)->get();
+        }
+    
+        if (is_array($alimentacionIds) && !empty($alimentacionIds)) {
+            $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', $alimentacionIds)->get();
+        }
+    
+        // Generar PDF
         $pdf = Pdf::loadView('pdf.reserva', compact(
             'reserva',
             'cliente',
@@ -206,6 +221,7 @@ class PagoController extends Controller
             'alimentos'
         ));
     
+        // Guardar en ruta definida
         $pdfPath = storage_path('app/public/reservas/resumen_' . $reserva->codigo . '.pdf');
         $pdf->save($pdfPath);
     

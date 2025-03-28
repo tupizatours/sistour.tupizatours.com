@@ -74,21 +74,23 @@
         @endif
 
         @foreach (['tickets' => 'Tickets', 'accesorios' => 'Accesorios', 'servicios' => 'Servicios'] as $grupo => $titulo)
-            @if(!empty($$grupo) && count($$grupo))
+            @php $grupoData = $$grupo ?? collect(); @endphp
+            @if($grupoData->isNotEmpty())
                 <h5>{{ $titulo }}</h5>
                 <table>
                     <thead><tr><th>Nombre</th><th>Precio</th></tr></thead>
                     <tbody>
-                        @foreach($$grupo as $item)
+                        @foreach($grupoData as $item)
                             <tr>
-                                <td>{{ $item['name'] }}</td>
-                                <td>Bs. {{ number_format($item['price'], 2) }}</td>
+                                <td>{{ $item['name'] ?? '-' }}</td>
+                                <td>Bs. {{ number_format($item['price'] ?? 0, 2) }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             @endif
         @endforeach
+    
     </div>
 
     @if(!empty($cliente->nota))
