@@ -766,6 +766,15 @@
             let totalServicios = 0;
             let totalHabitaciones = 0;
 
+            // Selecciona todos los checkboxes de tickets al cambiar el checkbox de "Seleccionar todos"
+            document.getElementById('select_all_tickets').addEventListener('change', function() {
+                const checkboxes = document.querySelectorAll('.ticket-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateCheckboxTotal();
+            });   
+
             // Función para manejar el cambio en el select de nacionalidad
             function handleNacionalidadChange() {
                 const selectedValue = nacionalidadSelect.value;
