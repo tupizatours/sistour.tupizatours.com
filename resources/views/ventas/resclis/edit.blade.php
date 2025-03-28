@@ -509,10 +509,10 @@
                                         </div>
 
                                         @php
-                                        // Mapeamos los IDs de habitaciones seleccionadas desde el modelo
-                                            $habitacionesSeleccionadas = collect($rescli->habitaciones ?? [])->pluck('id')->map(fn($i) => (int) $i);
+                                            // Mapeamos IDs de habitaciones seleccionadas
+                                            $idsHabitacionesSeleccionadas = collect($rescli->habitaciones ?? [])->pluck('id')->map(fn($i) => (int) $i)->toArray();
                                         @endphp
-                                        
+
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                             @foreach($hotelesSeleccionados as $key => $hotelIds)
                                                 <div class="row g-3">
@@ -520,16 +520,16 @@
                                                         <label class="form-label" for="noche_{{ $key }}">
                                                             Día {{ $key }}
                                                         </label>
-                                        
+
                                                         @foreach ($hoteles as $hotel)
                                                             @if(in_array($hotel->id, $hotelIds))
                                                                 <div class="form-check mb-2">
-                                                                    <!-- Checkbox oculto del hotel -->
+                                                                    <!-- Hotel (input oculto) -->
                                                                     <input type="checkbox" class="form-check-input" style="display: none;" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
                                                                     <label class="form-check-label fw-bold" for="hotel_{{ $hotel->id }}_{{ $key }}">
                                                                         {{ $hotel->titulo }}
                                                                     </label>
-                                        
+
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
                                                                             <input class="form-check-input habitacion-checkbox" type="radio"
@@ -540,7 +540,7 @@
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                 data-tit="{{ $hotel->titulo }}"
-                                                                                @if($habitacionesSeleccionadas->contains($habitacion->id)) checked @endif
+                                                                                @checked(in_array($habitacion->id, $idsHabitacionesSeleccionadas))
                                                                             />
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
@@ -555,8 +555,8 @@
                                                     </div>
                                                 </div>
                                             @endforeach
-                                        </div>
-                                    
+</div>
+
 
 
                                         <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
