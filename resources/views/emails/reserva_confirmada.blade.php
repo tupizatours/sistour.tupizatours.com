@@ -91,7 +91,7 @@
                         <p><strong>Fecha del Tour:</strong> {{ $data['fecha_reserva'] }}</p>
                         <p><strong>Cantidad de Personas:</strong> {{ $data['cantidad_personas'] }}</p>
                         <p><strong>Monto Pagado:</strong> Bs. {{ number_format($data['monto_pagado'], 2, '.', '') }}</p>
-                        <p><strong>Total c/u:</strong> Bs. {{ number_format($data['saldo_pendiente'], 2, '.', '') }}</p>
+                        <p><strong>Total c/u:</strong> Bs. {{ number_format($data['total'], 2, '.', '') }}</p>
                         <p><strong>Estado:</strong> {{ $data['estado'] }}</p>
                     </div>
 
