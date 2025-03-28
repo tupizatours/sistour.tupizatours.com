@@ -122,27 +122,28 @@ class PagoController extends Controller
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
 
         // 🔹 Enviar correo de confirmación de pago
-        if ($request->origen !== 'resclis') {
+        $data = [
+            'nombre' => $rescli->nombre,
+            'apellidos' => $rescli->apellido,
+            'email' => $rescli->correo,
+            'codigo_reserva' => $reserva->codigo,
+            'monto_pagado' => number_format($request->monto, 2, '.', ''),
+            'total' => $rescli->total,
+            'fecha_reserva' => $reserva->fecha,
+            'cantidad_personas' => $reserva->can_per,
+            'estado' => 'Confirmada',
+            'tour_id' => $reserva->id,
+            'turistas_adicionales' => $linksTuristas,
+        ];
 
-            $data = [
-                'nombre' => $rescli->nombre,
-                'apellidos' => $rescli->apellido,
-                'email' => $rescli->correo,
-                'codigo_reserva' => $reserva->codigo,
-                'monto_pagado' => number_format($request->monto, 2, '.', ''),
-                'total' => $rescli->total,
-                'fecha_reserva' => $reserva->fecha_reserva,
-                'cantidad_personas' => $reserva->can_per,
-                'estado' => 'Confirmada',
-                'tour_id' => $reserva->id,
-                'fecha_reserva' => $reserva->fecha,
-                'turistas_adicionales' => $linksTuristas,
-            ];
-
-            // Enviar el correo
+        try {
             Mail::to($rescli->correo)->send(new ReservaConfirmada($data, $pdfPath));
+        } catch (\Exception $e) {
+            \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
         }
-        return redirect('ventas/reservas/' . $request->reserva_id)
+
+        // 🔁 Redireccionar siempre a la vista de reservas
+        return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
 
@@ -222,8 +223,14 @@ class PagoController extends Controller
         ));
     
         // Guardar en ruta definida
-        $pdfPath = storage_path('app/public/reservas/resumen_' . $reserva->codigo . '.pdf');
+        $folderPath = public_path('reservas');
+        if (!file_exists($folderPath)) {
+            mkdir($folderPath, 0755, true); // Crea la carpeta si no existe
+        }
+
+        $pdfPath = $folderPath . '/resumen_' . $reserva->codigo . '.pdf';
         $pdf->save($pdfPath);
+        
     
         return $pdfPath;
     }
