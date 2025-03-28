@@ -188,4 +188,19 @@
 
         <div class="col-md-2"></div>
     </div>
+
+    @php
+        
+    public function build()
+        {
+            return $this->subject('Confirmación de Reserva - ' . $this->data['codigo_reserva'])
+                        ->view('emails.reserva_confirmada')
+                        ->attach(storage_path('app/public/reservas/resumen_' . $this->data['codigo_reserva'] . '.pdf'), [
+                            'as' => 'Resumen_Reserva.pdf',
+                            'mime' => 'application/pdf',
+                        ]);
+        }
+    @endphp
+
+
 @endsection

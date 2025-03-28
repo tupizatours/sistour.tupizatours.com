@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use App\Models\Reserva;
 use App\Models\Venta\Pago;
 use App\Models\Reserva\Resercliente;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class PagoController extends Controller
 {
@@ -116,6 +118,9 @@ class PagoController extends Controller
             ];
         }
 
+        // PDF
+        $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
+
         // 🔹 Enviar correo de confirmación de pago
         if ($request->origen !== 'resclis') {
 
@@ -125,16 +130,17 @@ class PagoController extends Controller
                 'email' => $rescli->correo,
                 'codigo_reserva' => $reserva->codigo,
                 'monto_pagado' => number_format($request->monto, 2, '.', ''),
-                'saldo_pendiente' => number_format($nuevoSaldoPendiente, 2, '.', ''),
+                'total' => $rescli->total,
                 'fecha_reserva' => $reserva->fecha_reserva,
                 'cantidad_personas' => $reserva->can_per,
                 'estado' => 'Confirmada',
                 'tour_id' => $reserva->id,
-                'turistas_adicionales' => $linksTuristas, // Enviar los links
+                'fecha_reserva' => $reserva->fecha,
+                'turistas_adicionales' => $linksTuristas,
             ];
 
             // Enviar el correo
-            Mail::to($rescli->correo)->send(new ReservaConfirmada($data));
+            Mail::to($rescli->correo)->send(new ReservaConfirmada($data, $pdfPath));
         }
         return redirect('ventas/reservas/' . $request->reserva_id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
@@ -164,6 +170,43 @@ class PagoController extends Controller
         // Si la comisión es mayor o igual a 1, asumimos que es un monto fijo
         return $cobro->comision;
     }
+
+
+    private function generarResumenReservaPDF($reserva, $cliente)
+    {
+        $habitaciones = collect(json_decode($cliente->habitaciones, true) ?? [])->map(function ($item) {
+            $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id']);
+            return [
+                'hotel' => $habit?->hotel->titulo ?? 'Hotel',
+                'name' => $item['name'],
+                'price' => $item['price'],
+            ];
+        });
+
+        $tickets = collect(json_decode($cliente->tickets, true) ?? []);
+        $accesorios = collect(json_decode($cliente->accesorios, true) ?? []);
+        $servicios = collect(json_decode($cliente->servicios, true) ?? []);
+
+        $alergias = \App\Models\Configuracion\Alergia::whereIn('id', json_decode($cliente->alergias ?? '[]'))->get();
+        $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', json_decode($cliente->alimentacion ?? '[]'))->get();
+
+        $pdf = Pdf::loadView('pdf.reserva', compact(
+            'reserva',
+            'cliente',
+            'habitaciones',
+            'tickets',
+            'accesorios',
+            'servicios',
+            'alergias',
+            'alimentos'
+        ));
+
+        $pdfPath = storage_path('app/public/reservas/resumen_' . $reserva->codigo . '.pdf');
+        $pdf->save($pdfPath);
+
+        return $pdfPath;
+    }
+
 
     /**
      * Display the specified resource.
