@@ -433,7 +433,7 @@
                                                 </div>    
                                                 @foreach($tickets as $ticket)
                                                     <div class="form-check">
-                                                        <input class="form-check-input" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" id="ticket_{{ $ticket->id }}" 
+                                                        <input class="form-check-input ticket-checkbox" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" id="ticket_{{ $ticket->id }}" 
                                                             data-name="{{ $ticket->titulo }}"
                                                             data-nac="{{ number_format($ticket->nacionales, 2, '.', '') }}"
                                                             data-ext="{{ number_format($ticket->extranjeros, 2, '.', '') }}">
