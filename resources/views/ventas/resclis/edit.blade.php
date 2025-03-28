@@ -286,10 +286,6 @@
 
                                     <hr>
 
-                                    <div class="d-flex align-items-center gap-2">
-                                        <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
-                                        <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
-                                    </div>
                                 </div>
 
                                 <div class="card-body pt-5 pb-5 p-4 fase" id="segunda_fase">
