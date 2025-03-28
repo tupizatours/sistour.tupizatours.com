@@ -366,7 +366,6 @@
                                             </div>
                                         </div>
                                         
-                                         
                                         <div class="col-md-12">
                                             <div class="d-flex justify-content-center gap-2">
                                                 <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="primera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
@@ -1058,6 +1057,7 @@
             });
         });
     </script>
+
     
     <script>
         $(document).ready(function () {
@@ -1077,44 +1077,34 @@
             });
         });
     </script>
-    
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const fileInput = document.getElementById('file-upload');
-            const imgPreview = document.getElementById('file-image');
-            const pdfPreview = document.getElementById('pdf-preview');
-            const messageBox = document.getElementById('messages');
-        
-            fileInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                if (!file) return;
-        
-                const fileName = file.name.toLowerCase();
-                const isImage = /\.(gif|jpg|jpeg|png)$/i.test(fileName);
-                const isPDF = /\.pdf$/i.test(fileName);
-        
-                if (isImage) {
-                    imgPreview.src = URL.createObjectURL(file);
-                    imgPreview.classList.remove("hidden");
-                    pdfPreview.classList.add("hidden");
-                    messageBox.innerHTML = `<strong>Imagen seleccionada:</strong> ${file.name}`;
-                } else if (isPDF) {
-                    pdfPreview.src = URL.createObjectURL(file);
-                    pdfPreview.classList.remove("hidden");
-                    imgPreview.classList.add("hidden");
-                    messageBox.innerHTML = `<strong>PDF seleccionado:</strong> ${file.name}`;
-                } else {
-                    imgPreview.classList.add("hidden");
-                    pdfPreview.classList.add("hidden");
-                    messageBox.innerHTML = `<strong>Archivo no soportado:</strong> ${file.name}`;
-                }
+            const continuarButtons = document.querySelectorAll(".continuar");
+            const regresarButtons = document.querySelectorAll(".regresar");
+
+            continuarButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const currentSection = button.closest(".fase");
+                    const nextSectionId = button.getAttribute("data-next");
+
+                    if (nextSectionId) {
+                        currentSection.style.display = "none"; // Oculta la sección actual
+                        document.getElementById(nextSectionId).style.display = "block"; // Muestra la siguiente sección
+                    }
+                });
+            });
+
+            regresarButtons.forEach(button => {
+                button.addEventListener("click", function () {
+                    const currentSection = button.closest(".fase");
+                    const prevSectionId = button.getAttribute("data-prev");
+
+                    if (prevSectionId) {
+                        currentSection.style.display = "none"; // Oculta la sección actual
+                        document.getElementById(prevSectionId).style.display = "block"; // Muestra la sección anterior
+                    }
+                });
             });
         });
-    </script>
-    <script>
-        document.getElementById('form-rescli').addEventListener('submit', function(e) {
-            console.log('📤 Intentando enviar el formulario...');
-        });
-
     </script>
 @endsection
