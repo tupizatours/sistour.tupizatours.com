@@ -63,6 +63,9 @@
             text-align: center;
             padding-top: 15px;
         }
+        li {
+            list-style: none;
+        }
         @media only screen and (max-width: 640px) {
             .container {
                 width: 90%;

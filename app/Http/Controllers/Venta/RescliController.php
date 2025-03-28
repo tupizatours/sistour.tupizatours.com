@@ -191,7 +191,7 @@ class RescliController extends Controller
 
     public function update(Request $request, $id)
     {
-        if ($request->pagina == "file_panel") {
+        if ($request->pagina == "file_panel" || $request->pagina == "user_external") {
             $alergias = json_encode($request->alergias);
             $alimentacion = json_encode($request->alimentacion);
     

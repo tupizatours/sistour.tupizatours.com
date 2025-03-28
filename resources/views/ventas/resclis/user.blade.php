@@ -212,7 +212,6 @@
                                         $newDate = date("m/d/Y", strtotime($originalDate));
                                     @endphp
 
-                                    <input type="hidden" value="file_panel" id="pagina" name="pagina" />
                                     <input type="hidden" value="user_external" id="pagina" name="pagina" />
                                     <input type="hidden" value="{{ $rescli->reserva->id }}" id="reserva_id" name="reserva_id">
                                     <input type="hidden" value="{{ $rescli->id }}" id="rescli_id" name="rescli_id">
