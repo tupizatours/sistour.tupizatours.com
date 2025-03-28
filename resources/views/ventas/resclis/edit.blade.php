@@ -510,7 +510,8 @@
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                         @php
-                                                $hotelesSeleccionados = json_decode($tour->hoteles, true);
+                                                $habitacionesSeleccionadas = collect($rescli->habitaciones);
+
                                          @endphp
                                             @foreach($hotelesSeleccionados as $key => $hotelIds)
                                                 <div class="row g-3">
