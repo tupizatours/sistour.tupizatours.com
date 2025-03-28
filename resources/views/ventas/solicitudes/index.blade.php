@@ -81,8 +81,7 @@
                                     <tr>
                                         <td>{{ $reserva->codigo }}</td>
                                         <td>{{ $reserva->tour->titulo }}</td>
-                                        <td>{{ $reserva->fecha }}</td>
-
+                                        <td>{{ \Carbon\Carbon::parse($reserva->fecha)->format('d-m-Y') }}</td>
                                         <td>
                                             {{ $reserva->turistas->first()->nombres.' '.$reserva->turistas->first()->apellidos }}
                                         </td>
