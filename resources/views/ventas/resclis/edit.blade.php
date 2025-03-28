@@ -487,7 +487,7 @@
                                     <div class="tab-content py-3">
                                         <div class="tab-pane fade show active" id="tourtickets" role="tabpanel">
                                             <div class="col-md-12">
-                                            <div class="form-check">
+                                                <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" id="select_all_tickets">
                                                     <label class="form-check-label" for="select_all_tickets">
                                                         <strong>Seleccionar todos</strong>
@@ -1122,29 +1122,4 @@
             });
         });
     </script>
-    <script>
-            function continuar2(){ 
-                const continuarButtons = document.querySelectorAll(".continuar2");
-                const regresarButtons = document.querySelectorAll(".regresar2");
-                const requiredFields = document.querySelectorAll("#segunda_fase [required]");
-                let allFilled = true;
-                                        requiredFields.forEach(field => {
-                                            if (!field.value) {
-                                                allFilled = false;
-                                            }
-                                        });
-                const valorFinal = allFilled;
-                if(valorFinal){
-                    document.getElementById('segunda_fase').style.display = "none"; // Oculta la sección actual
-                            document.getElementById('tercera_fase').style.display = "block";
-                }else{
-                    alert('Por favor llene los campos obligatorios *');
-                }
-            }
-
-            function regresar2(){
-                document.getElementById('segunda_fase').style.display = "none"; // Oculta la sección actual
-                document.getElementById('primera_fase').style.display = "block";
-            }
-    </script>     
 @endsection

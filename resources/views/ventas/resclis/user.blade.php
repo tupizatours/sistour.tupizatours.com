@@ -425,6 +425,12 @@
                                     <div class="tab-content py-3">
                                         <div class="tab-pane fade show active" id="tourtickets" role="tabpanel">
                                             <div class="col-md-12">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" id="select_all_tickets">
+                                                    <label class="form-check-label" for="select_all_tickets">
+                                                        <strong>Seleccionar todos</strong>
+                                                    </label>
+                                                </div>    
                                                 @foreach($tickets as $ticket)
                                                     <div class="form-check">
                                                         <input class="form-check-input" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" id="ticket_{{ $ticket->id }}" 
