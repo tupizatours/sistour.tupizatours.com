@@ -349,32 +349,31 @@
                                             <input type="text" class="form-control" id="nota" name="nota" required />
                                         </div>
 
-                                        <div class="col-md-12">
-                                            <label for="alimentacion" class="form-label">
-                                                Es importante subir una imagen del documento de identidad para su seguridad y la nuestra.
+                                        <div class="col-md-12 text-center">
+                                            <!-- Descripción arriba del botón -->
+                                            <div class="mb-2">
+                                                <p class="text-muted mb-1">
+                                                    Es importante subir una imagen o un PDF del documento de identidad para su seguridad y la nuestra.
+                                                </p>
+                                                <strong>(Campo requerido *)</strong>
+                                            </div>
+                                        
+                                            <!-- Botón de carga centrado -->
+                                            <label for="file-upload" id="file-upload-btn" class="btn btn-primary mb-3">
+                                                Seleccionar un archivo
                                             </label>
-
-                                            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-                                            <label for="file-upload" id="file-drag">
-                                                <img id="file-image" src="#" alt="Preview" class="hidden">
-                                                <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
-                                                
-                                                <div id="start">
-                                                    <i class="fa fa-download" aria-hidden="true"></i>
-                                                    <div>Selecciona el archivo a cargar</div>
-                                                    <div id="notimage" class="hidden">Selecciona una imagen</div>
-                                                    <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
-                                                </div>
-
-                                                <div id="response" class="hidden">
-                                                    <div id="messages"></div>
-                                                    
-                                                    <progress class="progress" id="file-progress" value="0">
-                                                        <span>0</span>%
-                                                    </progress>
-                                                </div>
-                                            </label>
+                                        
+                                            <!-- Input de archivo oculto -->
+                                            <input 
+                                                class="form-control form-control-solid d-none"
+                                                id="file-upload" 
+                                                name="file" 
+                                                type="file" 
+                                                accept=".pdf, .doc, .docx, image/*"
+                                                onchange="handleFileUpload(this)"
+                                                {{ empty($rescli->file) ? 'required' : '' }} 
+                                            />
+                                        
                                         </div>
 
                                         <div class="col-md-12">
