@@ -508,39 +508,39 @@
                                             </div>
                                         </div>
 
-                                        <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                         @php
-                                            
-                                            $habitacionesSeleccionadas = collect($rescli->habitaciones);
+                                            $habitacionesSeleccionadas = collect($rescli->habitaciones ?? [])->pluck('id')->map(fn($i) => (int) $i);
+                                        @endphp
 
-                                         @endphp
+                                        <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                             @foreach($hotelesSeleccionados as $key => $hotelIds)
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
                                                         <label class="form-label" for="noche_{{ $key }}">
-                                                            Dia {{ $key }}
+                                                            Día {{ $key }}
                                                         </label>
-                                                        @if($hoteles) 
+
                                                         @foreach ($hoteles as $hotel)
-                                                            @if(in_array($hotel->id, $hotelIds)) 
-                                                                <div class="form-check">
-                                                                    <!-- Checkbox para el hotel -->
-                                                                    <input class="form-check-input" style="display: none;" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                                    <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
+                                                            @if(in_array($hotel->id, $hotelIds))
+                                                                <div class="form-check mb-2">
+                                                                    <!-- Hotel oculto -->
+                                                                    <input type="checkbox" class="form-check-input" style="display: none;" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                                    <label class="form-check-label fw-bold" for="hotel_{{ $hotel->id }}_{{ $key }}">
                                                                         {{ $hotel->titulo }}
                                                                     </label>
+
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                            <!-- ID único para los checkbox buttons y name basado en el día para selección única -->
-                                                                            <input class="form-check-input habitacion-checkbox" type="checkbox" value="{{ $habitacion->id }}"
+                                                                            <input class="form-check-input habitacion-checkbox" type="radio"
+                                                                                value="{{ $habitacion->id }}"
                                                                                 id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                                 name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                 data-tit="{{ $hotel->titulo }}"
-                                                                                @if($rescli->habitaciones) @foreach($habitaciones as $habit) @if($habit["id"] == $habitacion->id) checked @endif @endforeach @endif />
-
+                                                                                @if($habitacionesSeleccionadas->contains($habitacion->id)) checked @endif
+                                                                            />
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
                                                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
@@ -551,12 +551,11 @@
                                                                 </div>
                                                             @endif
                                                         @endforeach
-                                                        @endif
                                                     </div>
                                                 </div>
                                             @endforeach
-
                                         </div>
+
 
                                         <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                             <div class="col-md-12">
