@@ -96,7 +96,7 @@
     @if(!empty($cliente->total))
     <div class="section">
         <h4>Total</h4>
-        <p class="bold">Bs.{{ $cliente->total }}</p>
+        <p>Bs. <span class="bold"> {{ $cliente->total }} </span></p>
     </div>
     @endif
 
