@@ -775,7 +775,7 @@
             const checkboxesTickets = document.querySelectorAll("input[type='checkbox'][id^='ticket_']");
             const checkboxesAccesorios = document.querySelectorAll("input[type='checkbox'][id^='accesorio_']");
             const checkboxesServicios = document.querySelectorAll("input[type='checkbox'][id^='turista_']");
-            const checkboxesHabitaciones = document.querySelectorAll("input[type='checkbox'][id^='form_habi_']");
+            const checkboxesHabitaciones = document.querySelectorAll("input[type='radio'][id^='form_habi_']");
 
             let totalTickets = 0;
             let totalAccesorios = 0;
