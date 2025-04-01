@@ -532,7 +532,7 @@
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
                                                                             <!-- ID único para los checkbox buttons y name basado en el día para selección única -->
-                                                                            <input class="form-check-input habitacion-checkbox" type="checkbox"
+                                                                            <input class="form-check-input habitacion-checkbox" type="radio"
                                                                                 value="{{ $habitacion->id }}"
                                                                                 id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                                 name="habitacion_dia_{{ $key }}"

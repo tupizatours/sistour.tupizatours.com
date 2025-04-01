@@ -45,7 +45,7 @@
 
                         @php
                             $originalDate = $reserva->created_at;
-                            $newDate = date("Y-m-d", strtotime($originalDate));
+                            $newDate = date("d-m-Y", strtotime($originalDate));
                         @endphp
 
                         <h6 class="card-infos">
