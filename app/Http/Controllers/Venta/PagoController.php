@@ -35,81 +35,58 @@ class PagoController extends Controller
      */
     public function store(Request $request)
     {
-        // Validar entrada
         $request->validate([
             'metodo' => 'required|string',
             'monto' => 'required|numeric|min:1',
         ]);
-    
-        // Obtener la reserva y el cliente asociado
+
         $rescli = Resercliente::find($request->rescli_id);
-    
-        if (!$rescli) {
-            return back()->with('error', 'Reserva no encontrada.');
-        }
-    
-        // Obtener la reserva asociada
+        if (!$rescli) return back()->with('error', 'Reserva no encontrada.');
+
         $reserva = Reserva::find($rescli->reserva_id);
-    
-        if (!$reserva) {
-            return back()->with('error', 'No se encontró la reserva asociada.');
-        }
-    
-        // Obtener el total pendiente actualizado
+        if (!$reserva) return back()->with('error', 'No se encontró la reserva asociada.');
+
         $totalPendiente = $reserva->total - $rescli->pagado;
-    
-        // Verificar si aún hay saldo pendiente
+
         if ($totalPendiente <= 0) {
             return back()->with('error', 'No hay saldo pendiente para esta reserva.');
         }
-    
-        // Verificar que el monto no exceda el saldo pendiente
-        if ($request->monto > $totalPendiente) {
-            return back()->with('error', 'El monto ingresado excede el saldo pendiente.');
-        }
-    
-        // Obtener la tasa de conversión desde la base de datos
-        $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1; // Asegurar que sea 1 si no hay tasa
-    
-        // Calcular conversión y comisiones
-        $conversion = $request->monto * $tasaConversion;
+
+        $montoIngresado = $request->monto;
+        $montoPago = min($montoIngresado, $totalPendiente);
+        $vuelto = $montoIngresado > $totalPendiente ? $montoIngresado - $totalPendiente : 0;
+
+        $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
+        $conversion = $montoPago * $tasaConversion;
         $comision = $this->calcularComision($request->metodo) ?? 0;
         $totalPago = $conversion + $comision;
-    
-        // Crear el pago
+
         $pago = Pago::create([
             'codigo' => uniqid(),
             'reserva_id' => $reserva->id,
             'rescli_id' => $rescli->id,
             'user_id' => auth()->id(),
-            'monto' => $request->monto,
+            'monto' => $montoPago,
             'conversion' => $conversion,
             'comision' => $comision,
             'total' => $totalPago,
             'metodo' => $request->metodo,
             'estatus' => '1',
         ]);
-    
-        // Actualizar monto pagado del cliente
-        $rescli->pagado += $request->monto;
+
+        $rescli->pagado += $montoPago;
         $rescli->save();
-    
-        // Recalcular el total pendiente después del pago
+
         $nuevoSaldoPendiente = $reserva->total - $rescli->pagado;
-    
-        // Verificar si el pago cubre el total pendiente y actualizar el estado
-        if ($nuevoSaldoPendiente >= 0) {
-            $reserva->estado = '2'; // Si estado es VARCHAR
+        if ($nuevoSaldoPendiente <= 0) {
+            $reserva->estado = '2';
             $reserva->save();
         }
-    
-        // Obtener la lista de turistas adicionales (excluyendo al principal)
+
         $touristasAdicionales = Resercliente::where('reserva_id', $reserva->id)
-            ->where('esPrincipal', false) // Solo los adicionales
-            ->get();
+            ->where('esPrincipal', false)->get();
 
         $linksTuristas = [];
-
         foreach ($touristasAdicionales as $turista) {
             $linksTuristas[] = [
                 'nombre' => $turista->nombres,
@@ -118,23 +95,20 @@ class PagoController extends Controller
             ];
         }
 
-        // PDF
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
 
-        // 🔹 Enviar correo de confirmación de pago
         $data = [
             'nombre' => $rescli->nombre,
             'apellidos' => $rescli->apellido,
             'email' => $rescli->correo,
             'codigo_reserva' => $reserva->codigo,
-            'monto_pagado' => number_format($request->monto, 2, '.', ''),
+            'monto_pagado' => number_format($montoPago, 2, '.', ''),
             'total' => $rescli->total,
             'fecha_reserva' => $reserva->fecha,
             'cantidad_personas' => $reserva->can_per,
             'estado' => 'Confirmada',
             'tour_id' => $reserva->id,
             'turistas_adicionales' => $linksTuristas,
-            'pagina' => $request->pagina,
         ];
 
         try {
@@ -143,10 +117,21 @@ class PagoController extends Controller
             \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
         }
 
-        // 🔁 Redireccionar siempre a la vista de reservas
+        // 🔁 Si hubo vuelto, mostrarlo en vista especial
+        if ($vuelto > 0) {
+            return view('ventas.resclis.vuelto', [
+                'vuelto' => $vuelto,
+                'rescli_id' => $rescli->id,
+                'monto_pagado' => $montoPago,
+                'monto_ingresado' => $montoIngresado,
+                'codigo_reserva' => $reserva->codigo
+            ]);
+        }
+
         return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
+
 
     /**
      * Obtener la tasa de conversión de la divisa seleccionada desde la base de datos.
