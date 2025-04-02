@@ -436,7 +436,7 @@
 
 @section('footer_scripts')
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
+       document.addEventListener("DOMContentLoaded", function () {
             const entradaInput = document.getElementById("entrada");
             const montoInput = document.getElementById("monto"); // oculto, se envía al backend
             const metodoSelect = document.getElementById("metodo");
@@ -447,7 +447,9 @@
             const vueltoInput = document.getElementById("vuelto");
             const btnPagar = document.getElementById("btnPagar");
 
-            function calcular() {
+            let userEditedEntrada = false;
+
+            function calcular(autoEntrada = false) {
                 const selectedOption = metodoSelect.options[metodoSelect.selectedIndex];
 
                 if (!selectedOption || selectedOption.value === "") {
@@ -465,24 +467,30 @@
                 const comisionFija = parseFloat(selectedOption.getAttribute('data-comision')) || 0;
 
                 let entrada = parseFloat(entradaInput.value) || 0;
-                let montoConvertido = entrada * tipoCambio;
 
+                // ✅ Auto-sugerir valor si es cambio de método y el usuario no escribió aún
+                if (autoEntrada && !userEditedEntrada) {
+                    if (selectedOption.value === "Paypal" || selectedOption.value === "Dolar") {
+                        entrada = (totalPendiente / tipoCambio);
+                    } else {
+                        entrada = totalPendiente;
+                    }
+                    entradaInput.value = entrada.toFixed(4);
+                }
+
+                let montoConvertido = entrada * tipoCambio;
                 let vuelto = 0;
 
                 if (montoConvertido > totalPendiente) {
-                    // Si el monto convertido excede el pendiente, ajustar
                     vuelto = montoConvertido - totalPendiente;
                     montoConvertido = totalPendiente;
                     entrada = montoConvertido / tipoCambio;
+                    entradaInput.value = entrada.toFixed(4);
                 }
 
-                // Setear valor limpio a enviar al backend
-                montoInput.value = entrada.toFixed(4);
-
-                // Calcular comisiones y total final
+                montoInput.value = entrada.toFixed(4); // Valor limpio para backend
                 const totalPago = montoConvertido + comisionFija;
 
-                // Setear conversion, comision, total a pagar y vuelto
                 conversionInput.value = tipoCambio.toFixed(2);
                 comisionInput.value = comisionFija.toFixed(2);
                 totalInput.value = totalPago.toFixed(2);
@@ -492,24 +500,23 @@
             }
 
             metodoSelect.addEventListener("change", function () {
-                entradaInput.value = "";
-                montoInput.value = "";
-                vueltoInput.value = "0.00";
-                calcular();
+                userEditedEntrada = false;
+                calcular(true); // true para autocompletar entrada sugerida
             });
 
             entradaInput.addEventListener("input", function () {
+                userEditedEntrada = true;
                 calcular();
             });
 
-            // Preseleccionar método Bolivianos si existe
             const bolivianosOption = [...metodoSelect.options].find(option => option.value === "Bolivianos");
             if (bolivianosOption) {
                 bolivianosOption.selected = true;
             }
 
-            calcular();
+            calcular(true); // Llamar con autoEntrada al iniciar
         });
+
         </script>
 
     <!-- SCRIPTS PARA FLECHAS -->
