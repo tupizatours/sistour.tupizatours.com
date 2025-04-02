@@ -30,62 +30,59 @@ class PagoController extends Controller
         //
     }
 
+
     public function store(Request $request)
     {
         $request->validate([
             'metodo' => 'required|string',
             'monto' => 'required|numeric|min:1',
         ]);
-    
+
         $rescli = Resercliente::find($request->rescli_id);
         if (!$rescli) return back()->with('error', 'Reserva no encontrada.');
-    
+
         $reserva = Reserva::find($rescli->reserva_id);
         if (!$reserva) return back()->with('error', 'No se encontró la reserva asociada.');
-    
+
         $totalPendiente = $reserva->total - $rescli->pagado;
         if ($totalPendiente <= 0) return back()->with('error', 'No hay saldo pendiente para esta reserva.');
-    
-        // Datos monetarios
-        $montoIngresado = $request->monto; // Puede estar en USD
+
+        // Datos de conversión
+        $montoIngresado = $request->monto;
         $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
         $comision = $this->calcularComision($request->metodo) ?? 0;
-    
-        // Conversión
+
+        // Conversión a bolivianos
         $montoConvertidoBs = $montoIngresado * $tasaConversion;
-    
-        // Se aplicará el menor entre lo convertido y lo pendiente
         $montoAplicadoBs = min($montoConvertidoBs, $totalPendiente);
-        $vuelto = $montoConvertidoBs - $montoAplicadoBs;
-    
+        $vuelto = round($montoConvertidoBs - $montoAplicadoBs, 2);
         $totalPago = $montoAplicadoBs + $comision;
-    
-        // Registrar pago
+
+        // Crear el pago
         Pago::create([
             'codigo' => uniqid(),
             'reserva_id' => $reserva->id,
             'rescli_id' => $rescli->id,
             'user_id' => auth()->id(),
-            'monto' => $montoIngresado,               // Monto original (USD)
-            'conversion' => $montoConvertidoBs,       // Convertido a Bs
+            'monto' => $montoIngresado,
+            'conversion' => $montoConvertidoBs,
             'comision' => $comision,
             'total' => $totalPago,
             'metodo' => $request->metodo,
             'estatus' => '1',
         ]);
-    
-        // Sumar solo el monto aplicado en Bs al total pagado
+
         $rescli->pagado += $montoAplicadoBs;
         $rescli->save();
-    
+
         if (($reserva->total - $rescli->pagado) <= 0) {
             $reserva->estado = '2';
             $reserva->save();
         }
-    
-        // PDF para correo
+
+        // PDF
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
-    
+
         $data = [
             'nombre' => $rescli->nombre,
             'apellidos' => $rescli->apellido,
@@ -100,29 +97,28 @@ class PagoController extends Controller
             'turistas_adicionales' => [],
             'pagina' => $request->pagina,
         ];
-    
+
         try {
             Mail::to($rescli->correo)->send(new ReservaConfirmada($data, $pdfPath));
         } catch (\Exception $e) {
             \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
         }
-    
-        // Si hay vuelto, mostrar vista especial
+
+        // Mostrar pantalla de vuelto si corresponde
         if ($vuelto > 0) {
             return view('ventas.resclis.vuelto', [
                 'rescli_id' => $rescli->id,
                 'codigo_reserva' => $reserva->codigo,
-                'monto_original' => $montoIngresado,
+                'monto_ingresado' => $montoIngresado,
                 'monto_convertido' => $montoConvertidoBs,
                 'monto_aplicado' => $montoAplicadoBs,
                 'vuelto' => $vuelto,
             ]);
         }
-    
+
         return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
-    
     /**
      * Obtener la tasa de conversión de la divisa seleccionada desde la base de datos.
      */
@@ -143,7 +139,7 @@ class PagoController extends Controller
         if (!$cobro) {
             return 0; // Si no se encuentra el método, no se cobra comisión
         }
-    
+
         // Si la comisión es mayor o igual a 1, asumimos que es un monto fijo
         return $cobro->comision;
     }
@@ -155,7 +151,7 @@ class PagoController extends Controller
         $ticketsRaw = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : ($cliente->tickets ?? []);
         $accesoriosRaw = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : ($cliente->accesorios ?? []);
         $serviciosRaw = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : ($cliente->servicios ?? []);
-    
+
         // Habitaciones con hotel
         $habitaciones = collect($habitacionesRaw)->map(function ($item) {
             $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id'] ?? 0);
@@ -165,27 +161,27 @@ class PagoController extends Controller
                 'price' => $item['price'] ?? 0,
             ];
         });
-    
+
         // Resto como colecciones limpias
         $tickets    = collect($ticketsRaw ?? []);
         $accesorios = collect($accesoriosRaw ?? []);
         $servicios  = collect($serviciosRaw ?? []);
-    
+
         // Alergias y alimentación
         $alergias = collect();
         $alimentos = collect();
-    
+
         $alergiaIds = is_string($cliente->alergias) ? json_decode($cliente->alergias, true) : ($cliente->alergias ?? []);
         $alimentacionIds = is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion, true) : ($cliente->alimentacion ?? []);
-    
+
         if (is_array($alergiaIds) && !empty($alergiaIds)) {
             $alergias = \App\Models\Configuracion\Alergia::whereIn('id', $alergiaIds)->get();
         }
-    
+
         if (is_array($alimentacionIds) && !empty($alimentacionIds)) {
             $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', $alimentacionIds)->get();
         }
-    
+
         // Generar PDF
         $pdf = Pdf::loadView('pdf.reserva', compact(
             'reserva',
@@ -197,7 +193,7 @@ class PagoController extends Controller
             'alergias',
             'alimentos'
         ));
-    
+
         // Guardar en ruta definida
         $folderPath = public_path('reservas');
         if (!file_exists($folderPath)) {
@@ -206,11 +202,11 @@ class PagoController extends Controller
 
         $pdfPath = $folderPath . '/resumen_' . $reserva->codigo . '.pdf';
         $pdf->save($pdfPath);
-        
-    
+
+
         return $pdfPath;
     }
-    
+
 
     /**
      * Display the specified resource.
