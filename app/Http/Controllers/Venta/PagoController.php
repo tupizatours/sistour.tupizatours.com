@@ -47,7 +47,7 @@ class PagoController extends Controller
             return back()->with('error', 'No se encontró la reserva asociada.');
         }
     
-        $totalPendiente = $reserva->total - $rescli->pagado;
+        $totalPendiente = $rescli->total - $rescli->pagado;
     
         if ($totalPendiente <= 0) {
             return back()->with('error', 'No hay saldo pendiente para esta reserva.');
