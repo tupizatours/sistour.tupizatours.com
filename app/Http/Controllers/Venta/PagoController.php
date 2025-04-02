@@ -38,55 +38,52 @@ class PagoController extends Controller
         ]);
     
         $rescli = Resercliente::find($request->rescli_id);
-        if (!$rescli) {
-            return back()->with('error', 'Reserva no encontrada.');
-        }
+        if (!$rescli) return back()->with('error', 'Reserva no encontrada.');
     
         $reserva = Reserva::find($rescli->reserva_id);
-        if (!$reserva) {
-            return back()->with('error', 'No se encontró la reserva asociada.');
-        }
+        if (!$reserva) return back()->with('error', 'No se encontró la reserva asociada.');
     
-        $totalPendiente = $rescli->total - $rescli->pagado;
+        $totalPendiente = $reserva->total - $rescli->pagado;
+        if ($totalPendiente <= 0) return back()->with('error', 'No hay saldo pendiente para esta reserva.');
     
-        if ($totalPendiente <= 0) {
-            return back()->with('error', 'No hay saldo pendiente para esta reserva.');
-        }
-    
-        $montoIngresado = $request->monto;
-        $montoAplicado = min($montoIngresado, $totalPendiente); // solo se registra hasta el pendiente
-        $vuelto = $montoIngresado - $montoAplicado;
-    
-        // Tasa y comisión
+        // Datos monetarios
+        $montoIngresado = $request->monto; // Puede estar en USD
         $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
         $comision = $this->calcularComision($request->metodo) ?? 0;
-        $conversion = $montoAplicado * $tasaConversion ?? 0;
-        $totalPago = $conversion + $comision;
     
-        // Registro del pago
+        // Conversión
+        $montoConvertidoBs = $montoIngresado * $tasaConversion;
+    
+        // Se aplicará el menor entre lo convertido y lo pendiente
+        $montoAplicadoBs = min($montoConvertidoBs, $totalPendiente);
+        $vuelto = $montoConvertidoBs - $montoAplicadoBs;
+    
+        $totalPago = $montoAplicadoBs + $comision;
+    
+        // Registrar pago
         Pago::create([
             'codigo' => uniqid(),
             'reserva_id' => $reserva->id,
             'rescli_id' => $rescli->id,
             'user_id' => auth()->id(),
-            'monto' => $montoAplicado,
-            'conversion' => $conversion,
+            'monto' => $montoIngresado,               // Monto original (USD)
+            'conversion' => $montoConvertidoBs,       // Convertido a Bs
             'comision' => $comision,
             'total' => $totalPago,
             'metodo' => $request->metodo,
             'estatus' => '1',
         ]);
-        
-        if ((!$conversion) && $conversion != 0) {
-            $rescli->pagado += $conversion;
-            $rescli->save();
-        }
-
+    
+        // Sumar solo el monto aplicado en Bs al total pagado
+        $rescli->pagado += $montoAplicadoBs;
+        $rescli->save();
+    
         if (($reserva->total - $rescli->pagado) <= 0) {
             $reserva->estado = '2';
             $reserva->save();
         }
     
+        // PDF para correo
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
     
         $data = [
@@ -94,7 +91,7 @@ class PagoController extends Controller
             'apellidos' => $rescli->apellido,
             'email' => $rescli->correo,
             'codigo_reserva' => $reserva->codigo,
-            'monto_pagado' => number_format($montoAplicado, 2, '.', ''),
+            'monto_pagado' => number_format($montoAplicadoBs, 2, '.', ''),
             'total' => $rescli->total,
             'fecha_reserva' => $reserva->fecha,
             'cantidad_personas' => $reserva->can_per,
@@ -110,18 +107,18 @@ class PagoController extends Controller
             \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
         }
     
-        // 🔁 Redireccionar a vista de vuelto si aplica
+        // Si hay vuelto, mostrar vista especial
         if ($vuelto > 0) {
             return view('ventas.resclis.vuelto', [
-                'codigo_reserva' => $reserva->codigo,
                 'rescli_id' => $rescli->id,
-                'monto_ingresado' => $montoIngresado,
-                'monto_pagado' => $montoAplicado,
+                'codigo_reserva' => $reserva->codigo,
+                'monto_original' => $montoIngresado,
+                'monto_convertido' => $montoConvertidoBs,
+                'monto_aplicado' => $montoAplicadoBs,
                 'vuelto' => $vuelto,
             ]);
         }
     
-        // En caso normal
         return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
