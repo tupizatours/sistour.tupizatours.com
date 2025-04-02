@@ -31,7 +31,7 @@ class PagoController extends Controller
     }
 
     /**
-     * Store a new pay.
+     * - the form for creating a new resource.
      */
     public function store(Request $request)
     {
@@ -50,24 +50,23 @@ class PagoController extends Controller
             return back()->with('error', 'No se encontró la reserva asociada.');
         }
 
-        // Calcular el saldo pendiente exacto
         $totalPendiente = $reserva->total - $rescli->pagado;
 
         if ($totalPendiente <= 0) {
             return back()->with('error', 'No hay saldo pendiente para esta reserva.');
         }
 
-        // Calcular comisión y tasa (si aplica)
-        $metodo = $request->metodo;
-        $comision = $this->calcularComision($metodo) ?? 0;
-        $tasa = $this->obtenerTasaConversion($metodo) ?? 1;
-
         $montoIngresado = $request->monto;
-        $montoAplicado = $totalPendiente; // SIEMPRE registrar solo el pendiente como pago
-        $conversion = $montoAplicado * $tasa;
+        $montoAplicado = min($montoIngresado, $totalPendiente);
+        $vuelto = $montoIngresado - $montoAplicado;
+
+        // Calcular conversión y comisiones
+        $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
+        $comision = $this->calcularComision($request->metodo) ?? 0;
+        $conversion = $montoAplicado * $tasaConversion;
         $totalPago = $conversion + $comision;
 
-        // Registrar el pago con solo el monto aplicable
+        // Registrar solo el monto necesario
         Pago::create([
             'codigo' => uniqid(),
             'reserva_id' => $reserva->id,
@@ -77,7 +76,7 @@ class PagoController extends Controller
             'conversion' => $conversion,
             'comision' => $comision,
             'total' => $totalPago,
-            'metodo' => $metodo,
+            'metodo' => $request->metodo,
             'estatus' => '1',
         ]);
 
@@ -89,7 +88,6 @@ class PagoController extends Controller
             $reserva->save();
         }
 
-        // Generar PDF y correo
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
 
         $data = [
@@ -113,12 +111,9 @@ class PagoController extends Controller
             \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
         }
 
-        // Calcular vuelto (solo si NO hay comisión o es mayor al pendiente)
-        $vuelto = $montoIngresado - $totalPendiente;
-        $mostrarVuelto = $vuelto > 0 && $comision == 0;
-
-        if ($mostrarVuelto) {
+        if ($vuelto > 0) {
             return view('ventas.resclis.vuelto', [
+                'nombre' => $rescli->nombres,
                 'codigo_reserva' => $reserva->codigo,
                 'rescli_id' => $rescli->id,
                 'monto_ingresado' => $montoIngresado,
@@ -130,6 +125,7 @@ class PagoController extends Controller
         return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
+
     /**
      * Obtener la tasa de conversión de la divisa seleccionada desde la base de datos.
      */
