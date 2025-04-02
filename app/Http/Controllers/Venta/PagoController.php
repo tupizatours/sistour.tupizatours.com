@@ -77,7 +77,7 @@ class PagoController extends Controller
             'estatus' => '1',
         ]);
     
-        $rescli->pagado += $montoAplicado;
+        $rescli->pagado += $conversion;
         $rescli->save();
     
         if (($reserva->total - $rescli->pagado) <= 0) {
