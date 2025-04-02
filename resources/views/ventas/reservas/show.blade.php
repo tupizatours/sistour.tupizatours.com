@@ -213,7 +213,9 @@
                                                     <div class="d-flex order-actions">
                                                         @if($rescli->esPrincipal == "1")
                                                         @else
-                                                            <a href="{{ URL::to('ventas/resclis/user/' . $rescli->id) }}" target="_BLANK">
+                                                            <a href="javascript:void(0);" 
+                                                                onclick="copiarLink('{{ URL::to('ventas/resclis/user/' . $rescli->id) }}')" 
+                                                                title="Copiar enlace">
                                                                 <i class="bx bxs-user"></i>
                                                             </a>
                                                         @endif

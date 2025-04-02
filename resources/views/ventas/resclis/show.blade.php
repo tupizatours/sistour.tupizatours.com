@@ -246,7 +246,7 @@
                                 </div>
 
                                 <div class="col-md-12">
-                                    <label for="total" class="form-label"><b>Vuelto</b></label>
+                                    <label for="total" class="form-label"><b>Vuelto Bs.</b></label>
                                     <input type="text" class="form-control" id="vuelto" name="vuelto" readonly />
                                 </div>
                               
