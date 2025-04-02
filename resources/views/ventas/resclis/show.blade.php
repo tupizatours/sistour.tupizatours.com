@@ -448,38 +448,65 @@
                 conversionInput.value = "0.00";
                 comisionInput.value = "0.00";
                 totalInput.value = "0.00";
-                montoInput.value = ""; // Restablecer campo si no hay selección
+                montoInput.value = "";
                 btnPagar.disabled = true;
                 return;
             }
 
-            const tipoCambio = parseFloat(selectedOption.getAttribute('data-tipo')) || 1; // Tasa de conversión
-            const comisionFija = parseFloat(selectedOption.getAttribute('data-comision')) || 0; // Comisión fija
+            const tipoCambio = parseFloat(selectedOption.getAttribute('data-tipo')) || 1;
+            const comisionFija = parseFloat(selectedOption.getAttribute('data-comision')) || 0;
 
             let monto = parseFloat(montoInput.value) || 0;
 
-            // **Si el usuario NO ha editado manualmente, actualizar el monto automático**
+            // Automáticamente establecer el monto si el usuario no editó
             if (!userEditedMonto) {
                 if (selectedOption.value === "Paypal" || selectedOption.value === "Dolar") {
-                    monto = (totalPendiente / tipoCambio).toFixed(2); // Convertir el monto a la divisa seleccionada
+                    monto = (totalPendiente / tipoCambio).toFixed(2);
                 } else {
-                    monto = totalPendiente.toFixed(2); // Mantener el saldo pendiente sin conversión
+                    monto = totalPendiente.toFixed(2);
                 }
                 montoInput.value = monto;
             }
 
-            // **Actualizar tasa de conversión**
+            const montoEnBs = monto * tipoCambio;
+
+            // ✅ Cálculo del vuelto visual
+            let vuelto = 0;
+            if (montoEnBs > totalPendiente) {
+                vuelto = montoEnBs - totalPendiente;
+                montoEnBs = totalPendiente; // Limitar monto efectivo al total pendiente
+                montoInput.value = (montoEnBs / tipoCambio).toFixed(2); // Ajustar también en la divisa original
+            }
+
+            // Actualizar campos en la UI
             conversionInput.value = tipoCambio.toFixed(2);
-
-            // **Calcular total a pagar**
-            const totalPago = (parseFloat(monto) * tipoCambio) + comisionFija;
-
-            // **Actualizar comisiones y total en pantalla**
             comisionInput.value = comisionFija.toFixed(2);
+
+            const totalPago = montoEnBs + comisionFija;
             totalInput.value = totalPago.toFixed(2);
 
-            // **Habilitar botón solo si el monto es válido**
             btnPagar.disabled = (parseFloat(totalPago) <= 0 || metodoSelect.value === "");
+
+            // 🔁 Mostrar vuelto visualmente si aplica
+            mostrarVueltoEnPantalla(vuelto);
+        }
+
+        // Mostrar vuelto en pantalla
+        function mostrarVueltoEnPantalla(vuelto) {
+            let vueltoElement = document.getElementById("vueltoVisual");
+            if (!vueltoElement) {
+                vueltoElement = document.createElement("div");
+                vueltoElement.id = "vueltoVisual";
+                vueltoElement.classList.add("mt-3", "alert", "alert-info");
+                btnPagar.parentNode.insertBefore(vueltoElement, btnPagar);
+            }
+
+            if (vuelto > 0) {
+                vueltoElement.innerHTML = `<strong>Vuelto estimado:</strong> Bs. ${vuelto.toFixed(2)}`;
+                vueltoElement.style.display = "block";
+            } else {
+                vueltoElement.style.display = "none";
+            }
         }
 
         // **Evento: Al cambiar método de pago, recalcular automáticamente y resetear edición manual**
