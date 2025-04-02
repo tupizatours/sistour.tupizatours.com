@@ -226,7 +226,8 @@
                                 
                                 <div class="col-md-12">
                                     <label for="monto" class="form-label"><b>MONTO</b> <span>*</span></label>
-                                    <input type="number" class="form-control" id="monto" name="monto" min="0.01" step="0.0001" required data-user-edited="false" />
+                                    <input type="number" class="form-control" id="entrada" name="entrada" min="0.01" step="0.0001" required />
+                                    <input type="hidden" class="form-control" id="monto" name="monto" />
                                 </div>
                                 
                                 <div class="col-md-12">
@@ -243,7 +244,12 @@
                                     <label for="total" class="form-label"><b>TOTAL A PAGAR</b></label>
                                     <input type="text" class="form-control" id="total" name="total" readonly />
                                 </div>
-                                
+
+                                <div class="col-md-12">
+                                    <label for="total" class="form-label"><b>Vuelto</b></label>
+                                    <input type="text" class="form-control" id="vuelto" name="vuelto" readonly />
+                                </div>
+                              
                                 <div class="col-md-12">
                                     <button type="submit" id="btnPagar" class="btn btn-primary continuar col-md-12" disabled>Realizar pago</button>
                                 </div>
@@ -430,80 +436,82 @@
 
 @section('footer_scripts')
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const montoInput = document.getElementById("monto");
-        const metodoSelect = document.getElementById("metodo");
-        const totalPendiente = parseFloat(document.getElementById("totalPendiente").value) || 0;
-        const conversionInput = document.getElementById("conversion");
-        const comisionInput = document.getElementById("comision");
-        const totalInput = document.getElementById("total");
-        const btnPagar = document.getElementById("btnPagar");
+        document.addEventListener("DOMContentLoaded", function () {
+            const entradaInput = document.getElementById("entrada");
+            const montoInput = document.getElementById("monto"); // oculto, se envía al backend
+            const metodoSelect = document.getElementById("metodo");
+            const totalPendiente = parseFloat(document.getElementById("totalPendiente").value) || 0;
+            const conversionInput = document.getElementById("conversion");
+            const comisionInput = document.getElementById("comision");
+            const totalInput = document.getElementById("total");
+            const vueltoInput = document.getElementById("vuelto");
+            const btnPagar = document.getElementById("btnPagar");
 
-        let userEditedMonto = false; // Flag para saber si el usuario ha editado el monto
+            function calcular() {
+                const selectedOption = metodoSelect.options[metodoSelect.selectedIndex];
 
-        function calcular() {
-            const selectedOption = metodoSelect.options[metodoSelect.selectedIndex];
-
-            if (!selectedOption || selectedOption.value === "") {
-                conversionInput.value = "0.00";
-                comisionInput.value = "0.00";
-                totalInput.value = "0.00";
-                montoInput.value = ""; // Restablecer campo si no hay selección
-                btnPagar.disabled = true;
-                return;
-            }
-
-            const tipoCambio = parseFloat(selectedOption.getAttribute('data-tipo')) || 1; // Tasa de conversión
-            const comisionFija = parseFloat(selectedOption.getAttribute('data-comision')) || 0; // Comisión fija
-
-            let monto = parseFloat(montoInput.value) || 0;
-
-            // **Si el usuario NO ha editado manualmente, actualizar el monto automático**
-            if (!userEditedMonto) {
-                if (selectedOption.value === "Paypal" || selectedOption.value === "Dolar") {
-                    monto = (totalPendiente / tipoCambio).toFixed(2); // Convertir el monto a la divisa seleccionada
-                } else {
-                    monto = totalPendiente.toFixed(2); // Mantener el saldo pendiente sin conversión
+                if (!selectedOption || selectedOption.value === "") {
+                    conversionInput.value = "0.00";
+                    comisionInput.value = "0.00";
+                    totalInput.value = "0.00";
+                    vueltoInput.value = "0.00";
+                    montoInput.value = "";
+                    entradaInput.value = "";
+                    btnPagar.disabled = true;
+                    return;
                 }
-                montoInput.value = monto;
+
+                const tipoCambio = parseFloat(selectedOption.getAttribute('data-tipo')) || 1;
+                const comisionFija = parseFloat(selectedOption.getAttribute('data-comision')) || 0;
+
+                let entrada = parseFloat(entradaInput.value) || 0;
+                let montoConvertido = entrada * tipoCambio;
+
+                let vuelto = 0;
+
+                if (montoConvertido > totalPendiente) {
+                    // Si el monto convertido excede el pendiente, ajustar
+                    vuelto = montoConvertido - totalPendiente;
+                    montoConvertido = totalPendiente;
+                    entrada = montoConvertido / tipoCambio;
+                }
+
+                // Setear valor limpio a enviar al backend
+                montoInput.value = entrada.toFixed(4);
+
+                // Calcular comisiones y total final
+                const totalPago = montoConvertido + comisionFija;
+
+                // Setear conversion, comision, total a pagar y vuelto
+                conversionInput.value = tipoCambio.toFixed(2);
+                comisionInput.value = comisionFija.toFixed(2);
+                totalInput.value = totalPago.toFixed(2);
+                vueltoInput.value = vuelto > 0 ? vuelto.toFixed(2) : "0.00";
+
+                btnPagar.disabled = entrada <= 0 || selectedOption.value === "";
             }
 
-            // **Actualizar tasa de conversión**
-            conversionInput.value = tipoCambio.toFixed(2);
+            metodoSelect.addEventListener("change", function () {
+                entradaInput.value = "";
+                montoInput.value = "";
+                vueltoInput.value = "0.00";
+                calcular();
+            });
 
-            // **Calcular total a pagar**
-            const totalPago = (parseFloat(monto) * tipoCambio) + comisionFija;
+            entradaInput.addEventListener("input", function () {
+                calcular();
+            });
 
-            // **Actualizar comisiones y total en pantalla**
-            comisionInput.value = comisionFija.toFixed(2);
-            totalInput.value = totalPago.toFixed(2);
+            // Preseleccionar método Bolivianos si existe
+            const bolivianosOption = [...metodoSelect.options].find(option => option.value === "Bolivianos");
+            if (bolivianosOption) {
+                bolivianosOption.selected = true;
+            }
 
-            // **Habilitar botón solo si el monto es válido**
-            btnPagar.disabled = (parseFloat(totalPago) <= 0 || metodoSelect.value === "");
-        }
-
-        // **Evento: Al cambiar método de pago, recalcular automáticamente y resetear edición manual**
-        metodoSelect.addEventListener("change", function () {
-            userEditedMonto = false;
             calcular();
         });
+        </script>
 
-        // **Evento: Si el usuario modifica manualmente el monto, marcar edición manual**
-        montoInput.addEventListener("input", function () {
-            userEditedMonto = true; // Indica que el usuario ha editado manualmente
-            calcular();
-        });
-
-        // **Preseleccionar "Bolivianos" como método por defecto**
-        const bolivianosOption = [...metodoSelect.options].find(option => option.value === "Bolivianos");
-        if (bolivianosOption) {
-            bolivianosOption.selected = true;
-        }
-
-        calcular();
-    });
-
-    </script>
     <!-- SCRIPTS PARA FLECHAS -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
