@@ -31,7 +31,7 @@ class PagoController extends Controller
     }
 
     /**
-     * - the form for creating a new resource.
+     * - the form for save a resource.
      */
     public function store(Request $request)
     {
@@ -41,90 +41,118 @@ class PagoController extends Controller
         ]);
 
         $rescli = Resercliente::find($request->rescli_id);
-        if (!$rescli) {
+        $reserva = Reserva::find($rescli->reserva_id);
+
+        if (!$rescli || !$reserva) {
             return back()->with('error', 'Reserva no encontrada.');
         }
 
-        $reserva = Reserva::find($rescli->reserva_id);
-        if (!$reserva) {
-            return back()->with('error', 'No se encontró la reserva asociada.');
-        }
-
-        $totalPendiente = $reserva->total - $rescli->pagado;
-
+        $totalPendiente = round($reserva->total - $rescli->pagado, 2);
         if ($totalPendiente <= 0) {
             return back()->with('error', 'No hay saldo pendiente para esta reserva.');
         }
 
         $montoIngresado = $request->monto;
-        $montoAplicado = min($montoIngresado, $totalPendiente);
-        $vuelto = $montoIngresado - $montoAplicado;
+        $metodo = $request->metodo;
+        $tasa = $this->obtenerTasaConversion($metodo) ?? 1;
+        $comision = $this->calcularComision($metodo) ?? 0;
 
-        // Calcular conversión y comisiones
-        $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
-        $comision = $this->calcularComision($request->metodo) ?? 0;
-        $conversion = $montoAplicado * $tasaConversion;
-        $totalPago = $conversion + $comision;
+        // Moneda nacional
+        if ($metodo === 'Bolivianos' || $metodo === 'Tarjeta de crédito' || $metodo === 'Transferencia bancaria' ||  $tasa == 1  ) {
+            $montoAplicado = min($montoIngresado, $totalPendiente);
+            $vuelto = $montoIngresado - $montoAplicado;
 
-        // Registrar solo el monto necesario
-        Pago::create([
-            'codigo' => uniqid(),
-            'reserva_id' => $reserva->id,
-            'rescli_id' => $rescli->id,
-            'user_id' => auth()->id(),
-            'monto' => $montoAplicado,
-            'conversion' => $conversion,
-            'comision' => $comision,
-            'total' => $totalPago,
-            'metodo' => $request->metodo,
-            'estatus' => '1',
-        ]);
+            // Registrar
+            Pago::create([
+                'codigo' => uniqid(),
+                'reserva_id' => $reserva->id,
+                'rescli_id' => $rescli->id,
+                'user_id' => auth()->id(),
+                'monto' => $montoAplicado,
+                'conversion' => 0,
+                'comision' => 0,
+                'total' => $montoAplicado,
+                'metodo' => $metodo,
+                'estatus' => '1',
+            ]);
 
-        $rescli->pagado += $montoAplicado;
-        $rescli->save();
+            $rescli->pagado += $montoAplicado;
+            $rescli->save();
 
-        if (($reserva->total - $rescli->pagado) <= 0) {
-            $reserva->estado = '2';
-            $reserva->save();
+            if (($reserva->total - $rescli->pagado) <= 0) {
+                $reserva->estado = '2';
+                $reserva->save();
+            }
+
+            if ($vuelto > 0) {
+                return view('ventas.resclis.vuelto', [
+                    'rescli_id' => $rescli->id,
+                    'codigo_reserva' => $reserva->codigo,
+                    'monto_ingresado' => $montoIngresado,
+                    'monto_pagado' => $montoAplicado,
+                    'vuelto_bs' => $vuelto,
+                    'vuelto_moneda' => null,
+                    'metodo' => $metodo,
+                ]);
+            }
         }
 
-        $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
+        // Moneda extranjera
+        else {
+            $montoBs = round($montoIngresado * $tasa, 2);
+            $conversionAplicada = min($montoBs, $totalPendiente);
+            $montoAplicado = round($conversionAplicada / $tasa, 2); // monto real aplicado en moneda extranjera
+            $vueltoMoneda = $montoIngresado - $montoAplicado;
+            $vueltoBs = round($vueltoMoneda * $tasa, 2);
 
-        $data = [
-            'nombre' => $rescli->nombre,
-            'apellidos' => $rescli->apellido,
-            'email' => $rescli->correo,
-            'codigo_reserva' => $reserva->codigo,
-            'monto_pagado' => number_format($montoAplicado, 2, '.', ''),
-            'total' => $rescli->total,
-            'fecha_reserva' => $reserva->fecha,
-            'cantidad_personas' => $reserva->can_per,
-            'estado' => 'Confirmada',
-            'tour_id' => $reserva->id,
-            'turistas_adicionales' => [],
-            'pagina' => $request->pagina,
-        ];
+            Pago::create([
+                'codigo' => uniqid(),
+                'reserva_id' => $reserva->id,
+                'rescli_id' => $rescli->id,
+                'user_id' => auth()->id(),
+                'monto' => $montoAplicado,
+                'conversion' => $conversionAplicada,
+                'comision' => $comision,
+                'total' => $conversionAplicada + $comision,
+                'metodo' => $metodo,
+                'estatus' => '1',
+            ]);
+
+            $rescli->pagado += $conversionAplicada;
+            $rescli->save();
+
+            if (($reserva->total - $rescli->pagado) <= 0) {
+                $reserva->estado = '2';
+                $reserva->save();
+            }
+
+            if ($vueltoBs > 0) {
+                return view('ventas.resclis.vuelto', [
+                    'rescli_id' => $rescli->id,
+                    'codigo_reserva' => $reserva->codigo,
+                    'monto_ingresado' => $montoIngresado,
+                    'monto_pagado' => $montoAplicado,
+                    'vuelto_bs' => $vueltoBs,
+                    'vuelto_moneda' => $vueltoMoneda,
+                    'metodo' => $metodo,
+                ]);
+            }
+        }
+
+        // PDF y correo
+        $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
+        $data = [ /* datos para el correo */];
 
         try {
             Mail::to($rescli->correo)->send(new ReservaConfirmada($data, $pdfPath));
         } catch (\Exception $e) {
-            \Log::error('Error al enviar correo de confirmación: ' . $e->getMessage());
-        }
-
-        if ($vuelto > 0) {
-            return view('ventas.resclis.vuelto', [
-                'nombre' => $rescli->nombres,
-                'codigo_reserva' => $reserva->codigo,
-                'rescli_id' => $rescli->id,
-                'monto_ingresado' => $montoIngresado,
-                'monto_aplicado' => $montoAplicado,
-                'vuelto' => $vuelto,
-            ]);
+            \Log::error('Error al enviar correo: ' . $e->getMessage());
         }
 
         return redirect('ventas/reservas/' . $reserva->id)
             ->with('success', 'Pago registrado exitosamente y correo enviado.');
     }
+
 
     /**
      * Obtener la tasa de conversión de la divisa seleccionada desde la base de datos.

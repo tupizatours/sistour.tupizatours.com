@@ -1,26 +1,62 @@
 @extends('layouts.tienda')
 
 @section('template_title')
-    Vuelto de la reserva
+    Vuelto entregado
+@endsection
+
+@section('estilos')
+    <style>
+        .card {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+        }
+
+        .info-group {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #444;
+        }
+
+        .btn-custom {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .btn-custom:hover {
+            background-color: #218838;
+        }
+    </style>
 @endsection
 
 @section('content')
-<div class="row">
-    <div class="col-md-2"></div>
-
+<div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card shadow">
-            <div class="card-body text-center py-5">
-                <h3 class="text-success mb-4">¡Gracias, {{ $nombre }}!</h3>
-                <p>Tu pago ha sido registrado exitosamente.</p>
-                <p>Se ha aplicado un monto de <strong>Bs. {{ number_format($monto_aplicado, 2, '.', '') }}</strong> a tu reserva.</p>
-                <p>Tu vuelto es: <strong class="text-danger">Bs. {{ number_format($vuelto, 2, '.', '') }}</strong></p>
+        <div class="card p-4">
+            <div class="card-body text-center">
+                <h3 class="text-success mb-4">¡Pago procesado correctamente!</h3>
+                <p>La reserva <strong>{{ $codigo_reserva }}</strong> ha sido registrada.</p>
 
-                <a href="{{ url('ventas/resclis/' . $rescli_id) }}" class="btn btn-primary mt-4">Volver a la reserva</a>
+                <div class="info-group">
+                    <p><span class="info-label">Monto ingresado:</span> {{ number_format($monto_ingresado, 2) }} {{ $metodo === 'efectivo_bs' ? 'Bs' : 'USD' }}</p>
+                    <p><span class="info-label">Monto aplicado al pago:</span> {{ number_format($monto_pagado, 2) }} {{ $metodo === 'efectivo_bs' ? 'Bs' : 'USD' }}</p>
+                    <p><span class="info-label">Vuelto:</span>
+                        {{ number_format($vuelto_bs, 2) }} Bs
+                        @if($vuelto_moneda)
+                            ({{ number_format($vuelto_moneda, 2) }} {{ strtoupper($metodo) }})
+                        @endif
+                    </p>
+                </div>
+
+                <a href="{{ url('ventas/resclis/' . $rescli_id) }}" class="btn btn-custom mt-3">Volver a la reserva</a>
             </div>
         </div>
     </div>
-
-    <div class="col-md-2"></div>
 </div>
 @endsection
