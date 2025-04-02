@@ -213,8 +213,9 @@
                                                     <div class="d-flex order-actions">
                                                         @if($rescli->esPrincipal == "1")
                                                         @else
-                                                            <a href="javascript:void(0);" 
-                                                                onclick="copiarLink('{{ URL::to('ventas/resclis/user/' . $rescli->id) }}')" 
+                                                            <a href="#" 
+                                                                class="copiar-enlace" 
+                                                                data-link="{{ URL::to('ventas/resclis/user/' . $rescli->id) }}" 
                                                                 title="Copiar enlace">
                                                                 <i class="bx bxs-user"></i>
                                                             </a>
@@ -284,4 +285,28 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('.copiar-enlace').forEach(function (enlace) {
+                enlace.addEventListener('click', function (e) {
+                    e.preventDefault(); // Evita navegación
+        
+                    const url = this.getAttribute('data-link');
+        
+                    if (!navigator.clipboard) {
+                        alert("Tu navegador no soporta copiar automáticamente.");
+                        return;
+                    }
+        
+                    navigator.clipboard.writeText(url).then(() => {
+                        alert("🔗 Enlace copiado al portapapeles:\n" + url);
+                    }).catch(err => {
+                        console.error("Error al copiar:", err);
+                        alert("❌ Ocurrió un error al copiar el enlace.");
+                    });
+                });
+            });
+        });
+    </script>
+        
 @endsection
