@@ -60,7 +60,7 @@ class PagoController extends Controller
         // Tasa y comisión
         $tasaConversion = $this->obtenerTasaConversion($request->metodo) ?? 1;
         $comision = $this->calcularComision($request->metodo) ?? 0;
-        $conversion = $montoAplicado * $tasaConversion;
+        $conversion = $montoAplicado * $tasaConversion ?? 0;
         $totalPago = $conversion + $comision;
     
         // Registro del pago
@@ -76,10 +76,12 @@ class PagoController extends Controller
             'metodo' => $request->metodo,
             'estatus' => '1',
         ]);
-    
-        $rescli->pagado += $conversion;
-        $rescli->save();
-    
+        
+        if ((!$conversion) && $conversion != 0) {
+            $rescli->pagado += $conversion;
+            $rescli->save();
+        }
+
         if (($reserva->total - $rescli->pagado) <= 0) {
             $reserva->estado = '2';
             $reserva->save();
