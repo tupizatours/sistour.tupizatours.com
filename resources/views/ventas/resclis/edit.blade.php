@@ -591,7 +591,7 @@
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                 data-tit="{{ $hotel->titulo }}"
-                                                                                @if(collect($habitacionesSeleccionadas)->pluck('id')->contains($habitacion->id)) checked @endif
+                                                                                @if(isset($habitacion_id[$key]) && $habitacion_id[$key]['id'] == $habitacion->id) checked @endif
                                                                                 />
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
