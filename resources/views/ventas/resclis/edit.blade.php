@@ -584,7 +584,7 @@
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
                                                                             <input class="form-check-input habitacion-checkbox" type="radio"
-                                                                                value="{{ $key }}_{{ $habitacion->id }}"
+                                                                                value="{{ $habitacion->id }}"
                                                                                 id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                                 name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
