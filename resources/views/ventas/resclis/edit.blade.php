@@ -478,7 +478,7 @@
 
                                     @php
                                         $ticket_id = is_string($rescli->tickets) ? json_decode($rescli->tickets, true) : $rescli->tickets;
-                                        $habitacion_id = is_string($rescli->habitaciones) ? json_decode($rescli->habitaciones, true) : $rescli->habitaciones;
+                                        $habitacion_id = array_values(is_string($rescli->habitaciones) ? json_decode($rescli->habitaciones, true) : ($rescli->habitaciones ?? []));
                                         $accesorio_id = is_string($rescli->accesorios) ? json_decode($rescli->accesorios, true) : $rescli->accesorios;
                                         $servicio_id = is_string($rescli->servicios) ? json_decode($rescli->servicios, true) : $rescli->servicios;
                                     @endphp
