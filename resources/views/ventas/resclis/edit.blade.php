@@ -533,15 +533,15 @@
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
                                                                             <!-- ID único para los checkbox buttons y name basado en el día para selección única -->
                                                                             <input class="form-check-input habitacion-checkbox" type="radio"
-                                                                                value="{{ $habitacion->id }}"
+                                                                                value="{{ $key }}_{{ $habitacion->id }}"
                                                                                 id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                                 name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                 data-tit="{{ $hotel->titulo }}"
-                                                                                @if($habitacionesSeleccionadas->contains('id', $habitacion->id)) checked @endif
-                                                                            />
+                                                                                @if(isset($habitacion_id[$key]) && $habitacion_id[$key]['id'] == $habitacion->id) checked @endif
+                                                                                />
 
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
