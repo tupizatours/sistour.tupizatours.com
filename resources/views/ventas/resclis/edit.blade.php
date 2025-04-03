@@ -566,6 +566,8 @@
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                             @foreach($hotelesSeleccionados as $key => $hotelIds)
+                                                <p class="text-muted">Día {{ $key }} - Seleccionada: {{ $habitacion_id[$key]['id'] ?? 'Ninguna' }}</p>
+
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
                                                         <label class="form-label" for="noche_{{ $key }}">
