@@ -480,7 +480,7 @@ Agregar turista
                                                                     data-dia="{{ $dia }}"
                                                                 />
                                                                 <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
-                                                                    {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->precio, 2, '.', '') }}
+                                                                    {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}
                                                                 </label>
                                                             </div>
                                                         @endforeach
