@@ -583,7 +583,7 @@ Agregar turista
                                 <span class="btn btn-inverse-success mb-3 col-md-12">Habitaciones</span>
                             </dt>
 
-                            <dt class="col-sm-9" id="hab_name"></dt>
+                            <dt class="col-sm-8" id="hab_name"></dt>
                             <dd class="col-sm-3 text-right" id="hab_pre"></dd>
                         </dl>
 
@@ -797,9 +797,7 @@ Agregar turista
         handleNacionalidadChange();
         updateAllTotals();
         updateSelectedItems();
-
     });
-
 </script>
 
 <script>
