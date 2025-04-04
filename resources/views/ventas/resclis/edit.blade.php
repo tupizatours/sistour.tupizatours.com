@@ -558,59 +558,7 @@
                                                     </div>
                                                 </div>
                                             @endforeach
-
                                         </div>
-
-                                        @php
-                                            $habitacionesSeleccionadas = collect($rescli->habitaciones ?? [])->pluck('id')->map(fn($i) => (int) $i);
-                                        @endphp
-
-                                        <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                            @foreach($hotelesSeleccionados as $key => $hotelIds)
-                                                <p class="text-muted">Día {{ $key }} - Seleccionada: {{ $habitacion_id[$key]['id'] ?? 'Ninguna' }}</p>
-
-                                                <div class="row g-3">
-                                                    <div class="col-md-12 form-check">
-                                                        <label class="form-label" for="noche_{{ $key }}">
-                                                            Día {{ $key }}
-                                                        </label>
-
-                                                        @foreach ($hoteles as $hotel)
-                                                            @if(in_array($hotel->id, $hotelIds))
-                                                                <div class="form-check mb-2">
-                                                                    <!-- Hotel oculto -->
-                                                                    <input type="checkbox" class="form-check-input" style="display: none;" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                                    <label class="form-check-label fw-bold" for="hotel_{{ $hotel->id }}_{{ $key }}">
-                                                                        {{ $hotel->titulo }}
-                                                                    </label>
-
-                                                                    @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                            <input class="form-check-input habitacion-checkbox" type="radio"
-                                                                                value="{{ $habitacion->id }}"
-                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
-                                                                                name="habitacion_dia_{{ $key }}"
-                                                                                data-name="{{ $habitacion->titulo }}"
-                                                                                data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                                                data-tit="{{ $hotel->titulo }}"
-                                                                                @if(isset($habitacion_id[$key]) && $habitacion_id[$key]['id'] == $habitacion->id) checked @endif
-                                                                                />
-                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
-                                                                                {{ $habitacion->titulo }}
-                                                                                <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
-                                                                                <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
-                                                                            </label>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div>
-
 
                                         <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                             <div class="col-md-12">
