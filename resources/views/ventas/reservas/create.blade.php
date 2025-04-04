@@ -435,6 +435,7 @@
                                             </div>
                                         </div>
 
+                                        
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                             <?php
                                                 $hotelesSeleccionados = json_decode($tour->hoteles, true);
@@ -451,21 +452,22 @@
                                                             @if(in_array($hotel->id, $hotelIds)) 
                                                                 <div class="form-check">
                                                                     <!-- Checkbox para el hotel -->
-                                                                    <input class="form-check-input" style="display: none;" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                                    <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
                                                                     <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
                                                                         {{ $hotel->titulo }}
                                                                     </label>
 
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                                         <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                            <!-- ID único para los checkbox buttons y name basado en el día para selección única -->
-                                                                            <input class="form-check-input habitacion-checkbox" type="checkbox" value="{{ $habitacion->id }}"
+                                                                            <!-- ID único para los radio buttons y name basado en el día para selección única -->
+                                                                            <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
                                                                                 id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                                 name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                                                data-tit="{{ $hotel->titulo }}" />
+                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                                data-dia="{{ $key + 1 }}"  />
+
 
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
@@ -899,17 +901,18 @@
                         price: parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.nac : checkbox.dataset.ext)
                     }));
                 document.getElementById("tickets_seleccionados").value = JSON.stringify(selectedTickets);
-
+                
                 // Habitaciones seleccionadas
                 const selectedRooms = Array.from(checkboxesHabitaciones)
                     .filter(radio => radio.checked)
                     .map(radio => ({
                         id: radio.value,
                         name: radio.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
+                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext),
+                        dia: parseInt(radio.dataset.dia) // 👈 Agrega el día al JSON
+
                     }));
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
-
                 // Accesorios seleccionados
                 const selectedAccessories = Array.from(checkboxesAccesorios)
                     .filter(checkbox => checkbox.checked)

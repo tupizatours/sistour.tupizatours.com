@@ -446,7 +446,8 @@ Agregar turista
                                     <div class="form-check">
                                         <input class="form-check-input ticket-checkbox" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" 
                                             data-name="{{ $ticket->titulo }}" 
-                                            data-precio="{{ number_format($ticket->nacionales, 2, '.', '') }}"
+                                            data-hnac="{{ number_format($ticket->nacionales, 2, '.', '') }}"
+                                            data-hext="{{ number_format($ticket->extranjeros, 2, '.', '') }}"   
                                             id="ticket_{{ $ticket->id }}">
                                         <label class="form-check-label" for="ticket_{{ $ticket->id }}">
                                             {{ $ticket->titulo }} - Bs. {{ number_format($ticket->nacionales, 2, '.', '') }}
@@ -477,6 +478,8 @@ Agregar turista
                                                                     value="{{ $habitacion->id }}"
                                                                     data-name="{{ $habitacion->titulo }}"
                                                                     data-precio="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                    data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                    data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
                                                                     data-dia="{{ $dia }}"
                                                                 />
                                                                 <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
@@ -704,13 +707,16 @@ Agregar turista
         }
 
         /** ✅ Muestra u oculta los contenedores dinámicamente y suma los valores */
-        function updateTotal(checkboxes, container, nameField, priceField, priceAttrBO, priceAttrExt = priceAttrBO) {
+        function updateTotal(checkboxes, container, nameField, priceField, priceAttrBO = "hnac", priceAttrExt = "hext") {
             let total = 0;
             let names = [], prices = [];
             let checkedCount = 0;
 
+            const isBolivian = nacionalidadSelect.value === "BO";
+
             checkboxes.forEach(checkbox => {
-                let price = parseFloat(checkbox.dataset.precio || "0"); // 🔥 AHORA LEE CORRECTAMENTE EL PRECIO
+                const priceAttr = isBolivian ? checkbox.dataset[priceAttrBO] : checkbox.dataset[priceAttrExt];
+                const price = parseFloat(priceAttr || "0");
 
                 if (checkbox.checked) {
                     checkedCount++;
@@ -732,6 +738,7 @@ Agregar turista
         }
 
 
+
         /** ✅ Actualiza el subtotal total */
         function updateGrandTotal() {
             let cantidad = parseInt(cantPerInput.value) || 1;
@@ -742,12 +749,15 @@ Agregar turista
             tourTotal.value = totalSum.toFixed(2);
         }
 
-        function saveSelections(checkboxes, hiddenFieldId) {
-            let selected = Array.from(checkboxes)
+        function saveSelections(checkboxes, hiddenFieldId, priceAttrBO = "hnac", priceAttrExt = "hext") {
+            const isBolivian = nacionalidadSelect.value === "BO";
+
+            const selected = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => {
-                    let price = parseFloat(checkbox.dataset.precio || "0");
-                    let selection = {
+                    const price = parseFloat(isBolivian ? checkbox.dataset[priceAttrBO] : checkbox.dataset[priceAttrExt]) || 0;
+
+                    const selection = {
                         id: checkbox.value,
                         name: checkbox.dataset.name,
                         price: price
@@ -764,11 +774,12 @@ Agregar turista
         }
 
         function updateSelectedItems() {
-            saveSelections(checkboxesTickets, "tickets_seleccionados", "nac", "ext");
-            saveSelections(checkboxesAccesorios, "accesorios_seleccionados", "aprecio");
-            saveSelections(checkboxesServicios, "servicios_seleccionados", "sprecio");
-            saveSelections(checkboxesHabitaciones, "habitaciones_seleccionadas", "precio");
+            saveSelections(checkboxesTickets, "tickets_seleccionados", "hnac", "hext");
+            saveSelections(checkboxesHabitaciones, "habitaciones_seleccionadas", "hnac", "hext");
+            saveSelections(checkboxesAccesorios, "accesorios_seleccionados", "precio");
+            saveSelections(checkboxesServicios, "servicios_seleccionados", "precio");
         }
+
 
         // ✅ Eventos de checkboxes
         checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
