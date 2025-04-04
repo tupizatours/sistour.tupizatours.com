@@ -583,8 +583,8 @@ Agregar turista
                                 <span class="btn btn-inverse-success mb-3 col-md-12">Habitaciones</span>
                             </dt>
 
-                            <dt class="col-sm-8" id="hab_name"></dt>
-                            <dd class="col-sm-3 text-right" id="hab_pre"></dd>
+                            <dt class="col-sm-5" id="hab_name"></dt>
+                            <dd class="col-sm-7 text-right" id="hab_pre"></dd>
                         </dl>
 
                         <dl class="col-md-12 row accesorios_cont" id="accesorios_cont" style="display: none;">
