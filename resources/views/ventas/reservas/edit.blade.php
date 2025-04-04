@@ -500,7 +500,7 @@ Agregar turista
                             </div>
 
                                                     
-                                                        <!-- ✅ TAB ACCESORIOS -->
+                            <!-- ✅ TAB ACCESORIOS -->
                             <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                 <div class="col-md-12">
                                     @foreach($accesorios as $accesorio)
