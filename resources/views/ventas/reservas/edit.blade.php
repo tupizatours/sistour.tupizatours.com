@@ -458,7 +458,9 @@ Agregar turista
                         
                             <!-- ✅ TAB HOTELES -->
                             <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                @foreach(json_decode($tour->hoteles, true) as $key => $hotelIds)
+                                @foreach(json_decode($tour->hoteles, true) as $index => $hotelIds)
+                                    @php $dia = $index + 1; @endphp
+                                    <label class="form-label" for="noche_{{ $dia }}">Día {{ $dia }}</label>
                                     <div class="row g-3">
                                         <div class="col-md-12 form-check">
                                             <label class="form-label" for="noche_{{ $key }}">Día {{ $key + 1 }}</label> {{-- Aumentamos 1 para coherencia de días --}}
@@ -472,14 +474,15 @@ Agregar turista
                             
                                                         @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                             <div class="form-check">
-                                                                <input class="form-check-input habitacion-checkbox" 
-                                                                       type="radio"
-                                                                       name="habitacion_dia_{{ $key }}"
-                                                                       id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
-                                                                       value="{{ $habitacion->id }}"
-                                                                       data-name="{{ $habitacion->titulo }}"
-                                                                       data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}" 
-                                                                       data-dia="{{ $key + 1 }}"
+                                                                <input
+                                                                    name="habitacion_dia_{{ $dia }}"
+                                                                    id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
+                                                                    value="{{ $habitacion->id }}"
+                                                                    data-dia="{{ $dia }}"
+                                                                    data-name="{{ $habitacion->titulo }}"
+                                                                    data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}"
+                                                                    class="form-check-input habitacion-checkbox"
+                                                                    type="radio"
                                                                 />
                                                                 <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                     {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->precio, 2, '.', '') }}
