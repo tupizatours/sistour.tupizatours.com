@@ -509,59 +509,59 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                           
                                             @foreach($hotelesSeleccionados as $dia => $hotelIds)
                                                 @php
                                                     $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $dia);
                                                 @endphp
+                                        
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
-                                                        <label class="form-label" for="noche_{{ $key }}">
-                                                            Dia {{ $key }}
+                                                        <label class="form-label" for="noche_{{ $dia }}">
+                                                            Día {{ $dia }}
                                                         </label>
+                                        
                                                         @if($hoteles) 
-                                                        @foreach ($hoteles as $hotel)
-                                                            @if(in_array($hotel->id, $hotelIds)) 
-                                                                <div class="form-check">
-                                                                    <!-- Checkbox para el hotel -->
-                                                                    <input class="form-check-input" style="display: none;" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                                    <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
-                                                                        {{ $hotel->titulo }}
-                                                                    </label>
-                                                                    @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">                                          
-                                                                            <input class="form-check-input habitacion-checkbox" type="radio"
-                                                                                name="habitacion_dia_{{ $dia }}"
-                                                                                value="{{ $habitacion->id }}"
-                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
-                                                                                data-name="{{ $habitacion->titulo }}"
-                                                                                data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                                                data-tit="{{ $hotel->titulo }}"
-                                                                                data-dia="{{ $dia }}"
-                                                                               @if($habitacionSeleccionada && $habitacionSeleccionada['id'] == $habitacion->id) checked @endif
-                                                                               />
-                                                                            
-
-                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
-                                                                                {{ $habitacion->titulo }}
-                                                                                <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
-                                                                                <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
-                                                                            </label>
-
-                                                                            <p>Día {{ $dia }} - Preseleccionada: {{ $habitacionSeleccionada['name'] ?? 'Ninguna' }}</p>
-
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
+                                                            @foreach ($hoteles as $hotel)
+                                                                @if(in_array($hotel->id, $hotelIds)) 
+                                                                    <div class="form-check">
+                                                                        <!-- Checkbox para el hotel -->
+                                                                        <input class="form-check-input" style="display: none;" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $dia }}" />
+                                                                        <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $dia }}">
+                                                                            {{ $hotel->titulo }}
+                                                                        </label>
+                                        
+                                                                        @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
+                                                                            <div class="form-check form_habi{{ $habitacion->id }}{{ $dia }}">
+                                                                                <input class="form-check-input habitacion-checkbox" type="radio"
+                                                                                    name="habitacion_dia_{{ $dia }}"
+                                                                                    value="{{ $habitacion->id }}"
+                                                                                    id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
+                                                                                    data-name="{{ $habitacion->titulo }}"
+                                                                                    data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                                    data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
+                                                                                    data-tit="{{ $hotel->titulo }}"
+                                                                                    data-dia="{{ $dia }}"
+                                                                                    @if($habitacionSeleccionada && $habitacionSeleccionada['id'] == $habitacion->id) checked @endif
+                                                                                />
+                                        
+                                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
+                                                                                    {{ $habitacion->titulo }}
+                                                                                    <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
+                                                                                    <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
+                                                                                </label>
+                                        
+                                                                                <p class="text-muted small">Día {{ $dia }} - Preseleccionada: {{ $habitacionSeleccionada['name'] ?? 'Ninguna' }}</p>
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
                                                         @endif
                                                     </div>
                                                 </div>
                                             @endforeach
                                         </div>
-
+                                        
                                         <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                             <div class="col-md-12">
                                            
