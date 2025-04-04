@@ -509,11 +509,12 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                            @foreach($hotelesSeleccionados as $dia => $hotelIds)
+                                            @foreach($hotelesSeleccionados as $index => $hotelIds)
                                                 @php
+                                                    $dia = $index + 1;
                                                     $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $dia);
                                                 @endphp
-                                        
+                                            
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
                                                         <label class="form-label" for="noche_{{ $dia }}">
@@ -534,13 +535,13 @@
                                                                             <div class="form-check form_habi{{ $habitacion->id }}{{ $dia }}">
                                                                                 <input class="form-check-input habitacion-checkbox" type="radio"
                                                                                     name="habitacion_dia_{{ $dia }}"
-                                                                                    value="{{ $habitacion->id }}"
                                                                                     id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
+                                                                                    value="{{ $habitacion->id }}"
                                                                                     data-name="{{ $habitacion->titulo }}"
                                                                                     data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                                                     data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                     data-tit="{{ $hotel->titulo }}"
-                                                                                    data-dia="{{ $dia }}"
+                                                                                    data-dia="{{ $dia }}"                                                                                    
                                                                                     @if($habitacionSeleccionada && $habitacionSeleccionada['id'] == $habitacion->id) checked @endif
                                                                                 />
                                         
