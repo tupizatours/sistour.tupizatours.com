@@ -509,11 +509,9 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                        @php
-                                            
-                                            $habitacionesSeleccionadas = collect($rescli->habitaciones ?? []);
-
-                                         @endphp
+                                            @php
+                                                $habitacionesSeleccionadas = collect($rescli->habitaciones ?? []);
+                                            @endphp
                                             @foreach($hotelesSeleccionados as $key => $hotelIds)
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
@@ -540,8 +538,11 @@
                                                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
                                                                                 data-tit="{{ $hotel->titulo }}"
                                                                                 data-dia="{{ $key }}"
-                                                                                @if(isset($habitacion_id[$key]) && $habitacion_id[$key]['id'] == $habitacion->id) checked @endif
-                                                                            />
+                                                                                @php
+                                                                                    $diaActual = $key + 1;
+                                                                                    $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $diaActual);
+                                                                                @endphp
+                                                                                @if($habitacionSeleccionada && $habitacionSeleccionada['id'] == $habitacion->id) checked @endif                                                                            />
                                                                             
 
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
@@ -549,6 +550,9 @@
                                                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
                                                                                 <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
                                                                             </label>
+                                                                            
+                                                                            <p>Día {{ $diaActual }} - Preseleccionada: {{ $habitacionSeleccionada['name'] ?? 'Ninguna' }}</p>
+
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
