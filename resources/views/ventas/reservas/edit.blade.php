@@ -459,9 +459,7 @@ Agregar turista
                             <!-- ✅ TAB HOTELES -->
                             <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                 @foreach(json_decode($tour->hoteles, true) as $index => $hotelIds)
-                                    @php
-                                        $dia = $index + 1;
-                                    @endphp
+                                    @php $dia = $index + 1; @endphp
 
                                     <div class="row g-3">
                                         <div class="col-md-12 form-check">
@@ -476,16 +474,16 @@ Agregar turista
 
                                                         @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                             <div class="form-check">
-                                                                <input class="form-check-input habitacion-checkbox" 
+                                                                <input class="form-check-input habitacion-checkbox"
                                                                     type="radio"
                                                                     name="habitacion_dia_{{ $dia }}"
                                                                     id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
                                                                     value="{{ $habitacion->id }}"
                                                                     data-name="{{ $habitacion->titulo }}"
-                                                                    data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}"
+                                                                    data-precio="{{ floatval($habitacion->precio) }}"
                                                                     data-dia="{{ $dia }}"
                                                                 />
-                                                                <label class="form-check-label" 
+                                                                <label class="form-check-label"
                                                                     for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
                                                                     {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->precio, 2, '.', '') }}
                                                                 </label>
@@ -498,6 +496,7 @@ Agregar turista
                                     </div>
                                 @endforeach
                             </div>
+
 
                                                     
                             <!-- ✅ TAB ACCESORIOS -->
