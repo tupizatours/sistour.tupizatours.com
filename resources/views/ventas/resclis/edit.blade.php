@@ -977,18 +977,14 @@
                 document.getElementById("tickets_seleccionados").value = JSON.stringify(selectedTickets);
 
                 // Habitaciones seleccionadas con día
-                const selectedRooms = [];
-                for (let dia = 0; dia <= 6; dia++) {
-                    const radio = document.querySelector(`input[name="habitacion_dia_${dia}"]:checked`);
-                    if (radio) {
-                        selectedRooms.push({
-                            dia: parseInt(radio.dataset.dia) // 👈 Esta línea asegura que el día se guarda bien
-                            id: parseInt(radio.value),
-                            name: radio.dataset.name,
-                            price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
-                        });
-                    }
-                }
+                const selectedRooms = Array.from(checkboxesHabitaciones)
+                .filter(radio => radio.checked)
+                .map(radio => ({
+                    id: radio.value,
+                    name: radio.dataset.name,
+                    price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext),
+                    dia: parseInt(radio.dataset.dia) // 👈 Esta línea asegura que el día se guarda bien
+                }));
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
 
                 // Accesorios seleccionados
