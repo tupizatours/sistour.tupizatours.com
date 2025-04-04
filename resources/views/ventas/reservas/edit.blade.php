@@ -478,7 +478,7 @@ Agregar turista
                                                                        id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
                                                                        value="{{ $habitacion->id }}"
                                                                        data-name="{{ $habitacion->titulo }}"
-                                                                       data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}"
+                                                                       data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}" 
                                                                        data-dia="{{ $key + 1 }}"
                                                                 />
                                                                 <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
@@ -747,18 +747,18 @@ Agregar turista
             let selected = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => {
-                let base = {
-                    id: checkbox.value,
-                    name: checkbox.dataset.name,
-                    price: parseFloat(checkbox.dataset.precio || "0")
-                };
+                    let price = parseFloat(checkbox.dataset.precio || "0");
+                    let selection = {
+                        id: checkbox.value,
+                        name: checkbox.dataset.name,
+                        price: price
+                    };
 
-                // Solo si existe data-dia, lo añade
-                if (checkbox.dataset.dia) {
-                    base.dia = parseInt(checkbox.dataset.dia);
-                }
+                    if (checkbox.dataset.dia) {
+                        selection.dia = parseInt(checkbox.dataset.dia);
+                    }
 
-                return base;
+                    return selection;
                 });
 
             document.getElementById(hiddenFieldId).value = JSON.stringify(selected);
@@ -768,7 +768,7 @@ Agregar turista
             saveSelections(checkboxesTickets, "tickets_seleccionados", "nac", "ext");
             saveSelections(checkboxesAccesorios, "accesorios_seleccionados", "aprecio");
             saveSelections(checkboxesServicios, "servicios_seleccionados", "sprecio");
-            saveSelections(checkboxesHabitaciones, "habitaciones_seleccionadas", "hnac", "hext");
+            saveSelections(checkboxesHabitaciones, "habitaciones_seleccionadas", "precio");
         }
 
         // ✅ Eventos de checkboxes
