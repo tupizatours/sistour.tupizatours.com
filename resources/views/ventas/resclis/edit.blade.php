@@ -509,10 +509,11 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                            @php
-                                                $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $dia);
-                                            @endphp
+                                           
                                             @foreach($hotelesSeleccionados as $dia => $hotelIds)
+                                                @php
+                                                    $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $dia);
+                                                @endphp
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
                                                         <label class="form-label" for="noche_{{ $key }}">
