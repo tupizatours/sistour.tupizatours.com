@@ -464,7 +464,9 @@
                                                                                 name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" />
+                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                                data-dia="{{ $key + 1 }}"  />
+
 
                                                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
@@ -985,7 +987,9 @@
                     .map(radio => ({
                         id: radio.value,
                         name: radio.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
+                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext),
+                        dia: parseInt(radio.dataset.dia) // 👈 Agrega el día al JSON
+
                     }));
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
 
