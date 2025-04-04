@@ -482,7 +482,7 @@ Agregar turista
                                                                     id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
                                                                     value="{{ $habitacion->id }}"
                                                                     data-name="{{ $habitacion->titulo }}"
-                                                                    data-precio="{{ $habitacion->precio }}"
+                                                                    data-precio="{{ floatval($habitacion->precio) }}"
                                                                     data-dia="{{ $dia }}"
                                                                 />
                                                                 <label class="form-check-label" 
