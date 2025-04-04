@@ -770,6 +770,7 @@
 
                 // Recalcula el total de tickets al cambiar la nacionalidad
                 updateCheckboxTotal();
+                updateHabitacionTotal();     // ✅ ¡necesitamos esto!
             }
 
             nacionalidadSelect.addEventListener("change", handleNacionalidadChange);
