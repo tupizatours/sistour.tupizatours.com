@@ -547,8 +547,6 @@
                                                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
                                                                                 <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
                                                                             </label>
-                                            
-                                                                            <p class="text-muted small">Día {{ $contadorDia }} - Preseleccionada: {{ $habitacionSeleccionada['name'] ?? 'Ninguna' }}</p>
                                                                         </div>
                                                                     @endforeach
                                                                 </div>
