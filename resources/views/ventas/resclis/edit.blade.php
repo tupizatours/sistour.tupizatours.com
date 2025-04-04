@@ -1027,14 +1027,19 @@
                     }));
                 document.getElementById("tickets_seleccionados").value = JSON.stringify(selectedTickets);
 
-                // Habitaciones seleccionadas
-                const selectedRooms = Array.from(checkboxesHabitaciones)
-                    .filter(radio => radio.checked)
-                    .map(radio => ({
-                        id: radio.value,
-                        name: radio.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
-                    }));
+                // Habitaciones seleccionadas con día
+                const selectedRooms = [];
+                for (let dia = 0; dia <= 6; dia++) {
+                    const radio = document.querySelector(`input[name="habitacion_dia_${dia}"]:checked`);
+                    if (radio) {
+                        selectedRooms.push({
+                            dia: dia + 1,
+                            id: parseInt(radio.value),
+                            name: radio.dataset.name,
+                            price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
+                        });
+                    }
+                }
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
 
                 // Accesorios seleccionados
