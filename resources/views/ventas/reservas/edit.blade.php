@@ -459,27 +459,41 @@ Agregar turista
                             <!-- ✅ TAB HOTELES -->
                             <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                 @foreach(json_decode($tour->hoteles, true) as $key => $hotelIds)
-                                <div class="row g-3">
-                                    <div class="col-md-12 form-check">
-                                        <label class="form-label" for="noche_{{ $key }}">Día {{ $key }}</label>
-                                        @foreach ($hoteles as $hotel)
-                                        @if(in_array($hotel->id, $hotelIds))
-                                        <div class="form-check">
-                                            <input class="form-check-input habitacion-checkbox" type="checkbox" 
-                                                value="{{ $hotel->id }}" 
-                                                data-name="{{ $hotel->titulo }}" 
-                                                data-precio="{{ number_format($hotel->precio, 2, '.', '') }}" 
-                                                id="hotel_{{ $hotel->id }}_{{ $key }}">
-                                            <label class="form-check-label" for="hotel_{{ $hotel->id }}_{{ $key }}">
-                                                {{ $hotel->titulo }} - Bs. {{ number_format($hotel->precio, 2, '.', '') }}
-                                            </label>
+                                    <div class="row g-3">
+                                        <div class="col-md-12 form-check">
+                                            <label class="form-label" for="noche_{{ $key }}">Día {{ $key + 1 }}</label> {{-- Aumentamos 1 para coherencia de días --}}
+                            
+                                            @foreach ($hoteles as $hotel)
+                                                @if(in_array($hotel->id, $hotelIds))
+                                                    <div class="form-check">
+                                                        <label class="form-check-label fw-bold" for="hotel_{{ $hotel->id }}_{{ $key }}">
+                                                            {{ $hotel->titulo }}
+                                                        </label>
+                            
+                                                        @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
+                                                            <div class="form-check">
+                                                                <input class="form-check-input habitacion-checkbox" 
+                                                                       type="radio"
+                                                                       name="habitacion_dia_{{ $key }}"
+                                                                       id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
+                                                                       value="{{ $habitacion->id }}"
+                                                                       data-name="{{ $habitacion->titulo }}"
+                                                                       data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}"
+                                                                       data-dia="{{ $key + 1 }}"
+                                                                />
+                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
+                                                                    {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->precio, 2, '.', '') }}
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            @endforeach
                                         </div>
-                                        @endif
-                                        @endforeach
                                     </div>
-                                </div>
                                 @endforeach
                             </div>
+                            
                         
                             <!-- ✅ TAB ACCESORIOS -->
                             <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
@@ -733,23 +747,22 @@ Agregar turista
             let selected = Array.from(checkboxes)
                 .filter(checkbox => checkbox.checked)
                 .map(checkbox => {
-                    // Intenta obtener el precio desde dataset
-                    let rawPrice = checkbox.dataset.precio;  
-                    let price = rawPrice ? parseFloat(rawPrice.replace(",", "")) : 0;
+                let base = {
+                    id: checkbox.value,
+                    name: checkbox.dataset.name,
+                    price: parseFloat(checkbox.dataset.precio || "0")
+                };
 
-                    console.log(`📩 Guardando en ${hiddenFieldId}: ${checkbox.dataset.name} - Precio: ${price}`);
+                // Solo si existe data-dia, lo añade
+                if (checkbox.dataset.dia) {
+                    base.dia = parseInt(checkbox.dataset.dia);
+                }
 
-                    return {
-                        id: checkbox.value,
-                        name: checkbox.dataset.name,
-                        price: price
-                    };
+                return base;
                 });
 
             document.getElementById(hiddenFieldId).value = JSON.stringify(selected);
         }
-
-
 
         function updateSelectedItems() {
             saveSelections(checkboxesTickets, "tickets_seleccionados", "nac", "ext");
