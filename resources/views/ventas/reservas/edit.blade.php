@@ -698,7 +698,7 @@ Agregar turista
 
         /** ✅ Actualiza los totales de todos los checkboxes */
         function updateAllTotals() {
-            totalTickets = updateTotal(checkboxesTickets, ticketsCont, ticName, ticPre, "nac", "ext");
+            totalTickets = updateTotal(checkboxesTickets, ticketsCont, ticName, ticPre, "precio");
             totalAccesorios = updateTotal(checkboxesAccesorios, accesoriosCont, accName, accPre, "precio");
             totalServicios = updateTotal(checkboxesServicios, serviciosCont, serName, serPre, "precio");
             totalHabitaciones = updateTotal(checkboxesHabitaciones, habitacionesCont, habName, habPre, "precio");
@@ -773,19 +773,18 @@ Agregar turista
             document.getElementById(hiddenFieldId).value = JSON.stringify(selected);
         }
 
+        // ✅ Eventos de checkboxes
+        checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
+        checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
+        checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
+        checkboxesHabitaciones.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
+
         function updateSelectedItems() {
             saveSelections(checkboxesTickets, "tickets_seleccionados", "hnac", "hext");
             saveSelections(checkboxesHabitaciones, "habitaciones_seleccionadas", "hnac", "hext");
             saveSelections(checkboxesAccesorios, "accesorios_seleccionados", "precio");
             saveSelections(checkboxesServicios, "servicios_seleccionados", "precio");
         }
-
-
-        // ✅ Eventos de checkboxes
-        checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
-        checkboxesAccesorios.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
-        checkboxesServicios.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
-        checkboxesHabitaciones.forEach(checkbox => checkbox.addEventListener("change", updateAllTotals));
 
         // ✅ Detecta cambios en los checkboxes y guarda los valores seleccionados
         checkboxesTickets.forEach(checkbox => checkbox.addEventListener("change", updateSelectedItems));
