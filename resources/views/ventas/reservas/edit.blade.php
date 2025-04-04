@@ -698,15 +698,14 @@ Agregar turista
 
         /** ✅ Actualiza los totales de todos los checkboxes */
         function updateAllTotals() {
-            totalTickets = updateTotal(checkboxesTickets, ticketsCont, ticName, ticPre, "precio");
+            totalTickets = updateTotal(checkboxesTickets, ticketsCont, ticName, ticPre, "hnac", "hext");
             totalAccesorios = updateTotal(checkboxesAccesorios, accesoriosCont, accName, accPre, "precio");
             totalServicios = updateTotal(checkboxesServicios, serviciosCont, serName, serPre, "precio");
-            totalHabitaciones = updateTotal(checkboxesHabitaciones, habitacionesCont, habName, habPre, "precio");
+            totalHabitaciones = updateTotal(checkboxesHabitaciones, habitacionesCont, habName, habPre, "hnac", "hext");
 
             updateGrandTotal();
         }
-
-        /** ✅ Muestra u oculta los contenedores dinámicamente y suma los valores */
+                /** ✅ Muestra u oculta los contenedores dinámicamente y suma los valores */
         function updateTotal(checkboxes, container, nameField, priceField, priceAttrBO = "hnac", priceAttrExt = "hext") {
             let total = 0;
             let names = [], prices = [];
