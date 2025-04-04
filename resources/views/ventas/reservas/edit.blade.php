@@ -459,32 +459,34 @@ Agregar turista
                             <!-- ✅ TAB HOTELES -->
                             <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                 @foreach(json_decode($tour->hoteles, true) as $index => $hotelIds)
-                                    @php $dia = $index + 1; @endphp
-                                    <label class="form-label" for="noche_{{ $dia }}">Día {{ $dia }}</label>
+                                    @php
+                                        $dia = $index + 1;
+                                    @endphp
+
                                     <div class="row g-3">
                                         <div class="col-md-12 form-check">
-                                            <label class="form-label" for="noche_{{ $key }}">Día {{ $key + 1 }}</label> {{-- Aumentamos 1 para coherencia de días --}}
-                            
+                                            <label class="form-label fw-bold" for="noche_{{ $dia }}">Día {{ $dia }}</label>
+
                                             @foreach ($hoteles as $hotel)
                                                 @if(in_array($hotel->id, $hotelIds))
-                                                    <div class="form-check">
-                                                        <label class="form-check-label fw-bold" for="hotel_{{ $hotel->id }}_{{ $key }}">
+                                                    <div class="form-check mb-2">
+                                                        <label class="form-check-label fw-bold">
                                                             {{ $hotel->titulo }}
                                                         </label>
-                            
+
                                                         @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
                                                             <div class="form-check">
-                                                                <input
+                                                                <input class="form-check-input habitacion-checkbox" 
+                                                                    type="radio"
                                                                     name="habitacion_dia_{{ $dia }}"
                                                                     id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}"
                                                                     value="{{ $habitacion->id }}"
-                                                                    data-dia="{{ $dia }}"
                                                                     data-name="{{ $habitacion->titulo }}"
-                                                                    data-precio="{{ number_format($habitacion->precio, 2, '.', '') }}"
-                                                                    class="form-check-input habitacion-checkbox"
-                                                                    type="radio"
+                                                                    data-precio="{{ $habitacion->precio }}"
+                                                                    data-dia="{{ $dia }}"
                                                                 />
-                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
+                                                                <label class="form-check-label" 
+                                                                    for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
                                                                     {{ $habitacion->titulo }} - Bs. {{ number_format($habitacion->precio, 2, '.', '') }}
                                                                 </label>
                                                             </div>
@@ -496,9 +498,9 @@ Agregar turista
                                     </div>
                                 @endforeach
                             </div>
-                            
-                        
-                            <!-- ✅ TAB ACCESORIOS -->
+
+                                                    
+                                                        <!-- ✅ TAB ACCESORIOS -->
                             <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                 <div class="col-md-12">
                                     @foreach($accesorios as $accesorio)
