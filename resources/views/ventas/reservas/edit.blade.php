@@ -699,7 +699,7 @@ Agregar turista
             totalTickets = updateTotal(checkboxesTickets, ticketsCont, ticName, ticPre, "nac", "ext");
             totalAccesorios = updateTotal(checkboxesAccesorios, accesoriosCont, accName, accPre, "precio");
             totalServicios = updateTotal(checkboxesServicios, serviciosCont, serName, serPre, "precio");
-            totalHabitaciones = updateTotal(checkboxesHabitaciones, habitacionesCont, habName, habPre, "hnac", "hext");
+            totalHabitaciones = updateTotal(checkboxesHabitaciones, habitacionesCont, habName, habPre, "precio");
 
             updateGrandTotal();
         }
