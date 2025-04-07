@@ -609,7 +609,7 @@
 
                             <dl class="col-md-12 row tickets_cont" id="tickets_cont" style="display: none;">
                                 <dt class="col-sm-12">
-                                    <span class="btn btn-inverse-success mb-3 col-md-12">Tickers</span>
+                                    <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
                                 </dt>
 
                                 <dt class="col-sm-5" id="tic_name"></dt>
@@ -708,7 +708,7 @@
             const checkboxesTickets = document.querySelectorAll("input[type='checkbox'][id^='ticket_']");
             const checkboxesAccesorios = document.querySelectorAll("input[type='checkbox'][id^='accesorio_']");
             const checkboxesServicios = document.querySelectorAll("input[type='checkbox'][id^='turista_']");
-            const checkboxesHabitaciones = document.querySelectorAll("input[type='checkbox'][id^='form_habi_']");
+            const checkboxesHabitaciones = document.querySelectorAll("input[type='radio'][id^='form_habi_']");
 
             let totalTickets = 0;
             let totalAccesorios = 0;
