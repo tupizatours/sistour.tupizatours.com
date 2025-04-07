@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reservas', function (Blueprint $table) {
+        /*Schema::create('reservas', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->nullable();
             $table->decimal('subtotal', 8, 2)->nullable();
@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('estado')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

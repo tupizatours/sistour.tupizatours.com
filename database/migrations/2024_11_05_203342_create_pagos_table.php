@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pagos', function (Blueprint $table) {
+        /*Schema::create('pagos', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->nullable();
 
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->decimal('total', 8, 2)->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

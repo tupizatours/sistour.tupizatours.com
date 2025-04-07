@@ -13,7 +13,7 @@ class CreatePermissionsTable extends Migration
      */
     public function up(): void
     {
-        $connection = config('roles.connection');
+        /*$connection = config('roles.connection');
         $table = config('roles.permissionsTable');
         $tableCheck = Schema::connection($connection)->hasTable($table);
 
@@ -27,7 +27,7 @@ class CreatePermissionsTable extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
-        }
+        }*/
     }
 
     /**

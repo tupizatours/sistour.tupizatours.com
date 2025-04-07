@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('gestions', function (Blueprint $table) {
+        /*Schema::create('gestions', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->nullable();
 
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->string('estado')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

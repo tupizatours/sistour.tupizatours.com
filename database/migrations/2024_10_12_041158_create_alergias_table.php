@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('alergias', function (Blueprint $table) {
+        /*Schema::create('alergias', function (Blueprint $table) {
             $table->id();
             $table->string('titulo')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

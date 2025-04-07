@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reserclientes', function (Blueprint $table) {
+        /*Schema::create('reserclientes', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->nullable();
             $table->decimal('pre_per', 8, 2)->nullable();
@@ -43,7 +43,7 @@ return new class extends Migration
             $table->string('estatus')->nullable();
             $table->string('esPrincipal')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

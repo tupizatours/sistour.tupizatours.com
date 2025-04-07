@@ -13,7 +13,7 @@ class CreateActivationsTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('activations', function (Blueprint $table) {
+        /*Schema::create('activations', function (Blueprint $table) {
             //Structure
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->unsigned()->index();
@@ -23,7 +23,7 @@ class CreateActivationsTable extends Migration
 
             //Relationships
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });
+        });*/
     }
 
     /**

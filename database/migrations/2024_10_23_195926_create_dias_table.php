@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('dias', function (Blueprint $table) {
+        /*Schema::create('dias', function (Blueprint $table) {
             $table->id();
             
             $table->unsignedBigInteger('tour_id')->unsigned()->index();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->text('dias')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

@@ -13,7 +13,7 @@ class CreateRoleUserTable extends Migration
      */
     public function up(): void
     {
-        $connection = config('roles.connection');
+        /*$connection = config('roles.connection');
         $table = config('roles.roleUserTable');
         $rolesTable = config('roles.rolesTable');
         $tableCheck = Schema::connection($connection)->hasTable($table);
@@ -28,7 +28,7 @@ class CreateRoleUserTable extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
-        }
+        }*/
     }
 
     /**

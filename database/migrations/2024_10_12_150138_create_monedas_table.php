@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('monedas', function (Blueprint $table) {
+        /*Schema::create('monedas', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->nullable();
             $table->string('codigo')->nullable();
             $table->string('simbolo')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

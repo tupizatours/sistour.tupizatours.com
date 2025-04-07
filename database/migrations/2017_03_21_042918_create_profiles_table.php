@@ -13,7 +13,7 @@ class CreateProfilesTable extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        /*Schema::create('profiles', function (Blueprint $table) {
             //Structure
             $table->increments('id');
             $table->unsignedBigInteger('user_id')->unsigned()->index();
@@ -29,7 +29,7 @@ class CreateProfilesTable extends Migration
             //Relationships
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('theme_id')->references('id')->on('themes');
-        });
+        });*/
     }
 
     /**

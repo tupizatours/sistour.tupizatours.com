@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('qrs', function (Blueprint $table) {
+        /*Schema::create('qrs', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->nullable();
             $table->text('file')->nullable();
             $table->string('estado')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

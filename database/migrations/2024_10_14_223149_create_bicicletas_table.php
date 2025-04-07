@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bicicletas', function (Blueprint $table) {
+        /*Schema::create('bicicletas', function (Blueprint $table) {
             $table->id();
 
             $table->unsignedBigInteger('propietario_id')->unsigned()->index();
@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('venta')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

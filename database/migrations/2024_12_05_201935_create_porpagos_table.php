@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('porpagos', function (Blueprint $table) {
+        /*Schema::create('porpagos', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('reserva_id')->nullable(); // Relacionar con otra tabla si aplica
             $table->unsignedBigInteger('tour_id')->nullable();
@@ -26,7 +26,7 @@ return new class extends Migration
             $table->json('saldo')->nullable();
             $table->json('dserv')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

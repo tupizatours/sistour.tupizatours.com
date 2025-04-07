@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('traductores', function (Blueprint $table) {
+        /*Schema::create('traductores', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->nullable();
             $table->string('apellido')->nullable();
@@ -32,7 +32,7 @@ return new class extends Migration
             $table->text('file')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

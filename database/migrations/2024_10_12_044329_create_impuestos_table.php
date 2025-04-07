@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('impuestos', function (Blueprint $table) {
+        /*Schema::create('impuestos', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->nullable();
             $table->string('porcentaje')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**

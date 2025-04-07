@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('links', function (Blueprint $table) {
+        /*Schema::create('links', function (Blueprint $table) {
             $table->id();
             $table->string('nombre')->nullable();
             $table->text('descripcion')->nullable();
             $table->string('url')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });
+        });*/
     }
 
     /**
