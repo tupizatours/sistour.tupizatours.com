@@ -397,44 +397,45 @@
                                     @endphp
 
                                     @foreach($hotelesSeleccionados as $key => $hotelIds)
-                                        <div class="row g-3">
-                                            <div class="col-md-12 form-check">
-                                                <label class="form-label" for="noche_{{ $key }}">
-                                                    Dia {{ $key }}
-                                                </label>
+                                    <div class="row g-3">
+                                        <div class="col-md-12 form-check">
+                                            <label class="form-label" for="noche_{{ $key }}">
+                                                Dia {{ $key }}
+                                            </label>
 
-                                                @foreach ($hoteles as $hotel)
-                                                    @if(in_array($hotel->id, $hotelIds)) 
-                                                        <div class="form-check">
-                                                            <!-- Checkbox para el hotel -->
-                                                            <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                            <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
-                                                                {{ $hotel->titulo }}
-                                                            </label>
+                                            @foreach ($hoteles as $hotel)
+                                                @if(in_array($hotel->id, $hotelIds)) 
+                                                    <div class="form-check">
+                                                        <!-- Checkbox para el hotel -->
+                                                        <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                        <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
+                                                            {{ $hotel->titulo }}
+                                                        </label>
 
-                                                            @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                                <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                    <!-- ID único para los checkbox buttons y name basado en el día para selección única -->
-                                                                    <input class="form-check-input habitacion-checkbox" type="checkbox" value="{{ $habitacion->id }}"
-                                                                        id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
-                                                                        name="habitacion_dia_{{ $key }}"
-                                                                        data-name="{{ $habitacion->titulo }}"
-                                                                        data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                        data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                                        data-tit="{{ $hotel->titulo }}" />
+                                                        @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
+                                                            <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
+                                                                <!-- ID único para los radio buttons y name basado en el día para selección única -->
+                                                                <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
+                                                                    id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
+                                                                    name="habitacion_dia_{{ $key }}"
+                                                                    data-name="{{ $habitacion->titulo }}"
+                                                                    data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                    data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                    data-dia="{{ $key + 1 }}"  />
 
-                                                                    <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
-                                                                        {{ $habitacion->titulo }}
-                                                                        <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
-                                                                        <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
-                                                                    </label>
-                                                                </div>
-                                                            @endforeach
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
+
+                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
+                                                                    {{ $habitacion->titulo }}
+                                                                    <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
+                                                                    <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @endif
+                                            @endforeach
                                         </div>
+                                    </div>
                                     @endforeach
                                 </div>
                                 <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
@@ -844,13 +845,10 @@
 
                 checkboxesHabitaciones.forEach(checkbox => {
                     if (checkbox.checked) {
-                        const hotelName = checkbox.dataset.tit; // Asegúrate de usar el dataset.tit
-                        const roomName = checkbox.dataset.name;
                         const price = parseFloat(nacionalidadSelect.value === "BO" ? checkbox.dataset.hnac : checkbox.dataset.hext) || 0;
-
                         totalHabitaciones += price;
 
-                        names += `${hotelName}: ${roomName}<br>`;
+                        names += `${checkbox.dataset.name}<br>`;
                         prices += `Bs. ${price.toFixed(2)}<br>`;
                     }
                 });
@@ -863,7 +861,7 @@
                     habitacionesCont.style.display = "none";
                 }
 
-                updateTotal(); // Asegúrate de actualizar el total
+                updateTotal();
             }
 
             // Función para calcular y actualizar el total acumulado en tourSbt
@@ -984,14 +982,15 @@
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
 
                 // Accesorios seleccionados
-                const selectedAccessories = Array.from(checkboxesAccesorios)
-                    .filter(checkbox => checkbox.checked)
-                    .map(checkbox => ({
-                        id: checkbox.value,
-                        name: checkbox.dataset.aname,
-                        price: parseFloat(checkbox.dataset.aprecio)
+                const selectedRooms = Array.from(checkboxesHabitaciones)
+                    .filter(radio => radio.checked)
+                    .map(radio => ({
+                        id: radio.value,
+                        name: radio.dataset.name,
+                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext),
+                        dia: parseInt(radio.dataset.dia) // este es el valor clave que ya se está agregando
                     }));
-                document.getElementById("accesorios_seleccionados").value = JSON.stringify(selectedAccessories);
+                document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
 
                 // Servicios seleccionados
                 const selectedServices = Array.from(checkboxesServicios)
