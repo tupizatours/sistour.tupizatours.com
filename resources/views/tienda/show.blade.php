@@ -977,20 +977,20 @@
                     .map(radio => ({
                         id: radio.value,
                         name: radio.dataset.name,
-                        price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext)
-                    }));
-                document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
-
-                // Accesorios seleccionados
-                const selectedRooms = Array.from(checkboxesHabitaciones)
-                    .filter(radio => radio.checked)
-                    .map(radio => ({
-                        id: radio.value,
-                        name: radio.dataset.name,
                         price: parseFloat(nacionalidadSelect.value === "BO" ? radio.dataset.hnac : radio.dataset.hext),
                         dia: parseInt(radio.dataset.dia) // este es el valor clave que ya se está agregando
                     }));
                 document.getElementById("habitaciones_seleccionadas").value = JSON.stringify(selectedRooms);
+
+                // Accesorios seleccionados
+                const selectedAccessories = Array.from(checkboxesAccesorios)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => ({
+                        id: checkbox.value,
+                        name: checkbox.dataset.aname,
+                        price: parseFloat(checkbox.dataset.aprecio)
+                    }));
+                document.getElementById("accesorios_seleccionados").value = JSON.stringify(selectedAccessories);
 
                 // Servicios seleccionados
                 const selectedServices = Array.from(checkboxesServicios)
