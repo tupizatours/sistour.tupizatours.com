@@ -436,38 +436,39 @@
                                         </div>
 
                                         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                            @php $contadorDia = 1; @endphp
-                                            @foreach($hotelesSeleccionados as $hotelIds)
-                                                @php
-                                                    $habitacionSeleccionada = collect($habitacion_id)->firstWhere('dia', $contadorDia);
-                                                @endphp
-                                            
+                                            <?php
+                                                $hotelesSeleccionados = json_decode($tour->hoteles, true);
+                                            ?>
+
+                                            @foreach($hotelesSeleccionados as $key => $hotelIds)
                                                 <div class="row g-3">
                                                     <div class="col-md-12 form-check">
-                                                        <label class="form-label" for="noche_{{ $contadorDia }}">
-                                                            Día {{ $contadorDia }}
+                                                        <label class="form-label" for="noche_{{ $key }}">
+                                                            Dia {{ $key }}
                                                         </label>
-                                            
-                                                        @foreach($hoteles as $hotel)
-                                                            @if(in_array($hotel->id, $hotelIds))
+
+                                                        @foreach ($hoteles as $hotel)
+                                                            @if(in_array($hotel->id, $hotelIds)) 
                                                                 <div class="form-check">
-                                                                    <input class="form-check-input" style="display: none;" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $contadorDia }}" />
-                                                                    <label class="form-check-label" for="hotel_{{ $hotel->id }}_{{ $contadorDia }}">
+                                                                    <!-- Checkbox para el hotel -->
+                                                                    <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                                    <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
                                                                         {{ $hotel->titulo }}
                                                                     </label>
-                                            
+
                                                                     @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $contadorDia }}">
-                                                                            <input class="form-check-input habitacion-checkbox" type="radio"
-                                                                                name="habitacion_dia_{{ $contadorDia }}"
-                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $contadorDia }}"
+                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
+                                                                            <!-- ID único para los radio buttons y name basado en el día para selección única -->
+                                                                            <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
+                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
+                                                                                name="habitacion_dia_{{ $key }}"
                                                                                 data-name="{{ $habitacion->titulo }}"
                                                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                                                data-tit="{{ $hotel->titulo }}"
-                                                                                data-dia="{{ $contadorDia }}"
-                                                                            />
-                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $contadorDia }}">
+                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                                data-dia="{{ $key + 1 }}"  />
+
+
+                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
                                                                                 {{ $habitacion->titulo }}
                                                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
                                                                                 <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
@@ -479,7 +480,6 @@
                                                         @endforeach
                                                     </div>
                                                 </div>
-                                                @php $contadorDia++; @endphp
                                             @endforeach
                                         </div>
 
