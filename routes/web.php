@@ -80,11 +80,12 @@ Route::group(['middleware' => ['auth', 'activated', 'activity', 'twostep', 'chec
     Route::resource('ventas/resclis', App\Http\Controllers\Venta\RescliController::class)->names('venresclis');
     Route::resource('ventas/vips', App\Http\Controllers\Venta\VipController::class)->names('venvips');
     
+    /* Despachos */
     Route::get('/despachos/vagonetas/{propietario_id}', 'App\Http\Controllers\Despacho\GestionController@obtenerVagonetas')->name('obtenerVagonetas');
     Route::get('/despachos/caballos/{propietario_id}', 'App\Http\Controllers\Despacho\GestionController@obtenerCaballos')->name('obtenerCaballos');
     Route::get('/despachos/bicicletas/{propietario_id}', 'App\Http\Controllers\Despacho\GestionController@obtenerBicicletas')->name('obtenerBicicletas');
     Route::post('/despachos/gestiones/anticipos', 'App\Http\Controllers\Despacho\GestionController@gesanticipos')->name('gesanticipos');
-
+    
     Route::resource('despachos/gestiones', App\Http\Controllers\Despacho\GestionController::class)->names('desges');
     Route::resource('despachos/transitos', App\Http\Controllers\Despacho\TransitoController::class)->names('destra');
     Route::resource('despachos/finalizados', App\Http\Controllers\Despacho\FinalizadoController::class)->names('desfin');
