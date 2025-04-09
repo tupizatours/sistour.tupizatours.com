@@ -292,6 +292,7 @@
                                             tarifa="servicio_t"
                                             value-tarifa={{ $gestion->servicio_t }}
                                             tarifa-field="costo"
+                                            label-field="titulo"
                                         />
                                     </div>
                                 @endif
@@ -477,13 +478,14 @@
                                         <x-prestatario-select
                                             id="servicio_id"
                                             name="servicio_id"
-                                            label="Elegir Servicio"
+                                            label="Elegir servicio"
                                             :items="$servicios"
-                                            :selected="null"
+                                            :selected="$gestion->servicio_id"
                                             onchange="servicioCosto()"
                                             tarifa="servicio_t"
                                             value-tarifa=""
                                             tarifa-field="costo"
+                                            label-field="titulo"
                                         />
                                     </div>
                                 @endif
