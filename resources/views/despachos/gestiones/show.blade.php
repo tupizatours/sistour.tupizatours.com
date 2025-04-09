@@ -380,11 +380,7 @@
                                                 checkbox-servid="{{ $gestion->vagoneta->id }}"
                                                 checkbox-target="{{ $gestion->vagoneta_t }}"
                                             >
-                                                @foreach($existePorpago as $porpago)
-                                                    @if($porpago->dserv == 'vagoneta')
-                                                        <div class="alert alert-success data_disabled"></div>
-                                                    @endif
-                                                @endforeach
+                                             
                                             </x-prestatario-recurso>
                                     
                                         @elseif($value == 105)
@@ -439,9 +435,7 @@
                                                 checkbox-servid="{{ $gestion->bicicleta->id }}"
                                                 checkbox-target="{{ $gestion->bicicleta_t }}"
                                             >
-                                                @if($existePorpago && $existePorpago->dserv == 'bicicleta')
-                                                    <div class="alert alert-success data_disabled"></div>
-                                                @endif
+                                               
                                             </x-prestatario-recurso>
                                         @endif
                                     @endforeach
