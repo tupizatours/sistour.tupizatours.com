@@ -68,7 +68,7 @@
                             @if($reserva->estatus == "1" && $reserva->estado == "3")
                                 @php
                                     $originalDate = $reserva->created_at;
-                                    $newDate = date("Y-m-d", strtotime($originalDate));
+                                    $newDate = date("d-m-Y", strtotime($originalDate));
                                 @endphp
 
                                 <tr>
