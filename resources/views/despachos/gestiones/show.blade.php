@@ -292,6 +292,7 @@
                                             tarifa="servicio_t"
                                             value-tarifa={{ $gestion->servicio_t }}
                                             tarifa-field="costo"
+                                            label-field="titulo" 
                                         />
                                     </div>
                                 @endif
@@ -484,8 +485,7 @@
                                             tarifa="servicio_t"
                                             value-tarifa=""
                                             tarifa-field="costo"
-                                            label-field="titulo" {{-- 👈 clave aquí! --}}
-
+                                            label-field="titulo" 
                                         />
                                     </div>
                                 @endif
