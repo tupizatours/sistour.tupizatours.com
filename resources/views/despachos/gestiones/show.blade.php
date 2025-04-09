@@ -375,7 +375,7 @@
                                                 tarifa-value="{{ $gestion->vagoneta_t }}"
                                             
                                                 checkbox-id="check_vago"
-                                                checkbox-pres="{{ $gestion->provag->id }}"
+                                                checkbox-pres="{{ optional($gestion->provag)->id }}"
                                                 checkbox-serv="vagoneta"
                                                 checkbox-servid="{{ $gestion->vagoneta->id }}"
                                                 checkbox-target="{{ $gestion->vagoneta_t }}"
@@ -407,7 +407,8 @@
                                                     tarifa-value="{{ $gestion->caballo_t }}"
 
                                                     checkbox-id="check_caba"
-                                                    checkbox-pres="{{ $gestion->procab->id }}"
+                                                    checkbox-pres="{{ optional($gestion->procab)->id }}"
+
                                                     checkbox-serv="caballo"
                                                     checkbox-servid="{{ $gestion->caballo->id }}"
                                                     checkbox-target="{{ $gestion->caballo_t }}"
@@ -432,7 +433,8 @@
                                                 tarifa-value="{{ $gestion->bicicleta_t }}"
                                             
                                                 checkbox-id="check_bici"
-                                                checkbox-pres="{{ $gestion->probic->id }}"
+                                                checkbox-pres="{{ optional($gestion->probic)->id }}"
+
                                                 checkbox-serv="bicicleta"
                                                 checkbox-servid="{{ $gestion->bicicleta->id }}"
                                                 checkbox-target="{{ $gestion->bicicleta_t }}"
