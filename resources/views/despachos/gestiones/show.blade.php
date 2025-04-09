@@ -460,192 +460,179 @@
                                     <button type="submit" class="btn btn-success col-md-12 text-uppercase">Iniciar Tour</button>
                                 </form>
                             </div>
-                        @else
-                            <form action="{{ route('desges.store') }}" class="" method="POST" enctype="multipart/form-data">
+                            @else
+                            <form action="{{ route('desges.store') }}" method="POST" enctype="multipart/form-data">
                                 @csrf
-
-                                <input type="hidden" value="gestions" name="pagina" id="pagina" />
-                                <input type="hidden" value="{{ $reserva->id }}" name="reserva_id" id="reserva_id" />
-                                <input type="hidden" value="{{ $reserva->tour_id }}" name="tour_id" id="tour_id" />
-
+                        
+                                <input type="hidden" name="pagina" value="gestions" />
+                                <input type="hidden" name="reserva_id" value="{{ $reserva->id }}" />
+                                <input type="hidden" name="tour_id" value="{{ $reserva->tour_id }}" />
+                        
                                 @php
                                     $serv_tour_id = json_decode($reserva->tour->serv_tour);
                                 @endphp
-
+                        
                                 @if($reserva->tour->id == $reserva->tour_id && $servicios->isNotEmpty())
                                     <div class="row g-3 pt-3 pb-2 col-md-12">
-                                        <div class="form-group mb-2 mt-2 col-md-6">
-                                            <label class="mb-2">Elegir servicio</label>
-                                            <select class="form-control form-control-solid" id="servicio_id" name="servicio_id" type="select" onchange="servicioCosto()">
-                                                <option value="">Seleccionar</option>
-                                                @foreach($servicios as $servicio)
-                                                    <option value="{{ $servicio->id }}" data-tarifa="{{ number_format($servicio->costo, 2, '.', '') }}">{{ $servicio->titulo }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    
-                                        <div class="form-group mb-2 mt-2 col-md-6">
-                                            <label class="mb-2">Precio costo</label>
-                                            <input class="form-control form-control-solid" id="servicio_t" name="servicio_t" type="number" />
-                                        </div>
+                                        <x-prestatario-select
+                                            id="servicio_id"
+                                            name="servicio_id"
+                                            label="Elegir Servicio"
+                                            :items="$servicios"
+                                            :selected="null"
+                                            onchange="servicioCosto()"
+                                            tarifa="servicio_t"
+                                            value-tarifa=""
+                                            tarifa-field="costo"
+                                        />
                                     </div>
                                 @endif
-                            
+                        
                                 <div class="row g-3 pt-3 pb-2 col-md-12">
                                     @if($reserva->tour->id == $reserva->tour_id)
                                         @foreach($serv_tour_id as $value)
                                             @if($value == 100)
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir guia</label>
-
-                                                    <select class="form-control form-control-solid" id="guia_id" name="guia_id" type="text" required onchange="mostrarCosto()">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($guias as $guia)
-                                                            <option value="{{ $guia->id }}" data-tarifa="{{ number_format($guia->tarifa, 2, '.', '') }}">{{ $guia->nombre.' '.$guia->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="guia_t" name="guia_t" type="number" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="guia_id"
+                                                    name="guia_id"
+                                                    label="Elegir Guía"
+                                                    :items="$guias"
+                                                    :selected="null"
+                                                    onchange="guiaCosto()"
+                                                    tarifa="guia_t"
+                                                    value-tarifa=""
+                                                    tarifa-field="tarifa"
+                                                />
                                             @elseif($value == 101)
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir traductor</label>
-
-                                                    <select class="form-control form-control-solid" id="traductor_id" name="traductor_id" type="select" onchange="traductorCosto()">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($traductors as $traductor)
-                                                            <option value="{{ $traductor->id }}" data-tarifa="{{ number_format($traductor->tarifa, 2, '.', '') }}">{{ $traductor->nombre.' '.$traductor->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="traductor_t" name="traductor_t" type="number" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="traductor_id"
+                                                    name="traductor_id"
+                                                    label="Elegir Traductor"
+                                                    :items="$traductors"
+                                                    :selected="null"
+                                                    onchange="traductorCosto()"
+                                                    tarifa="traductor_t"
+                                                    value-tarifa=""
+                                                    tarifa-field="tarifa"
+                                                />
                                             @elseif($value == 102)
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir cocinero</label>
-
-                                                    <select class="form-control form-control-solid" id="cocinero_id" name="cocinero_id" type="select" onchange="cocineroCosto()">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($cocineros as $cocinero)
-                                                            <option value="{{ $cocinero->id }}" data-tarifa="{{ number_format($cocinero->tarifa, 2, '.', '') }}">{{ $cocinero->nombre.' '.$cocinero->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="cocinero_t" name="cocinero_t" type="number" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="cocinero_id"
+                                                    name="cocinero_id"
+                                                    label="Elegir Cocinero"
+                                                    :items="$cocineros"
+                                                    :selected="null"
+                                                    onchange="cocineroCosto()"
+                                                    tarifa="cocinero_t"
+                                                    value-tarifa=""
+                                                    tarifa-field="tarifa"
+                                                />
                                             @elseif($value == 103)
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir chofer</label>
-
-                                                    <select class="form-control form-control-solid" id="chofer_id" name="chofer_id" type="select" onchange="choferCosto()">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($chofers as $chofer)
-                                                            <option value="{{ $chofer->id }}" data-tarifa="{{ number_format($chofer->tarifa, 2, '.', '') }}">{{ $chofer->nombre.' '.$chofer->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="chofer_t" name="chofer_t" type="number" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="chofer_id"
+                                                    name="chofer_id"
+                                                    label="Elegir Chofer"
+                                                    :items="$chofers"
+                                                    :selected="null"
+                                                    onchange="choferCosto()"
+                                                    tarifa="chofer_t"
+                                                    value-tarifa=""
+                                                    tarifa-field="tarifa"
+                                                />
                                             @elseif($value == 104)
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
-                                                
-                                                    <select class="form-control form-control-solid" id="provag_id" name="provag_id" type="select" onchange="cargarVagonetas(this.value)">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir vagoneta</label>
-
-                                                    <select class="form-control form-control-solid" id="vagoneta_id" name="vagoneta_id" type="select" onchange="vagonetaCosto()">
-                                                        <option value="">Seleccionar</option>
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="vagoneta_t" name="vagoneta_t" type="number" />
-                                                </div>
+                                                <x-prestatario-recurso
+                                                    prestatario-id="provag_id"
+                                                    prestatario-name="provag_id"
+                                                    prestatario-label="Elegir prestatario"
+                                                    :prestatario-items="$propietarios"
+                                                    :prestatario-selected="null"
+                                                    prestatario-onchange="cargarVagonetas(this.value)"
+                        
+                                                    recurso-id="vagoneta_id"
+                                                    recurso-name="vagoneta_id"
+                                                    recurso-label="Elegir vagoneta"
+                                                    :recurso-items="$vagonetas"
+                                                    :recurso-selected="null"
+                                                    recurso-onchange="vagonetaCosto()"
+                        
+                                                    tarifa-id="vagoneta_t"
+                                                    tarifa-value=""
+                        
+                                                    checkbox-id="check_vago"
+                                                    checkbox-pres=""
+                                                    checkbox-serv="vagoneta"
+                                                    checkbox-servid=""
+                                                    checkbox-target=""
+                                                />
                                             @elseif($value == 105)
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
-                                                
-                                                    <select class="form-control form-control-solid" id="procab_id" name="procab_id" type="select" onchange="cargarCaballos(this.value)">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir caballo</label>
-
-                                                    <select class="form-control form-control-solid" id="caballo_id" name="caballo_id" type="select" onchange="caballoCosto()">
-                                                        <option value="">Seleccionar</option> 
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="caballo_t" name="caballo_t" type="number" />
-                                                </div>
+                                                <x-prestatario-recurso
+                                                    prestatario-id="procab_id"
+                                                    prestatario-name="procab_id"
+                                                    prestatario-label="Elegir prestatario"
+                                                    :prestatario-items="$propietarios"
+                                                    :prestatario-selected="null"
+                                                    prestatario-onchange="cargarCaballos(this.value)"
+                        
+                                                    recurso-id="caballo_id"
+                                                    recurso-name="caballo_id"
+                                                    recurso-label="Elegir caballo"
+                                                    :recurso-items="$caballos"
+                                                    :recurso-selected="null"
+                                                    recurso-onchange="caballoCosto()"
+                        
+                                                    tarifa-id="caballo_t"
+                                                    tarifa-value=""
+                        
+                                                    checkbox-id="check_caba"
+                                                    checkbox-pres=""
+                                                    checkbox-serv="caballo"
+                                                    checkbox-servid=""
+                                                    checkbox-target=""
+                                                />
                                             @elseif($value == 106)
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
-
-                                                    <select class="form-control form-control-solid" id="probic_id" name="probic_id" type="select" onchange="cargarBicicletas(this.value)">
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir bicicleta</label>
-
-                                                    <select class="form-control form-control-solid" id="bicicleta_id" name="bicicleta_id" type="select" onchange="bicicletaCosto()">
-                                                        <option value="">Seleccionar</option>  
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="bicicleta_t" name="bicicleta_t" type="number" />
-                                                </div>
+                                                <x-prestatario-recurso
+                                                    prestatario-id="probic_id"
+                                                    prestatario-name="probic_id"
+                                                    prestatario-label="Elegir prestatario"
+                                                    :prestatario-items="$propietarios"
+                                                    :prestatario-selected="null"
+                                                    prestatario-onchange="cargarBicicletas(this.value)"
+                        
+                                                    recurso-id="bicicleta_id"
+                                                    recurso-name="bicicleta_id"
+                                                    recurso-label="Elegir bicicleta"
+                                                    :recurso-items="$bicicletas"
+                                                    :recurso-selected="null"
+                                                    recurso-onchange="bicicletaCosto()"
+                        
+                                                    tarifa-id="bicicleta_t"
+                                                    tarifa-value=""
+                        
+                                                    checkbox-id="check_bici"
+                                                    checkbox-pres=""
+                                                    checkbox-serv="bicicleta"
+                                                    checkbox-servid=""
+                                                    checkbox-target=""
+                                                />
                                             @endif
                                         @endforeach
                                     @endif
                                 </div>
-
+                        
                                 <div class="row g-3 pt-3 pb-2 col-md-12">
                                     <div class="form-group mb-2 mt-2 col-md-12">
-                                    @if($saldoPagado == $tot_dir)
-                                        <button type="submit" class="btn btn-primary col-md-12 font-14">GUARDAR</button>
+                                        @if($saldoPagado == $tot_dir)
+                                            <button type="submit" class="btn btn-primary col-md-12 font-14">GUARDAR</button>
                                         @else
-                                        <strong style="color:red">DEBE PAGAR EL SALDO DE LA RESERVA</strong>
-                                    @endif
+                                            <strong style="color:red">DEBE PAGAR EL SALDO DE LA RESERVA</strong>
+                                        @endif
                                     </div>
                                 </div>
+                                <div id="campos-dinamicos" style="display: none;"></div>
+
                             </form>
                         @endif
+                        
                     </div>
                 </div>
             </div>
