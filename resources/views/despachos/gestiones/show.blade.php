@@ -282,20 +282,17 @@
 
                                 @if($reserva->tour->id == $reserva->tour_id && $servicios->isNotEmpty())
                                     <div class="row g-3 pt-3 pb-2 col-md-12">
-                                        <div class="form-group mb-2 mt-2 col-md-6">
-                                            <label class="mb-2">Elegir servicio</label>
-                                            <select class="form-control form-control-solid" id="servicio_id" name="servicio_id" type="select" onchange="servicioCosto()">
-                                                <option value="">Seleccionar</option>
-                                                @foreach($servicios as $servicio)
-                                                    <option value="{{ $servicio->id }}" @if($servicio->id == $gestion->servicio_id) selected @endif data-tarifa="{{ number_format($servicio->costo, 2, '.', '') }}">{{ $servicio->titulo }}</option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                    
-                                        <div class="form-group mb-2 mt-2 col-md-6">
-                                            <label class="mb-2">Precio costo</label>
-                                            <input class="form-control form-control-solid" id="servicio_t" name="servicio_t" type="number" value="{{ $gestion->servicio_t }}" />
-                                        </div>
+                                        <x-prestatario-select
+                                            id="servicio_id"
+                                            name="servicio_id"
+                                            label="Elegir Servicio"
+                                            :items="$servicios"
+                                            :selected="$gestion->servicio_id"
+                                            onchange="servicioCosto()"
+                                            tarifa="servicio_t"
+                                            value-tarifa={{ $gestion->servicio_t }}
+                                            tarifa-field="costo"
+                                        />
                                     </div>
                                 @endif
 
@@ -303,191 +300,146 @@
                                     @foreach($serv_tour_id as $value)
                                         @if($value == 100)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir guia</label>
-
-                                                    <select class="form-control form-control-solid" id="guia_id" name="guia_id" type="text" required onchange="mostrarCosto()">
-                                                        <option value="{{ $gestion->guia->id }}" data-tarifa="{{ number_format($gestion->guia->tarifa, 2, '.', '') }}">{{ $gestion->guia->nombre.' '.$gestion->guia->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($guias as $guia)
-                                                            <option value="{{ $guia->id }}" data-tarifa="{{ number_format($guia->tarifa, 2, '.', '') }}">{{ $guia->nombre.' '.$guia->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="guia_t" name="guia_t" type="number" value="{{ $gestion->guia_t }}" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="guia_id"
+                                                    name="guia_id"
+                                                    label="Elegir Guía"
+                                                    :items="$guias"
+                                                    :selected="$gestion->guia_id"
+                                                    onchange="guiaCosto()"
+                                                    tarifa="guia_t"
+                                                    value-tarifa="{{ $gestion->guia_t }}"
+                                                    tarifa-field="tarifa"
+                                                />
                                             </div>
                                         @elseif($value == 101)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir traductor</label>
-
-                                                    <select class="form-control form-control-solid" id="traductor_id" name="traductor_id" type="select" onchange="traductorCosto()">
-                                                        <option value="{{ $gestion->traductor->id }}" data-tarifa="{{ number_format($gestion->traductor->tarifa, 2, '.', '') }}">{{ $gestion->traductor->nombre.' '.$gestion->traductor->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($traductors as $traductor)
-                                                            <option value="{{ $traductor->id }}" data-tarifa="{{ number_format($traductor->tarifa, 2, '.', '') }}">{{ $traductor->nombre.' '.$traductor->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="traductor_t" name="traductor_t" type="number" value="{{ $gestion->traductor_t }}" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="traductor_id"
+                                                    name="traductor_id"
+                                                    label="Elegir Traductor"
+                                                    :items="$traductors"
+                                                    :selected="$gestion->traductor_id"
+                                                    onchange="traductorCosto()"
+                                                    tarifa="traductor_t"
+                                                    value-tarifa="{{ $gestion->traductor_t }}"
+                                                    tarifa-field="tarifa"
+                                                />
                                             </div>
                                         @elseif($value == 102)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir cocinero</label>
-
-                                                    <select class="form-control form-control-solid" id="cocinero_id" name="cocinero_id" type="select" onchange="cocineroCosto()">
-                                                        <option value="{{ $gestion->cocinero->id }}" data-tarifa="{{ number_format($gestion->cocinero->tarifa, 2, '.', '') }}">{{ $gestion->cocinero->nombre.' '.$gestion->cocinero->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($cocineros as $cocinero)
-                                                            <option value="{{ $cocinero->id }}" data-tarifa="{{ number_format($cocinero->tarifa, 2, '.', '') }}">{{ $cocinero->nombre.' '.$cocinero->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="cocinero_t" name="cocinero_t" type="number" value="{{ $gestion->cocinero_t }}" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="cocinero_id"
+                                                    name="cocinero_id"
+                                                    label="Elegir cocinero"
+                                                    :items="$cocineros"
+                                                    :selected="$gestion->cocinero_id"
+                                                    onchange="cocineroCosto()"
+                                                    tarifa="cocinero_t"
+                                                    value-tarifa="{{ $gestion->cocinero_t }}"
+                                                    tarifa-field="tarifa"
+                                                />
                                             </div>
                                         @elseif($value == 103)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Elegir chofer</label>
-
-                                                    <select class="form-control form-control-solid" id="chofer_id" name="chofer_id" type="select" onchange="choferCosto()">
-                                                        <option value="{{ $gestion->chofer->id }}" data-tarifa="{{ number_format($gestion->chofer->tarifa, 2, '.', '') }}">{{ $gestion->chofer->nombre.' '.$gestion->chofer->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($chofers as $chofer)
-                                                            <option value="{{ $chofer->id }}" data-tarifa="{{ number_format($chofer->tarifa, 2, '.', '') }}">{{ $chofer->nombre.' '.$chofer->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-6">
-                                                    <label class="mb-2">Precio costo</label>
-                                                    <input class="form-control form-control-solid" id="chofer_t" name="chofer_t" type="number" value="{{ $gestion->chofer_t }}" />
-                                                </div>
+                                                <x-prestatario-select
+                                                    id="chofer_id"
+                                                    name="chofer_id"
+                                                    label="Elegir chofer"
+                                                    :items="$chofers"
+                                                    :selected="$gestion->chofer_id"
+                                                    onchange="choferCosto()"
+                                                    tarifa="chofer_t"
+                                                    value-tarifa="{{ $gestion->chofer_t }}"
+                                                    tarifa-field="tarifa"
+                                                />
                                             </div>
                                         @elseif($value == 104)
-                                            <div class="row g-3 pt-3 pb-2 col-md-12 prelative">
+                                            <x-prestatario-recurso
+                                                prestatario-id="provag_id"
+                                                prestatario-name="provag_id"
+                                                prestatario-label="Elegir prestatario"
+                                                :prestatario-items="$propietarios"
+                                                :prestatario-selected="$gestion->provag_id"
+                                                prestatario-onchange="cargarVagonetas(this.value)"
+                                            
+                                                recurso-id="vagoneta_id"
+                                                recurso-name="vagoneta_id"
+                                                recurso-label="Elegir vagoneta"
+                                                :recurso-items="$vagonetas"
+                                                :recurso-selected="$gestion->vagoneta_id"
+                                                recurso-onchange="vagonetaCosto()"
+                                            
+                                                tarifa-id="vagoneta_t"
+                                                tarifa-value="{{ $gestion->vagoneta_t }}"
+                                            
+                                                checkbox-id="check_vago"
+                                                checkbox-pres="{{ $gestion->provag->id }}"
+                                                checkbox-serv="vagoneta"
+                                                checkbox-servid="{{ $gestion->vagoneta->id }}"
+                                                checkbox-target="{{ $gestion->vagoneta_t }}"
+                                            >
                                                 @foreach($existePorpago as $porpago)
                                                     @if($porpago->dserv == 'vagoneta')
                                                         <div class="alert alert-success data_disabled"></div>
                                                     @endif
                                                 @endforeach
-                                                
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
-
-                                                    <select class="form-control form-control-solid" id="provag_id" name="provag_id" type="select" required onchange="cargarVagonetas(this.value)">
-                                                        <option value="{{ $gestion->provag->id }}">{{ $gestion->provag->nombre.' '.$gestion->provag->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir vagoneta</label>
-
-                                                    <select class="form-control form-control-solid" id="vagoneta_id" name="vagoneta_id" type="select" onchange="vagonetaCosto()">
-                                                        <option value="{{ $gestion->vagoneta->id }}" data-tarifa="{{ number_format($gestion->vagoneta->costo, 2, '.', '') }}">{{ $gestion->vagoneta->marca }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($vagonetas as $vagoneta)
-                                                            <option value="{{ $vagoneta->id }}" data-tarifa="{{ number_format($vagoneta->costo, 2, '.', '') }}">{{ $vagoneta->marca }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label for="check_vago" class="mb-2">Precio costo</label> <input class="form-check-input" type="checkbox" id="check_vago" name="check_pres" data-pres="{{ $gestion->provag->id }}" data-serv="vagoneta" data-servid="{{ $gestion->vagoneta->id }}" data-target="{{ $gestion->vagoneta_t }}" data-exclusive="true" />
-                                                    <input class="form-control form-control-solid" id="vagoneta_t" name="vagoneta_t" type="number" value="{{ $gestion->vagoneta_t }}" />
-                                                </div>
-                                            </div>
+                                            </x-prestatario-recurso>
+                                    
                                         @elseif($value == 105)
-                                            <div class="row g-3 pt-3 pb-2 col-md-12 prelative">
-                                                @foreach($existePorpago as $porpago)
-                                                    @if($porpago->dserv == 'caballo')
-                                                        <div class="alert alert-success data_disabled"></div>
-                                                    @endif
-                                                @endforeach
+                                                <x-prestatario-recurso
+                                                    prestatario-id="procab_id"
+                                                    prestatario-name="procab_id"
+                                                    prestatario-label="Elegir prestatario"
+                                                    :prestatario-items="$propietarios"
+                                                    :prestatario-selected="$gestion->procab_id"
+                                                    prestatario-onchange="cargarCaballos(this.value)"
 
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
+                                                    recurso-id="caballo_id"
+                                                    recurso-name="caballo_id"
+                                                    recurso-label="Elegir caballo"
+                                                    :recurso-items="$caballos"
+                                                    :recurso-selected="$gestion->caballo_id"
+                                                    recurso-onchange="caballoCosto()"
 
-                                                    <select class="form-control form-control-solid" id="procab_id" name="procab_id" type="select" required onchange="cargarCaballos(this.value)">
-                                                        <option value="{{ $gestion->procab->id }}">{{ $gestion->procab->nombre.' '.$gestion->procab->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
+                                                    tarifa-id="caballo_t"
+                                                    tarifa-value="{{ $gestion->caballo_t }}"
 
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir caballo</label>
-
-                                                    <select class="form-control form-control-solid" id="caballo_id" name="caballo_id" type="select" onchange="caballoCosto()">
-                                                        <option value="{{ $gestion->caballo->id }}" data-tarifa="{{ number_format($gestion->caballo->costo, 2, '.', '') }}">{{ $gestion->caballo->nombre }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($caballos as $caballo)
-                                                            <option value="{{ $caballo->id }}" data-tarifa="{{ number_format($caballo->costo, 2, '.', '') }}">{{ $caballo->nombre }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label for="check_caba" class="mb-2">Precio costo</label> <input class="form-check-input" type="checkbox" id="check_caba" name="check_pres" data-pres="{{ $gestion->procab->id }}" data-serv="caballo" data-servid="{{ $gestion->caballo->id }}" data-target="{{ $gestion->caballo_t }}" data-exclusive="true" />
-                                                    <input class="form-control form-control-solid" id="caballo_t" name="caballo_t" type="number" value="{{ $gestion->caballo_t }}" />
-                                                </div>
-                                            </div>
+                                                    checkbox-id="check_caba"
+                                                    checkbox-pres="{{ $gestion->procab->id }}"
+                                                    checkbox-serv="caballo"
+                                                    checkbox-servid="{{ $gestion->caballo->id }}"
+                                                    checkbox-target="{{ $gestion->caballo_t }}"
+                                                />
                                         @elseif($value == 106)
-                                            <div class="row g-3 pt-3 pb-2 col-md-12 prelative">
-                                                @if($existePorpago)
-                                                    @if($existePorpago->dserv == 'bicicleta')
-                                                        <div class="alert alert-success data_disabled"></div>
-                                                    @endif
+                                            <x-prestatario-recurso
+                                                prestatario-id="probic_id"
+                                                prestatario-name="probic_id"
+                                                prestatario-label="Elegir prestatario"
+                                                :prestatario-items="$propietarios"
+                                                :prestatario-selected="$gestion->probic_id"
+                                                prestatario-onchange="cargarBicicletas(this.value)"
+                                            
+                                                recurso-id="bicicleta_id"
+                                                recurso-name="bicicleta_id"
+                                                recurso-label="Elegir bicicleta"
+                                                :recurso-items="$bicicletas"
+                                                :recurso-selected="$gestion->bicicleta_id"
+                                                recurso-onchange="bicicletaCosto()"
+                                            
+                                                tarifa-id="bicicleta_t"
+                                                tarifa-value="{{ $gestion->bicicleta_t }}"
+                                            
+                                                checkbox-id="check_bici"
+                                                checkbox-pres="{{ $gestion->probic->id }}"
+                                                checkbox-serv="bicicleta"
+                                                checkbox-servid="{{ $gestion->bicicleta->id }}"
+                                                checkbox-target="{{ $gestion->bicicleta_t }}"
+                                            >
+                                                @if($existePorpago && $existePorpago->dserv == 'bicicleta')
+                                                    <div class="alert alert-success data_disabled"></div>
                                                 @endif
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir prestatario</label>
-
-                                                    <select class="form-control form-control-solid" id="probic_id" name="probic_id" type="select" required onchange="cargarBicicletas(this.value)">
-                                                        <option value="{{ $gestion->probic->id }}">{{ $gestion->probic->nombre.' '.$gestion->probic->apellido }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($propietarios as $propietario)
-                                                            <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label class="mb-2">Elegir bicicleta</label>
-
-                                                    <select class="form-control form-control-solid" id="bicicleta_id" name="bicicleta_id" type="select" onchange="bicicletaCosto()">
-                                                        <option value="{{ $gestion->bicicleta->id }}" data-tarifa="{{ number_format($gestion->bicicleta->costo, 2, '.', '') }}">{{ $gestion->bicicleta->nombre }}</option>
-                                                        <option value="">Seleccionar</option>
-                                                        @foreach($bicicletas as $bicicleta)
-                                                            <option value="{{ $bicicleta->id }}" data-tarifa="{{ number_format($bicicleta->costo, 2, '.', '') }}">{{ $bicicleta->nombre }}</option>
-                                                        @endforeach    
-                                                    </select>
-                                                </div>
-
-                                                <div class="form-group mb-2 mt-2 col-md-4">
-                                                    <label for="check_bici" class="mb-2">Precio costo</label> <input class="form-check-input" type="checkbox" id="check_bici" name="check_pres" data-pres="{{ $gestion->probic->id }}" data-serv="bicicleta" data-servid="{{ $gestion->bicicleta->id }}" data-target="{{ $gestion->bicicleta_t }}" data-exclusive="true" />
-                                                    <input class="form-control form-control-solid" id="bicicleta_t" name="bicicleta_t" type="number" value="{{ $gestion->bicicleta_t }}" />
-                                                </div>
-                                            </div>
+                                            </x-prestatario-recurso>
                                         @endif
                                     @endforeach
                                 @endif
@@ -1043,325 +995,110 @@
             calculateSubtotal();
         });
 
-        window.addEventListener("load", function () {
-            // Definir los nombres de los campos dinámicos
-            const campos = [
-                "servicio_id", 
-                "guia_id", 
-                "traductor_id", 
-                "cocinero_id", 
-                "chofer_id", 
-                "vagoneta_id", 
-                "caballo_id", 
-                "bicicleta_id", 
-                "provag_id", 
-                "procab_id", 
-                "probic_id",
-                "servicio_t",
-                "guia_t",
-                "traductor_t",
-                "cocinero_t",
-                "chofer_t",
-                "vagoneta_t",
-                "caballo_t",
-                "bicicleta_t"
-            ];
-
-            // Función para actualizar el valor de los campos dinámicos
-            function actualizarCampos(campo, valor) {
-                const inputDerecho = document.getElementById(`input-${campo}`);
-                if (inputDerecho) {
-                    inputDerecho.value = valor; // Asigna el nuevo valor al campo derecho
-                } else {
-                    // Crear dinámicamente un campo input si no existe
-                    const nuevoInput = document.createElement("input");
-                    nuevoInput.type = "text";
-                    nuevoInput.id = `input-${campo}`;
-                    nuevoInput.name = campo;
-                    nuevoInput.value = valor;
-                    nuevoInput.readOnly = true;
-
-                    // Agregar al contenedor de campos dinámicos
-                    document.getElementById("campos-dinamicos").appendChild(nuevoInput);
-                }
-            }
-
-            // Inicializar valores de los campos dinámicos
-            campos.forEach((campo) => {
-                const elementoIzquierdo = document.querySelector(`[name="${campo}"]`);
-                const valor = elementoIzquierdo ? elementoIzquierdo.value : null;
-                actualizarCampos(campo, valor); // Inicializar con los valores actuales
-            });
-
-            // Función para manejar cambios dinámicos en "servicio_id"
-            function servicioCosto() {
-                const select = document.getElementById('servicio_id');
-                const selectedOption = select.options[select.selectedIndex];
-                const cost = selectedOption.getAttribute('data-tarifa') || ''; // Obtener la tarifa del atributo
-
-                // Actualizar el campo de costo en el lado izquierdo
-                document.getElementById('servicio_t').value = cost;
-                document.getElementById('input-servicio_t').value = cost;
-
-                // Actualizar el valor correspondiente en los campos dinámicos
-                actualizarCampos('servicio_id', select.value); // Actualizar el id del servicio
-                actualizarCampos('servicio_t', cost); // Actualizar el costo del servicio
-                actualizarCampos('input-servicio_t', cost); // Actualizar el costo del servicio
-            }
-
-            // Agregar evento de cambio al selector "servicio_id"
-            const servicioSelect = document.getElementById('servicio_id');
-            if (servicioSelect) {
-                servicioSelect.addEventListener("change", servicioCosto);
-            }
-
-            // Función para manejar cambios dinámicos en "guia_id"
-            function guiaCosto() {
-                const select = document.getElementById('guia_id');
-                const selectedOption = select.options[select.selectedIndex];
-                const cost = selectedOption.getAttribute('data-tarifa') || ''; // Obtener la tarifa del atributo
-
-                // Actualizar el campo de costo en el lado izquierdo
-                document.getElementById('guia_t').value = cost;
-                document.getElementById('input-guia_t').value = cost;
-
-                // Actualizar el valor correspondiente en los campos dinámicos
-                actualizarCampos('guia_id', select.value); // Actualizar el id de la guia
-                actualizarCampos('guia_t', cost); // Actualizar el costo de la guia
-                actualizarCampos('input-guia_t', cost); // Actualizar el costo de la guia
-            }
-
-            // Agregar evento de cambio al selector "guia_id"
-            const guiaSelect = document.getElementById('guia_id');
-            if (guiaSelect) {
-                guiaSelect.addEventListener("change", guiaCosto);
-            }
-
-            // Función para manejar cambios dinámicos en "traductor_id"
-            function traductorCosto() {
-                const select = document.getElementById('traductor_id');
-                const selectedOption = select.options[select.selectedIndex];
-                const cost = selectedOption.getAttribute('data-tarifa') || ''; // Obtener la tarifa del atributo
-
-                // Actualizar el campo de costo en el lado izquierdo
-                document.getElementById('traductor_t').value = cost;
-                document.getElementById('input-traductor_t').value = cost;
-
-                // Actualizar el valor correspondiente en los campos dinámicos
-                actualizarCampos('traductor_id', select.value); // Actualizar el id del traductor
-                actualizarCampos('traductor_t', cost); // Actualizar el costo del traductor
-                actualizarCampos('input-traductor_t', cost); // Actualizar el costo del traductor
-            }
-
-            // Agregar evento de cambio al selector "traductor_id"
-            const traductorSelect = document.getElementById('traductor_id');
-            if (traductorSelect) {
-                traductorSelect.addEventListener("change", traductorCosto);
-            }
-
-            // Función para manejar cambios dinámicos en "cocinero_id"
-            function cocineroCosto() {
-                const select = document.getElementById('cocinero_id');
-                const selectedOption = select.options[select.selectedIndex];
-                const cost = selectedOption.getAttribute('data-tarifa') || ''; // Obtener la tarifa del atributo
-
-                // Actualizar el campo de costo en el lado izquierdo
-                document.getElementById('cocinero_t').value = cost;
-                document.getElementById('input-cocinero_t').value = cost;
-
-                // Actualizar el valor correspondiente en los campos dinámicos
-                actualizarCampos('cocinero_id', select.value); // Actualizar el id del cocinero
-                actualizarCampos('cocinero_t', cost); // Actualizar el costo del cocinero
-                actualizarCampos('input-cocinero_t', cost); // Actualizar el costo del cocinero
-            }
-
-            // Agregar evento de cambio al selector "cocinero_id"
-            const cocineroSelect = document.getElementById('cocinero_id');
-            if (cocineroSelect) {
-                cocineroSelect.addEventListener("change", cocineroCosto);
-            }
-
-            // Función para manejar cambios dinámicos en "chofer_id"
-            function choferCosto() {
-                const select = document.getElementById('chofer_id');
-                const selectedOption = select.options[select.selectedIndex];
-                const cost = selectedOption.getAttribute('data-tarifa') || ''; // Obtener la tarifa del atributo
-
-                // Actualizar el campo de costo en el lado izquierdo
-                document.getElementById('chofer_t').value = cost;
-                document.getElementById('input-chofer_t').value = cost;
-
-                // Actualizar el valor correspondiente en los campos dinámicos
-                actualizarCampos('chofer_id', select.value); // Actualizar el id del chofer
-                actualizarCampos('chofer_t', cost); // Actualizar el costo del chofer
-                actualizarCampos('input-chofer_t', cost); // Actualizar el costo del chofer
-            }
-
-            // Agregar evento de cambio al selector "chofer_id"
-            const choferSelect = document.getElementById('chofer_id');
-            if (choferSelect) {
-                choferSelect.addEventListener("change", choferCosto);
-            }
-
-            // Función para cargar las vagonetas según el prestatario seleccionado
-            function cargarVagonetas(propietarioId) {
-                const selectVagoneta = document.getElementById('vagoneta_id');
-                selectVagoneta.innerHTML = '<option value="">Seleccionar</option>'; // Reiniciar las opciones
-
-                if (propietarioId) {
-                    fetch(`{{ url('/despachos/vagonetas/') }}/${propietarioId}`)
-                        .then(response => response.json())
-                        .then(vagonetas => {
-                            vagonetas.forEach(vagoneta => {
-                                const option = document.createElement('option');
-                                option.value = vagoneta.id;
-                                option.text = vagoneta.marca;
-                                option.setAttribute('data-tarifa', vagoneta.costo); // Agregar tarifa al atributo
-                                selectVagoneta.appendChild(option);
-                            });
-                        })
-                        .catch(error => console.error('Error al cargar vagonetas:', error));
-                }
-
-                // Actualizar el campo dinámico con el prestatario seleccionado
-                actualizarCampos('provag_id', propietarioId);
-            }
-
-            // Función para actualizar el costo según la vagoneta seleccionada
-            function vagonetaCosto() {
-                const selectVagoneta = document.getElementById('vagoneta_id');
-                const selectedOption = selectVagoneta.options[selectVagoneta.selectedIndex];
-                const cost = selectedOption ? selectedOption.getAttribute('data-tarifa') : ''; // Obtener la tarifa
-
-                // Actualizar el campo de costo en el formulario principal
-                document.getElementById('vagoneta_t').value = cost || '';
-
-                // Actualizar los campos dinámicos con la vagoneta seleccionada y su costo
-                actualizarCampos('vagoneta_id', selectVagoneta.value);
-                actualizarCampos('vagoneta_t', cost);
-            }
-
-            // Asociar los eventos a los selectores del HTML
-            const prestatarioSelect = document.getElementById('provag_id');
-            if (prestatarioSelect) {
-                prestatarioSelect.addEventListener("change", function () {
-                    const propietarioId = prestatarioSelect.value;
-                    cargarVagonetas(propietarioId);
-                });
-            }
-
-            const vagonetaSelect = document.getElementById('vagoneta_id');
-            if (vagonetaSelect) {
-                vagonetaSelect.addEventListener("change", vagonetaCosto);
-            }
-
-            // Función para cargar las vagonetas según el prestatario seleccionado
-            function cargarCaballos(propietarioId) {
-                const selectCaballo = document.getElementById('caballo_id');
-                selectCaballo.innerHTML = '<option value="">Seleccionar</option>'; // Reiniciar las opciones
-
-                if (propietarioId) {
-                    fetch(`{{ url('/despachos/caballos/') }}/${propietarioId}`)
-                        .then(response => response.json())
-                        .then(caballos => {
-                            caballos.forEach(caballo => {
-                                const option = document.createElement('option');
-                                option.value = caballo.id;
-                                option.text = `${caballo.nombre}`;
-                                option.setAttribute('data-tarifa', caballo.costo);
-                                selectCaballo.appendChild(option);
-                            });
-                        })
-                        .catch(error => console.error('Error al cargar caballos:', error));
-                }
-
-                // Actualizar el campo dinámico con el prestatario seleccionado
-                actualizarCampos('procab_id', propietarioId);
-            }
-
-            // Función para actualizar el costo según el caballo seleccionado
-            function caballoCosto() {
-                const selectCaballo = document.getElementById('caballo_id');
-                const selectedOption = selectCaballo.options[selectCaballo.selectedIndex];
-                const cost = selectedOption ? selectedOption.getAttribute('data-tarifa') : ''; // Obtener la tarifa
-
-                // Actualizar el campo de costo en el formulario principal
-                document.getElementById('caballo_t').value = cost || '';
-
-                // Actualizar los campos dinámicos con el caballo seleccionado y su costo
-                actualizarCampos('caballo_id', selectCaballo.value);
-                actualizarCampos('caballo_t', cost);
-            }
-
-            // Asociar los eventos a los selectores del HTML
-            const prestatarioSelectC = document.getElementById('procab_id');
-            if (prestatarioSelectC) {
-                prestatarioSelectC.addEventListener("change", function () {
-                    const propietarioId = prestatarioSelectC.value;
-                    cargarCaballos(propietarioId);
-                });
-            }
-
-            const caballoSelect = document.getElementById('caballo_id');
-            if (caballoSelect) {
-                caballoSelect.addEventListener("change", caballoCosto);
-            }
-
-            // Función para cargar las biciletas según el prestatario seleccionado
-            function cargarBicicletas(propietarioId) {
-                const selectBicicleta = document.getElementById('bicicleta_id');
-                selectBicicleta.innerHTML = '<option value="">Seleccionar</option>'; // Reiniciar las opciones
-
-                if (propietarioId) {
-                    fetch(`{{ url('/despachos/bicicletas/') }}/${propietarioId}`)
-                        .then(response => response.json())
-                        .then(bicicletas => {
-                            bicicletas.forEach(bicicleta => {
-                                const option = document.createElement('option');
-                                option.value = bicicleta.id;
-                                option.text = `${bicicleta.nombre}`;
-                                option.setAttribute('data-tarifa', bicicleta.costo);
-                                selectBicicleta.appendChild(option);
-                            });
-                        })
-                        .catch(error => console.error('Error al cargar bicicletas:', error));
-                }
-
-                // Actualizar el campo dinámico con el prestatario seleccionado
-                actualizarCampos('probic_id', propietarioId);
-            }
-
-            // Función para actualizar el costo según la bicicleta seleccionada
-            function bicicletaCosto() {
-                const selectBicicleta = document.getElementById('bicicleta_id');
-                const selectedOption = selectBicicleta.options[selectBicicleta.selectedIndex];
-                const cost = selectedOption ? selectedOption.getAttribute('data-tarifa') : ''; // Obtener la tarifa
-
-                // Actualizar el campo de costo en el formulario principal
-                document.getElementById('bicicleta_t').value = cost || '';
-
-                // Actualizar los campos dinámicos con la bicicleta seleccionada y su costo
-                actualizarCampos('bicicleta_id', selectBicicleta.value);
-                actualizarCampos('bicicleta_t', cost);
-            }
-
-            // Asociar los eventos a los selectores del HTML
-            const prestatarioSelectB = document.getElementById('probic_id');
-            if (prestatarioSelectB) {
-                prestatarioSelectB.addEventListener("change", function () {
-                    const propietarioId = prestatarioSelectB.value;
-                    cargarBicicletas(propietarioId);
-                });
-            }
-
-            const bicicletaSelect = document.getElementById('bicicleta_id');
-            if (bicicletaSelect) {
-                bicicletaSelect.addEventListener("change", bicicletaCosto);
-            }
-        });
+       
     </script>
 
     <script>
-        
+        window.addEventListener("load", function () {
+            const campos = [
+                "servicio_id", "guia_id", "traductor_id", "cocinero_id", "chofer_id",
+                "vagoneta_id", "caballo_id", "bicicleta_id",
+                "provag_id", "procab_id", "probic_id",
+                "servicio_t", "guia_t", "traductor_t", "cocinero_t", "chofer_t",
+                "vagoneta_t", "caballo_t", "bicicleta_t"
+            ];
+
+            const campoDinamicoContainer = document.getElementById("campos-dinamicos");
+
+            function actualizarCampos(campo, valor) {
+                let input = document.getElementById(`input-${campo}`);
+                if (!input) {
+                    input = document.createElement("input");
+                    input.type = "text";
+                    input.id = `input-${campo}`;
+                    input.name = campo;
+                    input.readOnly = true;
+                    campoDinamicoContainer.appendChild(input);
+                }
+                input.value = valor;
+            }
+
+            // Inicializar campos al cargar
+            campos.forEach(campo => {
+                const el = document.querySelector(`[name="${campo}"]`);
+                if (el) actualizarCampos(campo, el.value);
+            });
+
+            // Generalizar funciones de actualización de tarifa
+            function conectarSelectConTarifa({ selectId, tarifaId }) {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+
+                select.addEventListener("change", () => {
+                    const opt = select.options[select.selectedIndex];
+                    const costo = opt?.getAttribute("data-tarifa") || "";
+
+                    document.getElementById(tarifaId).value = costo;
+                    actualizarCampos(selectId, select.value);
+                    actualizarCampos(tarifaId, costo);
+                });
+            }
+
+            [
+                { selectId: "servicio_id", tarifaId: "servicio_t" },
+                { selectId: "guia_id", tarifaId: "guia_t" },
+                { selectId: "traductor_id", tarifaId: "traductor_t" },
+                { selectId: "cocinero_id", tarifaId: "cocinero_t" },
+                { selectId: "chofer_id", tarifaId: "chofer_t" },
+                { selectId: "vagoneta_id", tarifaId: "vagoneta_t" },
+                { selectId: "caballo_id", tarifaId: "caballo_t" },
+                { selectId: "bicicleta_id", tarifaId: "bicicleta_t" },
+            ].forEach(conectarSelectConTarifa);
+
+            // Carga dinámica de recursos (vagoneta, caballo, bicicleta)
+            function cargarRecursos({ url, propietarioId, selectId }) {
+                const select = document.getElementById(selectId);
+                if (!select) return;
+
+                select.innerHTML = `<option value="">Seleccionar</option>`;
+
+                if (!propietarioId) return;
+
+                fetch(`${url}/${propietarioId}`)
+                    .then(res => res.json())
+                    .then(items => {
+                        items.forEach(item => {
+                            const opt = document.createElement("option");
+                            opt.value = item.id;
+                            opt.text = item.nombre || item.marca;
+                            opt.setAttribute("data-tarifa", item.costo);
+                            select.appendChild(opt);
+                        });
+                    })
+                    .catch(err => console.error(`Error al cargar ${selectId}:`, err));
+
+                actualizarCampos(selectId.replace('_id', 'pres'), propietarioId);
+            }
+
+            // Asociar cambios a selects de prestatarios
+            const configCargas = [
+                { triggerId: 'provag_id', targetId: 'vagoneta_id', endpoint: 'vagonetas' },
+                { triggerId: 'procab_id', targetId: 'caballo_id', endpoint: 'caballos' },
+                { triggerId: 'probic_id', targetId: 'bicicleta_id', endpoint: 'bicicletas' },
+            ];
+
+            configCargas.forEach(({ triggerId, targetId, endpoint }) => {
+                const el = document.getElementById(triggerId);
+                if (!el) return;
+
+                el.addEventListener("change", () =>
+                    cargarRecursos({
+                        url: `{{ url('/despachos/${endpoint}') }}`,
+                        propietarioId: el.value,
+                        selectId: targetId
+                    })
+                );
+            });
+        });
     </script>
 @endsection
