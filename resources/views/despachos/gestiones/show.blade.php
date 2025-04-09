@@ -479,11 +479,12 @@
                                             name="servicio_id"
                                             label="Elegir Servicio"
                                             :items="$servicios"
-                                            :selected="null"
+                                            :selected="$gestion->servicio_id"
                                             onchange="servicioCosto()"
                                             tarifa="servicio_t"
-                                            value-tarifa=""
+                                            value-tarifa="{{ $gestion->servicio_t }}"
                                             tarifa-field="costo"
+                                            label-field="titulo" {{-- 👈 clave aquí! --}}
                                         />
                                     </div>
                                 @endif

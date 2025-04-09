@@ -5,15 +5,17 @@
     'items',
     'selected' => null,
     'onchange' => '',
+    'col' => 6,
+    'required' => false,
+    'disabled' => false,
     'placeholder' => 'Seleccionar',
     'tarifa' => null,
     'valueTarifa' => null,
-    'tarifaField' => null,
-    'disabled' => false,
-    'required' => false,
+    'tarifaField' => 'tarifa',
+    'labelField' => 'nombre', // nuevo prop: por defecto muestra el nombre
 ])
 
-<div class="form-group mb-2 mt-2 col-md-{{ $col ?? 6 }}">
+<div class="form-group mb-2 mt-2 col-md-{{ $col }}">
     <label class="mb-2">{{ $label }}</label>
     <select
         class="form-control form-control-solid"
@@ -30,21 +32,18 @@
                 data-tarifa="{{ number_format($item->{$tarifaField}, 2, '.', '') }}"
                 {{ $selected == $item->id ? 'selected' : '' }}
             >
-                {{ $item->nombre . ' ' . ($item->apellido ?? '') }}
+                {{ $item->{$labelField} ?? ($item->nombre . ' ' . ($item->apellido ?? '')) }}
             </option>
         @endforeach
     </select>
-</div>
 
-@if($tarifa)
-    <div class="form-group mb-2 mt-2 col-md-{{ $col ?? 6 }}">
-        <label class="mb-2">Precio costo</label>
+    @if ($tarifa)
         <input
-            class="form-control form-control-solid"
+            class="form-control form-control-solid mt-2"
             id="{{ $tarifa }}"
             name="{{ $tarifa }}"
             type="number"
             value="{{ $valueTarifa }}"
         />
-    </div>
-@endif
+    @endif
+</div>
