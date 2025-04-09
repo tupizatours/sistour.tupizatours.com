@@ -484,6 +484,8 @@
                                             tarifa="servicio_t"
                                             value-tarifa=""
                                             tarifa-field="costo"
+                                            label-field="titulo" {{-- 👈 clave aquí! --}}
+
                                         />
                                     </div>
                                 @endif
