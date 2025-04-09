@@ -139,7 +139,15 @@ class GestionController extends Controller
             ->get();
 
         $resclis = Resercliente::where('reserva_id', $id)->get(); // Filtrar Resercliente por reserva_id
-        $gestion = Gestion::where('reserva_id', $id)->first();
+        
+        $gestion = Gestion::with([
+            'vagoneta', 'provag',
+            'caballo', 'procab',
+            'bicicleta', 'probic',
+            'guia', 'traductor',
+            'cocinero', 'chofer',
+            'servicio'
+        ])->where('reserva_id', $id)->first();
 
         $serv_tour_ids = json_decode($reserva->tour->serv_tour);
         $servicios = Servicio::whereIn('id', $serv_tour_ids)->get();
