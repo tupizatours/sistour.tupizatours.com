@@ -465,7 +465,7 @@ class EstatusController extends Controller
             $reserva->estado = $request->estado ?? 2; // Si no viene, se pone 2 por defecto
             $reserva->save();
         
-            return redirect()->route('reservas.show', $id)->with('success', 'Estado de la reserva actualizado.');
+            return redirect()->to('/ventas/reservas/' . $id)->with('success', 'Estado de la reserva actualizado.');
         }
     }
 
