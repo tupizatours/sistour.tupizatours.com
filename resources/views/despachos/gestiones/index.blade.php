@@ -68,12 +68,12 @@
                             @if($reserva->estatus == "1" && $reserva->estado == "3")
                                 @php
                                     $originalDate = $reserva->created_at;
-                                    $newDate = date("d-m-Y", strtotime($originalDate));
+                                    $newDate = date("Y-m-d", strtotime($originalDate));
                                 @endphp
 
                                 <tr>
                                     <td>{{ $reserva->tour->titulo }}</td>
-                                    <td>{{ $reserva->fecha }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($reserva->fecha)->format('d-m-Y') }}</td>
                                     
                                     <td>
                                         <div class="d-flex order-actions">
