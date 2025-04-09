@@ -58,7 +58,7 @@
 
                     <div class="card-body">
                         <h6 class="card-title mb-4">
-                            Salida del tour: {{ $reserva->fecha }}
+                            Salida del tour: {{ \Carbon\Carbon::parse($reserva->fecha)->format('d-m-Y') }} 
                         </h6>
 
                         <div class="row mt-4">
@@ -213,35 +213,37 @@
                                                 
                                                 <td>
                                                     <div class="d-flex order-actions">
-                                                        @if($rescli->esPrincipal == "1")
-                                                            
-                                                        @else
-                                                            <a href="{{ URL::to('ventas/resclis/user/' . $rescli->id) }}" target="_BLANK" class="">
-                                                                <i class="bx bxs-user"></i>
-                                                            </a>
-                                                        @endif
-
-                                                        <a href="{{ URL::to('ventas/resclis/' . $rescli->id . '/edit') }}" class="">
-                                                            <i class="bx bxs-edit"></i>
-                                                        </a>
-
-                                                        <a href="{{ URL::to('ventas/resclis/' . $rescli->id) }}" class="ms-1">
-                                                            <i class="fadeIn animated bx bx-dollar-circle"></i>
-                                                        </a>
-
-                                                        <form action="{{ route('estatus.update', $reserva->id) }}" class="ms-1" method="POST">
-                                                            @csrf
-                                                            @method('PUT')
-
-                                                            <button type="button" class="btn boton-eliminar" data-bs-toggle="modal" data-bs-target="#ModalPreDelete{{ $reserva->id }}">
-                                                                <i class="bx bxs-trash"></i>
-                                                            </button>
-
-                                                            <input type="hidden" value="2" id="estatus" name="estatus" />
-                                                            <input type="hidden" value="solicitudes" id="pagina" name="pagina" />
-
-                                                            @include('ventas.solicitudes.predelete')
-                                                        </form>
+                                                        <button type="button" class="btn text-primary" data-bs-toggle="modal" data-bs-target="#ModalCambiarEstado{{ $reserva->id }}">
+                                                            <i class="bx bx-undo"></i> {{-- ícono de flecha inversa --}}
+                                                        </button>
+                                                    </div>
+                                                
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="ModalCambiarEstado{{ $reserva->id }}" tabindex="-1" aria-hidden="true">
+                                                        <div class="modal-dialog modal-dialog-centered">
+                                                            <div class="modal-content">
+                                                                <form action="{{ route('estatus.update', $reserva->id) }}" method="POST">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="pagina" value="estado_reserva">
+                                                                    <input type="hidden" name="estado" value="2">
+                                                
+                                                                    <div class="modal-header bg-light">
+                                                                        <h5 class="modal-title">Revertir estado de la reserva</h5>
+                                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                                    </div>
+                                                
+                                                                    <div class="modal-body">
+                                                                        ¿Deseas cambiar el estado de esta reserva a <strong>"en revisión"</strong>?
+                                                                    </div>
+                                                
+                                                                    <div class="modal-footer">
+                                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                                        <button type="submit" class="btn btn-warning">Aceptar</button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

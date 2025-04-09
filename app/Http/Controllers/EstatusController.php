@@ -455,6 +455,18 @@ class EstatusController extends Controller
         
             return back()->with($mensaje, $estadoMensaje);
         }
+        if ($request->pagina == "estado_reserva") {
+            $reserva = Reserva::find($id);
+            
+            if (!$reserva) {
+                return back()->with('danger', 'Reserva no encontrada.');
+            }
+        
+            $reserva->estado = $request->estado ?? 2; // Si no viene, se pone 2 por defecto
+            $reserva->save();
+        
+            return back()->with('success', 'Estado de la reserva actualizado.');
+        }
     }
 
     /**
