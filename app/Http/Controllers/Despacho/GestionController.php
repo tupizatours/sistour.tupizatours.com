@@ -32,7 +32,7 @@ use DB;
 use App\Models\Despacho\Gestion;
 use App\Models\Caja\Porcobro;
 use App\Models\Caja\Porpago;
-use Illuminate\Support\Str; 
+use Illuminate\Support\Str;
 
 class GestionController extends Controller
 {
@@ -52,7 +52,7 @@ class GestionController extends Controller
         $cocineros = Cocinero::all();
         $guias = Guia::all();
         $traductors = Traductor::all();
-        
+
         return view('despachos.gestiones.index', compact('reservas', 'tours', 'servicios', 'vagonetas', 'caballors', 'bicicletas', 'propietarios', 'chofers', 'cocineros', 'guias', 'traductors'));
     }
 
@@ -69,7 +69,7 @@ class GestionController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->pagina == "gestions"){
+        if ($request->pagina == "gestions") {
             $rs = [
                 'codigo'                => str_random(10),
                 'reserva_id'            => $request->reserva_id,
@@ -99,13 +99,13 @@ class GestionController extends Controller
 
             Gestion::create($rs);
 
-            return redirect('despachos/gestiones/'.$request->reserva_id);
-        }else{
+            return redirect('despachos/gestiones/' . $request->reserva_id);
+        } else {
             $res = Reserva::find($request->reserva_id);
             $res->estado = 3;
             $res->save();
-    
-            return redirect('despachos/gestiones/'.$request->reserva_id);
+
+            return redirect('despachos/gestiones/' . $request->reserva_id);
         }
     }
 
@@ -140,58 +140,63 @@ class GestionController extends Controller
             ->get();
 
         $resclis = Resercliente::where('reserva_id', $id)->get(); // Filtrar Resercliente por reserva_id
-        
+
         $gestion = Gestion::with([
-            'vagoneta', 'provag',
-            'caballo', 'procab',
-            'bicicleta', 'probic',
-            'guia', 'traductor',
-            'cocinero', 'chofer',
+            'vagoneta',
+            'provag',
+            'caballo',
+            'procab',
+            'bicicleta',
+            'probic',
+            'guia',
+            'traductor',
+            'cocinero',
+            'chofer',
             'servicio'
         ])->where('reserva_id', $id)->first();
 
         $serv_tour_ids = json_decode($reserva->tour->serv_tour);
         $servicios = Servicio::whereIn('id', $serv_tour_ids)->get();
 
-        $tours = Tour::where('estatus',1)->get();
+        $tours = Tour::where('estatus', 1)->get();
         $hottus = HotelTour::all();
-        $categorias = Categoria::where('estatus',1)->get();
-        $alergias = Alergia::where('estatus',1)->get();
-        $alimentos = Alimentacion::where('estatus',1)->get();
-        $habitaciones = Habitacion::where('estatus',1)->get();
-        $links = Link::where('estatus',1)->get();
-        $onlines = Online::where('estatus',1)->get();
-        $qrs = Qr::where('estatus',1)->get();
-        $guias = Guia::where('estatus',1)->get();
-        $traductors = Traductor::where('estatus',1)->get();
-        $chofers = Chofer::where('estatus',1)->get();
-        $cocineros = Cocinero::where('estatus',1)->get();
-        $propietarios = Propietario::where('estatus',1)->get();
-        $vagonetas = Vagoneta::where('estatus',1)->get();
-        $bicicletas = Bicicleta::where('estatus',1)->get();
-        $caballos = Caballo::where('estatus',1)->get();
-        $turistas = Turista::where('estatus',1)->get();
+        $categorias = Categoria::where('estatus', 1)->get();
+        $alergias = Alergia::where('estatus', 1)->get();
+        $alimentos = Alimentacion::where('estatus', 1)->get();
+        $habitaciones = Habitacion::where('estatus', 1)->get();
+        $links = Link::where('estatus', 1)->get();
+        $onlines = Online::where('estatus', 1)->get();
+        $qrs = Qr::where('estatus', 1)->get();
+        $guias = Guia::where('estatus', 1)->get();
+        $traductors = Traductor::where('estatus', 1)->get();
+        $chofers = Chofer::where('estatus', 1)->get();
+        $cocineros = Cocinero::where('estatus', 1)->get();
+        $propietarios = Propietario::where('estatus', 1)->get();
+        $vagonetas = Vagoneta::where('estatus', 1)->get();
+        $bicicletas = Bicicleta::where('estatus', 1)->get();
+        $caballos = Caballo::where('estatus', 1)->get();
+        $turistas = Turista::where('estatus', 1)->get();
 
         $clientesConDatos = $resclis->map(function ($resercliente) {
             $hotelesSeleccionados = $resercliente->habitaciones ?? [];
             $ticketsSeleccionados = $resercliente->tickets ?? [];
             $accesoriosSeleccionados = $resercliente->accesorios ?? [];
             $serviciosSeleccionados = $resercliente->servicios ?? [];
-        
+
             $sumaHoteles = 0;
             $sumaTickets = 0;
             $sumaAccesorios = 0;
             $sumaServicios = 0;
-        
+
             $detallesHoteles = [];
             $detallesTickets = [];
             $detallesAccesorios = [];
             $detallesServicios = [];
-        
+
             // Procesar Hoteles
             foreach ($hotelesSeleccionados as $hotel) {
                 $habitacion = \App\Models\Servicio\Habitacion::find($hotel['id']);
-                
+
                 if ($habitacion) {
                     $detallesHoteles[] = [
                         'nombre' => $habitacion->titulo,
@@ -200,7 +205,7 @@ class GestionController extends Controller
                     $sumaHoteles += $habitacion->costo;
                 }
             }
-        
+
             // Procesar Tickets
             foreach ($ticketsSeleccionados as $ticket) {
                 $ticketData = \App\Models\Servicio\Ticket::find($ticket['id']);
@@ -212,7 +217,7 @@ class GestionController extends Controller
                     $sumaTickets += $ticketData->costo;
                 }
             }
-        
+
             // Procesar Accesorios
             foreach ($accesoriosSeleccionados as $accesorio) {
                 $accesorioData = \App\Models\Servicio\Accesorio::find($accesorio['id']);
@@ -224,7 +229,7 @@ class GestionController extends Controller
                     $sumaAccesorios += $accesorioData->costo;
                 }
             }
-        
+
             // Procesar Servicios
             foreach ($serviciosSeleccionados as $servicio) {
                 $servicioData = \App\Models\Servicio\Turista::find($servicio['id']);
@@ -236,7 +241,7 @@ class GestionController extends Controller
                     $sumaServicios += $servicioData->costo;
                 }
             }
-        
+
             return [
                 'hoteles' => $detallesHoteles,
                 'tickets' => $detallesTickets,
@@ -248,14 +253,14 @@ class GestionController extends Controller
                 'total_servicios' => $sumaServicios,
             ];
         });
-        
+
         // Suma general para todos los clientes
         $totalGeneralHoteles = $clientesConDatos->sum('total_hoteles');
         $totalGeneralTickets = $clientesConDatos->sum('total_tickets');
         $totalGeneralAccesorios = $clientesConDatos->sum('total_accesorios');
         $totalGeneralServicios = $clientesConDatos->sum('total_servicios');
         $totalGeneralGasto = $totalGeneralHoteles + $totalGeneralTickets + $totalGeneralAccesorios + $totalGeneralServicios;
-        
+
         return view('despachos.gestiones.show', compact(
             'clientesConDatos',
             'totalGeneralHoteles',
@@ -263,17 +268,33 @@ class GestionController extends Controller
             'totalGeneralAccesorios',
             'totalGeneralServicios',
             'totalGeneralGasto',
-            'turistas', 'gestion', 
-            'caballos', 'bicicletas', 'vagonetas', 'propietarios', 
-            'cocineros', 'chofers', 'traductors', 'guias', 
-            'resclis', 'reserva', 'links', 'onlines', 'qrs', 'habitaciones', 
-            'alimentos', 'alergias', 'tours', 'hottus', 'categorias', 'servicios', 'existePorpago'));
+            'turistas',
+            'gestion',
+            'caballos',
+            'bicicletas',
+            'vagonetas',
+            'propietarios',
+            'cocineros',
+            'chofers',
+            'traductors',
+            'guias',
+            'resclis',
+            'reserva',
+            'links',
+            'onlines',
+            'qrs',
+            'habitaciones',
+            'alimentos',
+            'alergias',
+            'tours',
+            'hottus',
+            'categorias',
+            'servicios',
+            'existePorpago'
+        ));
     }
 
-    public function gesanticipos(Request $request)
-    {
-       
-    }
+    public function gesanticipos(Request $request) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -292,7 +313,7 @@ class GestionController extends Controller
         $links = Link::all();
         $onlines = Online::all();
         $qrs = Qr::all();
-        
+
         return view('despachos.gestiones.show', compact('resclis', 'reserva', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'hottus', 'categorias', 'servicios'));
     }
 
@@ -346,5 +367,73 @@ class GestionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    private function guardarPorpagos(Request $request)
+    {
+        $servicios = [
+            'servicio' => [
+                'servicio_id'   => $request->servicio_id,
+                'costo'         => $request->servicio_t,
+                'es_prestatario' => false,
+            ],
+            'guia' => [
+                'servicio_id'   => $request->guia_id,
+                'costo'         => $request->guia_t,
+                'es_prestatario' => false,
+            ],
+            'traductor' => [
+                'servicio_id'   => $request->traductor_id,
+                'costo'         => $request->traductor_t,
+                'es_prestatario' => false,
+            ],
+            'cocinero' => [
+                'servicio_id'   => $request->cocinero_id,
+                'costo'         => $request->cocinero_t,
+                'es_prestatario' => false,
+            ],
+            'chofer' => [
+                'servicio_id'   => $request->chofer_id,
+                'costo'         => $request->chofer_t,
+                'es_prestatario' => true, // si lo consideras prestatario
+            ],
+            'vagoneta' => [
+                'servicio_id'   => $request->provag_id,
+                'pres_serv_id'  => $request->vagoneta_id,
+                'costo'         => $request->vagoneta_t,
+                'es_prestatario' => true,
+            ],
+            'caballo' => [
+                'servicio_id'   => $request->procab_id,
+                'pres_serv_id'  => $request->caballo_id,
+                'costo'         => $request->caballo_t,
+                'es_prestatario' => true,
+            ],
+            'bicicleta' => [
+                'servicio_id'   => $request->probic_id,
+                'pres_serv_id'  => $request->bicicleta_id,
+                'costo'         => $request->bicicleta_t,
+                'es_prestatario' => true,
+            ]
+        ];
+
+        foreach ($servicios as $tipo => $data) {
+            if (!empty($data['costo']) && !empty($data['servicio_id'])) {
+                \App\Models\Caja\Porpago::updateOrCreate(
+                    [
+                        'reserva_id'    => $request->reserva_id,
+                        'tour_id'       => $request->tour_id,
+                        'tipo_servicio' => $tipo,
+                    ],
+                    [
+                        'servicio_id'   => $data['servicio_id'],
+                        'pres_serv_id'  => $data['pres_serv_id'] ?? null,
+                        'costo'         => $data['costo'],
+                        'es_prestatario' => $data['es_prestatario'],
+                        'estado'        => 'pendiente',
+                    ]
+                );
+            }
+        }
     }
 }

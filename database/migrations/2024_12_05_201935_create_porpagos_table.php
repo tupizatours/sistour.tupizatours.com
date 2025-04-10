@@ -11,21 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('porpagos', function (Blueprint $table) {
+        Schema::create('porpagos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('reserva_id')->nullable(); // Relacionar con otra tabla si aplica
-            $table->unsignedBigInteger('tour_id')->nullable();
-            $table->json('vagonetas')->nullable(); // Guardar como JSON
-            $table->json('caballos')->nullable();
-            $table->json('bicicletas')->nullable();
-            $table->json('tickets')->nullable();
-            $table->json('anticipoActual')->nullable();
-            $table->json('subtotal')->nullable();
-            $table->json('prestatario')->nullable();
-            $table->json('saldo')->nullable();
-            $table->json('dserv')->nullable();
+            $table->unsignedBigInteger('reserva_id');
+            $table->unsignedBigInteger('tour_id');
+            $table->string('tipo_servicio'); // Ej: 'guia', 'caballo'
+            $table->unsignedBigInteger('servicio_id')->nullable(); // ID del guía, traductor, prestatario...
+            $table->unsignedBigInteger('pres_serv_id')->nullable(); // ID del elemento (caballo, vagoneta...)
+            $table->unsignedBigInteger('anticipo_id')->nullable(); // FK a anticipos
+            $table->decimal('costo', 10, 2)->default(0);
+            $table->boolean('es_prestatario')->default(false); // <--- Campo agregado
+            $table->string('estado')->default('pendiente');
             $table->timestamps();
-        });*/
+        });
+        
     }
 
     /**

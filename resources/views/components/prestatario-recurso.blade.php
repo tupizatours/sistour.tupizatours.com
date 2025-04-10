@@ -15,15 +15,10 @@
 
     'tarifaId',
     'tarifaValue' => null,
-
-    'checkboxId' => null,
-    'checkboxPres' => null,
-    'checkboxServ' => null,
-    'checkboxServid' => null,
-    'checkboxTarget' => null,
 ])
 
 <div class="row g-3 pt-3 pb-2 col-md-12 prelative">
+    {{-- Selector de Prestatario --}}
     <div class="form-group mb-2 mt-2 col-md-4">
         <label class="mb-2">{{ $prestatarioLabel }}</label>
         <select class="form-control form-control-solid"
@@ -40,6 +35,7 @@
         </select>
     </div>
 
+    {{-- Selector de Recurso (caballo, vagoneta, etc.) --}}
     <div class="form-group mb-2 mt-2 col-md-4">
         <label class="mb-2">{{ $recursoLabel }}</label>
         <select class="form-control form-control-solid"
@@ -57,18 +53,9 @@
         </select>
     </div>
 
+    {{-- Campo de Tarifa --}}
     <div class="form-group mb-2 mt-2 col-md-4">
-        <label class="mb-2" for="{{ $checkboxId }}">Precio costo</label>
-        @if($checkboxId)
-            <input class="form-check-input" type="checkbox"
-                   id="{{ $checkboxId }}"
-                   name="check_pres"
-                   data-pres="{{ $checkboxPres }}"
-                   data-serv="{{ $checkboxServ }}"
-                   data-servid="{{ $checkboxServid }}"
-                   data-target="{{ $checkboxTarget }}"
-                   data-exclusive="true" />
-        @endif
+        <label class="mb-2">Precio costo</label>
         <input class="form-control form-control-solid"
                id="{{ $tarifaId }}"
                name="{{ $tarifaId }}"

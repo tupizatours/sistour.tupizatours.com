@@ -12,31 +12,46 @@ class Porpago extends Model
     protected $fillable = [
         'reserva_id',
         'tour_id',
-        'vagonetas',
-        'caballos',
-        'bicicletas',
-        'tickets',
-        'anticipoActual',
-        'subtotal',
-        'prestatario',
-        'saldo',
-        'dserv'
+        'tipo_servicio',     // Ej: 'guia', 'caballo', 'bicicleta'
+        'servicio_id',       // ID del guía/traductor o prestatario
+        'pres_serv_id',      // ID del elemento físico (caballo, vagoneta, etc.)
+        'anticipo_id',       // FK a anticipos si se ha entregado anticipo
+        'costo',             // Monto total asignado
+        'es_prestatario',    // Boolean para distinguir si es un servicio de prestatario
+        'estado',            // Estado del pago (ej: pendiente, pagado)
     ];
 
     protected $casts = [
-        'vagonetas' => 'array',
-        'caballos' => 'array',
-        'bicicletas' => 'array',
-        'tickets' => 'array',
+        'es_prestatario' => 'boolean',
+        'costo' => 'decimal:2',
     ];
 
     protected $table = 'porpagos';
 
-    public function banco() {
-        return $this->belongsTo('App\Models\Reserva', 'reserva_id', 'id');
+    // Relaciones
+    public function reserva()
+    {
+        return $this->belongsTo(\App\Models\Reserva::class, 'reserva_id');
     }
 
-    public function tour() {
-        return $this->belongsTo('App\Models\Tour', 'tour_id', 'id');
+    public function tour()
+    {
+        return $this->belongsTo(\App\Models\Tour::class, 'tour_id');
+    }
+
+    public function anticipo()
+    {
+        return $this->belongsTo(\App\Models\Caja\Anticipo::class, 'anticipo_id');
+    }
+
+    public function prestatario()
+    {
+        return $this->belongsTo(\App\Models\Propietario::class, 'servicio_id');
+    }
+
+    public function elemento()
+    {
+        // Este método se puede personalizar con morphTo o lógica condicional si deseas acceder dinámicamente al "pres_serv_id"
+        return null;
     }
 }
