@@ -620,20 +620,20 @@
 
             <div class="col-lg-6">
                 @if($gestion)
-                <x-operacion-prestatario
-                    :reserva="$reserva" 
-                    :gestion="$gestion" 
-                    :propietarios="$prestatariosEnGestion" 
-                />
-                
-                <x-operacion-totalidad
-                    :totalGeneralHoteles="$totalGeneralHoteles"
-                    :totalGeneralTickets="$totalGeneralTickets"
-                    :totalGeneralAccesorios="$totalGeneralAccesorios"
-                    :totalGeneralServicios="$totalGeneralServicios"
-                    :totalGeneralGasto="$totalGeneralGasto"
-                    :prestatarios="$propietarios"
-                />
+                    <x-operacion-prestatario
+                        :reserva="$reserva" 
+                        :gestion="$gestion" 
+                        :propietarios="$prestatariosEnGestion" 
+                    />
+                    
+                    <x-operacion-totalidad
+                        :totalGeneralHoteles="$totalGeneralHoteles"
+                        :totalGeneralTickets="$totalGeneralTickets"
+                        :totalGeneralAccesorios="$totalGeneralAccesorios"
+                        :totalGeneralServicios="$totalGeneralServicios"
+                        :totalGeneralGasto="$totalGeneralGasto"
+                        :prestatarios="$propietarios"
+                    />
                 @endif
             </div>
         </div>
