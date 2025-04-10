@@ -282,7 +282,7 @@
 
                                 @if($reserva->tour->id == $reserva->tour_id && $servicios->isNotEmpty())
                                     <div class="row g-3 pt-3 pb-2 col-md-12">
-                                        <x-prestatario-select
+                                        <x-prestatarios.prestatario-select
                                             id="servicio_id"
                                             name="servicio_id"
                                             label="Elegir Servicio"
@@ -301,7 +301,7 @@
                                     @foreach($serv_tour_id as $value)
                                         @if($value == 100)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="guia_id"
                                                     name="guia_id"
                                                     label="Elegir Guía"
@@ -315,7 +315,7 @@
                                             </div>
                                         @elseif($value == 101)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="traductor_id"
                                                     name="traductor_id"
                                                     label="Elegir Traductor"
@@ -329,7 +329,7 @@
                                             </div>
                                         @elseif($value == 102)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="cocinero_id"
                                                     name="cocinero_id"
                                                     label="Elegir cocinero"
@@ -343,7 +343,7 @@
                                             </div>
                                         @elseif($value == 103)
                                             <div class="row g-3 pt-3 pb-2 col-md-12">
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="chofer_id"
                                                     name="chofer_id"
                                                     label="Elegir chofer (opcional)"
@@ -358,7 +358,7 @@
                                                 />
                                             </div>
                                         @elseif($value == 104)
-                                            <x-prestatario-recurso
+                                            <x-prestatarios.prestatario-recurso
                                                 prestatario-id="provag_id"
                                                 prestatario-name="provag_id"
                                                 prestatario-label="Elegir prestatario"
@@ -380,7 +380,7 @@
                                             </x-prestatario-recurso>
                                     
                                         @elseif($value == 105)
-                                                <x-prestatario-recurso
+                                                <x-prestatarios.prestatario-recurso
                                                     prestatario-id="procab_id"
                                                     prestatario-name="procab_id"
                                                     prestatario-label="Elegir prestatario"
@@ -399,7 +399,7 @@
                                                     tarifa-value="{{ $gestion->caballo_t ?? '' }}"
                                                 />
                                         @elseif($value == 106)
-                                            <x-prestatario-recurso
+                                            <x-prestatarios.prestatario-recurso
                                                 prestatario-id="probic_id"
                                                 prestatario-name="probic_id"
                                                 prestatario-label="Elegir prestatario"
@@ -418,7 +418,7 @@
                                                 tarifa-value="{{ $gestion->bicicleta_t }}"
                                             >
                                                
-                                            </x-prestatario-recurso>
+                                            </x-prestatarios.prestatario-recurso>
                                         @endif
                                     @endforeach
                                 @endif
@@ -453,7 +453,7 @@
                         
                                 @if($reserva->tour->id == $reserva->tour_id && $servicios->isNotEmpty())
                                     <div class="row g-3 pt-3 pb-2 col-md-12">
-                                        <x-prestatario-select
+                                        <x-prestatarios.prestatario-select
                                             id="servicio_id"
                                             name="servicio_id"
                                             label="Elegir Servicio"
@@ -472,7 +472,7 @@
                                     @if($reserva->tour->id == $reserva->tour_id)
                                         @foreach($serv_tour_id as $value)
                                             @if($value == 100)
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="guia_id"
                                                     name="guia_id"
                                                     label="Elegir Guía"
@@ -484,7 +484,7 @@
                                                     tarifa-field="tarifa"
                                                 />
                                             @elseif($value == 101)
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="traductor_id"
                                                     name="traductor_id"
                                                     label="Elegir Traductor"
@@ -496,7 +496,7 @@
                                                     tarifa-field="tarifa"
                                                 />
                                             @elseif($value == 102)
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="cocinero_id"
                                                     name="cocinero_id"
                                                     label="Elegir Cocinero"
@@ -508,7 +508,7 @@
                                                     tarifa-field="tarifa"
                                                 />
                                             @elseif($value == 103)
-                                                <x-prestatario-select
+                                                <x-prestatarios.prestatario-select
                                                     id="chofer_id"
                                                     name="chofer_id"
                                                     label="Elegir Chofer"
@@ -521,7 +521,7 @@
                                                     :required="false"
                                                 />
                                             @elseif($value == 104)
-                                                <x-prestatario-recurso
+                                                <x-prestatarios.prestatario-recurso
                                                     prestatario-id="provag_id"
                                                     prestatario-name="provag_id"
                                                     prestatario-label="Elegir prestatario"
@@ -546,7 +546,7 @@
                                                     checkbox-target=""
                                                 />
                                             @elseif($value == 105)
-                                                <x-prestatario-recurso
+                                                <x-prestatarios.prestatario-recurso
                                                     prestatario-id="procab_id"
                                                     prestatario-name="procab_id"
                                                     prestatario-label="Elegir prestatario"
@@ -571,7 +571,7 @@
                                                     checkbox-target=""
                                                 />
                                             @elseif($value == 106)
-                                                <x-prestatario-recurso
+                                                <x-prestatarios.prestatario-recurso
                                                     prestatario-id="probic_id"
                                                     prestatario-name="probic_id"
                                                     prestatario-label="Elegir prestatario"
@@ -619,11 +619,22 @@
             </div>
 
             <div class="col-lg-6">
-                <x-operacion-prestatario 
-                    :reserva="$reserva" 
-                    :gestion="$gestion" 
-                    :propietarios="$propietarios" 
-                />
+                @if(gestion)
+                    <x-caja.operacion-prestatario 
+                        :reserva="$reserva" 
+                        :gestion="$gestion" 
+                        :propietarios="$prestatariosEnGestion" 
+                    />
+                    
+                    <x-caja.operacion-totalidad 
+                        :totalGeneralHoteles="$totalGeneralHoteles"
+                        :totalGeneralTickets="$totalGeneralTickets"
+                        :totalGeneralAccesorios="$totalGeneralAccesorios"
+                        :totalGeneralServicios="$totalGeneralServicios"
+                        :totalGeneralGasto="$totalGeneralGasto"
+                        :prestatarios="$propietarios"
+                    />
+                @endif
             </div>
         </div>
     </div>
