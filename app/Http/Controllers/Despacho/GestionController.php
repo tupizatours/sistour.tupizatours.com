@@ -300,40 +300,44 @@ class GestionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        if($request->pagina == "gestions"){
+        if ($request->pagina == "gestions") {
             $rs = [
-                'codigo'                => str_random(10),
-                'reserva_id'            => $request->reserva_id,
-                'tour_id'               => $request->tour_id,
-                'servicio_id'           => $request->servicio_id,
-                'servicio_t'            => $request->servicio_t,
-                'guia_id'               => $request->guia_id,
-                'guia_t'                => $request->guia_t,
-                'traductor_id'          => $request->traductor_id,
-                'traductor_t'           => $request->traductor_t,
-                'cocinero_id'           => $request->cocinero_id,
-                'cocinero_t'            => $request->cocinero_t,
-                'chofer_id'             => $request->chofer_id,
-                'chofer_t'              => $request->chofer_t,
-                'vagoneta_id'           => $request->vagoneta_id,
-                'provag_id'             => $request->provag_id,
-                'vagoneta_t'            => $request->vagoneta_t,
-                'caballo_id'            => $request->caballo_id,
-                'procab_id'             => $request->procab_id,
-                'caballo_t'             => $request->caballo_t,
-                'bicicleta_id'          => $request->bicicleta_id,
-                'probic_id'             => $request->probic_id,
-                'bicicleta_t'           => $request->bicicleta_t,
-                'estado'                => 1,
-                'estatus'               => 1,
+                'codigo'        => Str::random(10),
+                'reserva_id'    => $request->reserva_id,
+                'tour_id'       => $request->tour_id,
+                'servicio_id'   => $request->servicio_id,
+                'servicio_t'    => $request->servicio_t,
+                'guia_id'       => $request->guia_id,
+                'guia_t'        => $request->guia_t,
+                'traductor_id'  => $request->traductor_id,
+                'traductor_t'   => $request->traductor_t,
+                'cocinero_id'   => $request->cocinero_id,
+                'cocinero_t'    => $request->cocinero_t,
+                'chofer_id'     => $request->chofer_id,
+                'chofer_t'      => $request->chofer_t,
+                'vagoneta_id'   => $request->vagoneta_id,
+                'provag_id'     => $request->provag_id,
+                'vagoneta_t'    => $request->vagoneta_t,
+                'caballo_id'    => $request->caballo_id,
+                'procab_id'     => $request->procab_id,
+                'caballo_t'     => $request->caballo_t,
+                'bicicleta_id'  => $request->bicicleta_id,
+                'probic_id'     => $request->probic_id,
+                'bicicleta_t'   => $request->bicicleta_t,
+                'estado'        => 1,
+                'estatus'       => 1,
             ];
 
-            $ges = Gestion::find($id);
-            $ges->update($rs);
+            $gestion = Gestion::find($id);
+            $gestion->update($rs);
 
-            return redirect('despachos/gestiones/'.$request->reserva_id);
+            // 🔁 Crear/Actualizar Porpago por cada servicio correspondiente
+            $this->guardarPorpagos($request);
+
+            return redirect('despachos/gestiones/' . $request->reserva_id);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

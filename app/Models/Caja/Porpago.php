@@ -19,7 +19,6 @@ class Porpago extends Model
         'anticipoActual',
         'subtotal',
         'prestatario',
-        'anticipoAnterior',
         'saldo',
         'dserv'
     ];

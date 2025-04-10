@@ -22,7 +22,6 @@ return new class extends Migration
             $table->json('anticipoActual')->nullable();
             $table->json('subtotal')->nullable();
             $table->json('prestatario')->nullable();
-            $table->json('anticipoAnterior')->nullable();
             $table->json('saldo')->nullable();
             $table->json('dserv')->nullable();
             $table->timestamps();
