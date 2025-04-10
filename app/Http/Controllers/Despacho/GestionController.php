@@ -32,6 +32,7 @@ use DB;
 use App\Models\Despacho\Gestion;
 use App\Models\Caja\Porcobro;
 use App\Models\Caja\Porpago;
+use Illuminate\Support\Str; 
 
 class GestionController extends Controller
 {
