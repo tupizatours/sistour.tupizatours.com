@@ -619,15 +619,13 @@
             </div>
 
             <div class="col-lg-6">
-              
                 @if(gestion)
-                <x-caja.operacion-prestatario
+                <x-operacion-prestatario
                     :reserva="$reserva" 
                     :gestion="$gestion" 
                     :propietarios="$prestatariosEnGestion" 
                 />
-                
-                <x-caja.operacion-totalidad
+                <x-operacion-totalidad
                     :totalGeneralHoteles="$totalGeneralHoteles"
                     :totalGeneralTickets="$totalGeneralTickets"
                     :totalGeneralAccesorios="$totalGeneralAccesorios"
