@@ -346,13 +346,15 @@
                                                 <x-prestatario-select
                                                     id="chofer_id"
                                                     name="chofer_id"
-                                                    label="Elegir chofer"
+                                                    label="Elegir chofer (opcional)"
                                                     :items="$chofers"
                                                     :selected="$gestion->chofer_id"
                                                     onchange="choferCosto()"
                                                     tarifa="chofer_t"
                                                     value-tarifa="{{ $gestion->chofer_t }}"
                                                     tarifa-field="tarifa"
+                                                    :required="false"
+
                                                 />
                                             </div>
                                         @elseif($value == 104)
@@ -373,12 +375,6 @@
                                             
                                                 tarifa-id="vagoneta_t"
                                                 tarifa-value="{{ $gestion->vagoneta_t }}"
-                                            
-                                                checkbox-id="check_vago"
-                                                checkbox-pres="{{ optional($gestion->provag)->id }}"
-                                                checkbox-serv="vagoneta"
-                                                checkbox-servid="{{ $gestion->vagoneta->id }}"
-                                                checkbox-target="{{ $gestion->vagoneta_t }}"
                                             >
                                              
                                             </x-prestatario-recurso>
@@ -391,23 +387,16 @@
                                                     :prestatario-items="$propietarios"
                                                     :prestatario-selected="$gestion->procab_id"
                                                     prestatario-onchange="cargarCaballos(this.value)"
-
+                                                
                                                     recurso-id="caballo_id"
                                                     recurso-name="caballo_id"
                                                     recurso-label="Elegir caballo"
                                                     :recurso-items="$caballos"
                                                     :recurso-selected="$gestion->caballo_id"
                                                     recurso-onchange="caballoCosto()"
-
+                                                
                                                     tarifa-id="caballo_t"
-                                                    tarifa-value="{{ $gestion->caballo_t }}"
-
-                                                    checkbox-id="check_caba"
-                                                    checkbox-pres="{{ optional($gestion->procab)->id }}"
-
-                                                    checkbox-serv="caballo"
-                                                    checkbox-servid="{{ $gestion->caballo->id }}"
-                                                    checkbox-target="{{ $gestion->caballo_t }}"
+                                                    tarifa-value="{{ $gestion->caballo_t ?? '' }}"
                                                 />
                                         @elseif($value == 106)
                                             <x-prestatario-recurso
@@ -427,13 +416,6 @@
                                             
                                                 tarifa-id="bicicleta_t"
                                                 tarifa-value="{{ $gestion->bicicleta_t }}"
-                                            
-                                                checkbox-id="check_bici"
-                                                checkbox-pres="{{ optional($gestion->probic)->id }}"
-
-                                                checkbox-serv="bicicleta"
-                                                checkbox-servid="{{ $gestion->bicicleta->id }}"
-                                                checkbox-target="{{ $gestion->bicicleta_t }}"
                                             >
                                                
                                             </x-prestatario-recurso>
@@ -536,6 +518,7 @@
                                                     tarifa="chofer_t"
                                                     value-tarifa=""
                                                     tarifa-field="tarifa"
+                                                    :required="false"
                                                 />
                                             @elseif($value == 104)
                                                 <x-prestatario-recurso
