@@ -99,6 +99,9 @@ class GestionController extends Controller
 
             Gestion::create($rs);
 
+            // 🔁 Crear/Actualizar Porpago por cada servicio correspondiente
+            $this->guardarPorpagos($request);
+
             return redirect('despachos/gestiones/' . $request->reserva_id);
         } else {
             $res = Reserva::find($request->reserva_id);
