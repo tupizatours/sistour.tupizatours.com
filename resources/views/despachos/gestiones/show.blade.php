@@ -619,7 +619,7 @@
             </div>
 
             <div class="col-lg-6">
-                <x-caja.operacion-prestatario 
+                <x-operacion-prestatario 
                     :reserva="$reserva" 
                     :gestion="$gestion" 
                     :propietarios="$propietarios" 
