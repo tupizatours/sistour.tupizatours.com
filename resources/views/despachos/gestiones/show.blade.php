@@ -625,6 +625,7 @@
                     :gestion="$gestion" 
                     :propietarios="$prestatariosEnGestion" 
                 />
+                
                 <x-operacion-totalidad
                     :totalGeneralHoteles="$totalGeneralHoteles"
                     :totalGeneralTickets="$totalGeneralTickets"
