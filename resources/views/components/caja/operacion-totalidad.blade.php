@@ -21,7 +21,7 @@
         ] as $label => $monto)
             <dl class="col-md-12 row">
                 <dt class="col-sm-9">
-                    <div class="form-check">
+                    <div class="form-check"> 
                         <input type="hidden" name="checkboxes[{{ strtolower($label) }}][nombre]" value="{{ $label }}">
                         <input type="hidden" name="checkboxes[{{ strtolower($label) }}][monto]" value="{{ $monto }}">
                         <input class="form-check-input"
@@ -45,15 +45,30 @@
             </dt>
             <dd class="col-sm-3 text-right">Bs. {{ number_format($totalGeneralGasto, 2) }}</dd>
         </dl>
-
-        <div class="form-group mt-3">
-            <label for="prestatario_totalidad"><strong>¿Quién se hace cargo?</strong></label>
-            <select class="form-control" name="prestatario_totalidad" id="prestatario_totalidad" required>
-                <option value="">Seleccionar</option>
-                @foreach($prestatarios as $prestatario)
-                    <option value="{{ $prestatario->id }}">{{ $prestatario->nombre }} {{ $prestatario->apellido }}</option>
-                @endforeach
-            </select>
-        </div>
     </div>
 </div>
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.card input.form-check-input[type="checkbox"]');
+
+        checkboxes.forEach(cb => {
+            cb.addEventListener('change', function () {
+                let total = 0;
+
+                checkboxes.forEach(chk => {
+                    if (chk.checked) {
+                        const monto = parseFloat(chk.dataset.monto || 0);
+                        total += monto;
+                    }
+                });
+
+                // Emitimos un evento personalizado para informar el total
+                const event = new CustomEvent('totalidadUpdated', { detail: { total } });
+                window.dispatchEvent(event);
+            });
+        });
+    });
+</script>
+@endpush

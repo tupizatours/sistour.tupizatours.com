@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            {{-- Prestatario (solo visible si se activa el checkbox) --}}
+            {{-- Prestatario dejar siempre visible  --}}
             <div class="form-group mb-3 d-none" id="prestatarioWrapper">
                 <label for="prestatario"><strong>Prestatario</strong></label>
                 <select class="form-control" id="prestatario" name="prestatario">
@@ -33,7 +33,7 @@
                 </select>
             </div>
 
-            {{-- Servicio relacionado con el prestatario --}}
+            {{-- Servicio relacionado con el prestatario siguen apareciendo automaticamente  --}}
             <div class="form-group mb-3">
                 <label for="tipo_servicio"><strong>Servicio a pagar</strong></label>
                 <select class="form-control" id="tipo_servicio" required>
@@ -50,13 +50,13 @@
                 </select>
             </div>
 
-            {{-- Subtotal --}}
+            {{-- Subtotal agregar monto seleccionado en el checkbox de operacion-totalidad --}}
             <div class="form-group mb-3">
                 <label for="subtotal"><strong>Monto del Servicio</strong></label>
                 <input type="number" class="form-control" id="subtotal" name="subtotal" value="0" readonly>
             </div>
 
-            {{-- Anticipo --}}
+            {{-- Anticipo activar cuando el checkbox este activo aun sigue sin funcionar--}}
             <div class="form-group mb-3">
                 <label for="anticipoActual"><strong>Anticipo</strong></label>
                 <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0" disabled>
@@ -92,23 +92,31 @@
         const dservInput = document.getElementById('dserv');
         const dseridInput = document.getElementById('dserid');
 
-        function resetServicio() {
-            tipoServicioSelect.selectedIndex = 0;
-            subtotalInput.value = 0;
-            anticipoInput.value = 0;
-            totalInput.value = 0;
-            dservInput.value = '';
-            dseridInput.value = '';
+        let montoServicioIndividual = 0;
+        let montoTotalidadSeleccionada = 0;
+
+        // Escuchamos el evento desde operacion-totalidad
+        window.addEventListener('totalidadUpdated', function (e) {
+            montoTotalidadSeleccionada = parseFloat(e.detail.total || 0);
+            updateSubtotal();
+            updateTotal();
+        });
+
+        function updateSubtotal() {
+            const selectedOption = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
+            const costo = parseFloat(selectedOption?.dataset?.costo || 0);
+            montoServicioIndividual = costo;
+
+            // Se suman el servicio individual + totalidad seleccionada
+            subtotalInput.value = (montoServicioIndividual + montoTotalidadSeleccionada).toFixed(2);
         }
 
         function updateServicio() {
             const option = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
-            const costo = parseFloat(option.dataset.costo || 0);
             const presId = option.dataset.pres || '';
             const recursoId = option.dataset.id || '';
             const tipo = option.value;
 
-            subtotalInput.value = costo;
             dservInput.value = tipo;
             dseridInput.value = recursoId;
 
@@ -116,6 +124,7 @@
                 prestatarioSelect.value = presId;
             }
 
+            updateSubtotal();
             updateTotal();
         }
 
@@ -126,7 +135,6 @@
             totalInput.value = (total < 0 ? 0 : total).toFixed(2);
         }
 
-        // Toggle anticipo visualmente
         toggleAnticipo.addEventListener('change', function () {
             const isChecked = this.checked;
             prestatarioWrapper.classList.toggle('d-none', !isChecked);
@@ -143,7 +151,7 @@
         tipoServicioSelect.addEventListener('change', updateServicio);
         anticipoInput.addEventListener('input', updateTotal);
 
-        // Inicializar si ya hay selección
+        // Inicial
         updateServicio();
     });
 </script>
