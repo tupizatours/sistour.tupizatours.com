@@ -51,24 +51,23 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const checkboxes = document.querySelectorAll('.card input.form-check-input[type="checkbox"]');
+        const checkboxes = document.querySelectorAll('input.form-check-input[data-monto]');
 
-        checkboxes.forEach(cb => {
-            cb.addEventListener('change', function () {
-                let total = 0;
-
-                checkboxes.forEach(chk => {
-                    if (chk.checked) {
-                        const monto = parseFloat(chk.dataset.monto || 0);
-                        total += monto;
-                    }
-                });
-
-                // Emitimos un evento personalizado para informar el total
-                const event = new CustomEvent('totalidadUpdated', { detail: { total } });
-                window.dispatchEvent(event);
+        function dispatchTotalidad() {
+            let total = 0;
+            checkboxes.forEach(cb => {
+                if (cb.checked) {
+                    total += parseFloat(cb.dataset.monto || 0);
+                }
             });
-        });
+
+            window.dispatchEvent(new CustomEvent('totalidadUpdated', {
+                detail: { total }
+            }));
+        }
+
+        checkboxes.forEach(cb => cb.addEventListener('change', dispatchTotalidad));
+        dispatchTotalidad(); // Emitir al cargar
     });
 </script>
 @endpush

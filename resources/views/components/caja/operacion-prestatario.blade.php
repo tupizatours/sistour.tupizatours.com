@@ -14,7 +14,7 @@
             <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
             <input type="hidden" name="tour_id" value="{{ $reserva->tour_id }}">
 
-            {{-- Checkbox para activar el modo anticipo --}}
+            {{-- Activar anticipo --}}
             <div class="form-group mb-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="toggleAnticipo">
@@ -22,8 +22,8 @@
                 </div>
             </div>
 
-            {{-- Prestatario dejar siempre visible  --}}
-            <div class="form-group mb-3 d-none" id="prestatarioWrapper">
+            {{-- Prestatario SIEMPRE visible --}}
+            <div class="form-group mb-3" id="prestatarioWrapper">
                 <label for="prestatario"><strong>Prestatario</strong></label>
                 <select class="form-control" id="prestatario" name="prestatario">
                     <option value="">Seleccionar</option>
@@ -33,7 +33,7 @@
                 </select>
             </div>
 
-            {{-- Servicio relacionado con el prestatario siguen apareciendo automaticamente  --}}
+            {{-- Servicio relacionado --}}
             <div class="form-group mb-3">
                 <label for="tipo_servicio"><strong>Servicio a pagar</strong></label>
                 <select class="form-control" id="tipo_servicio" required>
@@ -50,13 +50,13 @@
                 </select>
             </div>
 
-            {{-- Subtotal agregar monto seleccionado en el checkbox de operacion-totalidad --}}
+            {{-- Subtotal --}}
             <div class="form-group mb-3">
                 <label for="subtotal"><strong>Monto del Servicio</strong></label>
                 <input type="number" class="form-control" id="subtotal" name="subtotal" value="0" readonly>
             </div>
 
-            {{-- Anticipo activar cuando el checkbox este activo aun sigue sin funcionar--}}
+            {{-- Anticipo --}}
             <div class="form-group mb-3">
                 <label for="anticipoActual"><strong>Anticipo</strong></label>
                 <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0" disabled>
@@ -68,13 +68,10 @@
                 <input type="number" class="form-control" id="total" name="total" value="0" readonly>
             </div>
 
-            {{-- Campos ocultos --}}
             <input type="hidden" id="dserv" name="dserv">
             <input type="hidden" id="dserid" name="dserid">
 
-            <button type="submit" class="btn btn-primary col-md-12 text-uppercase">
-                Realizar operación
-            </button>
+            <button type="submit" class="btn btn-primary col-md-12 text-uppercase">Realizar operación</button>
         </form>
     </div>
 </div>
@@ -92,38 +89,28 @@
         const dservInput = document.getElementById('dserv');
         const dseridInput = document.getElementById('dserid');
 
-        let montoServicioIndividual = 0;
-        let montoTotalidadSeleccionada = 0;
+        let montoServicio = 0;
+        let montoTotalidad = 0;
 
-        // Escuchamos el evento desde operacion-totalidad
         window.addEventListener('totalidadUpdated', function (e) {
-            montoTotalidadSeleccionada = parseFloat(e.detail.total || 0);
+            montoTotalidad = parseFloat(e.detail.total || 0);
             updateSubtotal();
             updateTotal();
         });
 
         function updateSubtotal() {
             const selectedOption = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
-            const costo = parseFloat(selectedOption?.dataset?.costo || 0);
-            montoServicioIndividual = costo;
-
-            // Se suman el servicio individual + totalidad seleccionada
-            subtotalInput.value = (montoServicioIndividual + montoTotalidadSeleccionada).toFixed(2);
+            montoServicio = parseFloat(selectedOption?.dataset?.costo || 0);
+            subtotalInput.value = (montoServicio + montoTotalidad).toFixed(2);
         }
 
         function updateServicio() {
             const option = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
-            const presId = option.dataset.pres || '';
-            const recursoId = option.dataset.id || '';
-            const tipo = option.value;
-
-            dservInput.value = tipo;
-            dseridInput.value = recursoId;
-
+            dservInput.value = option.value;
+            dseridInput.value = option.dataset.id || '';
             if (toggleAnticipo.checked) {
-                prestatarioSelect.value = presId;
+                prestatarioSelect.value = option.dataset.pres || '';
             }
-
             updateSubtotal();
             updateTotal();
         }
@@ -131,28 +118,19 @@
         function updateTotal() {
             const subtotal = parseFloat(subtotalInput.value || 0);
             const anticipo = parseFloat(anticipoInput.value || 0);
-            const total = subtotal - (toggleAnticipo.checked ? anticipo : 0);
-            totalInput.value = (total < 0 ? 0 : total).toFixed(2);
+            totalInput.value = (subtotal - (toggleAnticipo.checked ? anticipo : 0)).toFixed(2);
         }
 
         toggleAnticipo.addEventListener('change', function () {
-            const isChecked = this.checked;
-            prestatarioWrapper.classList.toggle('d-none', !isChecked);
-            anticipoInput.disabled = !isChecked;
-
-            if (!isChecked) {
-                anticipoInput.value = 0;
-                prestatarioSelect.selectedIndex = 0;
-            }
-
+            anticipoInput.disabled = !this.checked;
+            if (!this.checked) anticipoInput.value = 0;
             updateTotal();
         });
 
         tipoServicioSelect.addEventListener('change', updateServicio);
         anticipoInput.addEventListener('input', updateTotal);
 
-        // Inicial
-        updateServicio();
+        updateServicio(); // Init
     });
 </script>
 @endpush
