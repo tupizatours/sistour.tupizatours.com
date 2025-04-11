@@ -49,34 +49,31 @@
         </dl>
     </div>
 </div>
-
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('input.form-check-input[data-monto]');
         const totalDisplay = document.getElementById('totalidadSeleccionada');
 
-        function dispatchTotalidad() {
-            let total = 0;
-            checkboxes.forEach(cb => {
-                if (cb.checked) {
-                    total += parseFloat(cb.dataset.monto || 0);
-                }
-            });
+        const formatBs = (amount) => `Bs. ${parseFloat(amount).toFixed(2)}`;
 
-            // Mostrar en interfaz
-            if (totalDisplay) {
-                totalDisplay.textContent = `Bs. ${total.toFixed(2)}`;
-            }
+        const calcularTotalidad = () => {
+            let total = Array.from(checkboxes)
+                .filter(cb => cb.checked)
+                .reduce((sum, cb) => sum + parseFloat(cb.dataset.monto || 0), 0);
 
-            // Enviar evento al componente de operaciones
+            totalDisplay.textContent = formatBs(total);
+
+            // Emitir evento global para otros componentes
             window.dispatchEvent(new CustomEvent('totalidadUpdated', {
                 detail: { total }
             }));
-        }
+        };
 
-        checkboxes.forEach(cb => cb.addEventListener('change', dispatchTotalidad));
-        dispatchTotalidad(); // Emitir al cargar
+        checkboxes.forEach(cb => cb.addEventListener('change', calcularTotalidad));
+
+        // Ejecutar una vez al iniciar
+        calcularTotalidad();
     });
 </script>
 @endpush
