@@ -169,5 +169,7 @@
         </script>
         
         @yield('footer_scripts')
+        @stack('scripts') {{-- 👈 Asegura que se inyecten scripts desde los componentes --}}
+
     </body>
 </html>
