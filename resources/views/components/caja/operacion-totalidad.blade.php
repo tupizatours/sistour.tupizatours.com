@@ -68,6 +68,7 @@
             window.dispatchEvent(new CustomEvent('totalidadUpdated', {
                 detail: { total }
             }));
+            console.log("✅ Totalidad actual:", total);
         };
 
         checkboxes.forEach(cb => cb.addEventListener('change', calcularTotalidad));
