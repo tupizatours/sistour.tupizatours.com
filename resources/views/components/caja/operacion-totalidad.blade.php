@@ -51,31 +51,53 @@
 </div>
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const checkboxes = document.querySelectorAll('input.form-check-input[data-monto]');
-        const totalDisplay = document.getElementById('totalidadSeleccionada');
+    (function () {
+        document.addEventListener('DOMContentLoaded', function () {
+            const checkboxes = document.querySelectorAll('input.form-check-input[data-monto]');
+            const totalDisplay = document.getElementById('totalidadSeleccionada');
 
-        const formatBs = (amount) => `Bs. ${parseFloat(amount).toFixed(2)}`;
+            if (!checkboxes.length || !totalDisplay) {
+                console.warn("⚠️ Checkboxes o totalDisplay no encontrados.");
+                return;
+            }
 
-        const calcularTotalidad = () => {
-            let total = Array.from(checkboxes)
-                .filter(cb => cb.checked)
-                .reduce((sum, cb) => sum + parseFloat(cb.dataset.monto || 0), 0);
+            const formatBs = (amount) => `Bs. ${parseFloat(amount).toFixed(2)}`;
 
-            totalDisplay.textContent = formatBs(total);
+            const calcularTotalidad = () => {
+                let total = 0;
 
-            // Emitir evento global para otros componentes
-            window.dispatchEvent(new CustomEvent('totalidadUpdated', {
-                detail: { total }
-            }));
-            console.log("✅ Totalidad actual:", total);
-        };
+                checkboxes.forEach(cb => {
+                    if (cb.checked) {
+                        total += parseFloat(cb.dataset.monto || 0);
+                    }
+                });
 
-        checkboxes.forEach(cb => cb.addEventListener('change', calcularTotalidad));
+                totalDisplay.textContent = formatBs(total);
 
-        // Ejecutar una vez al iniciar
-        calcularTotalidad();
-    });
+                const event = new CustomEvent('totalidadUpdated', {
+                    detail: { total },
+                    bubbles: true,
+                    cancelable: true,
+                });
+
+                window.dispatchEvent(event);
+                console.log("✅ Event 'totalidadUpdated' dispatched with total:", total);
+            };
+
+            // Asegurar que los eventos estén correctamente ligados
+            checkboxes.forEach(cb => {
+                cb.addEventListener('change', calcularTotalidad);
+            });
+
+            // Ejecutar cálculo inicial
+            calcularTotalidad();
+        });
+
+        // Debug: escucha global (puedes mover esto al otro componente para verificar recepción)
+        window.addEventListener('totalidadUpdated', function (e) {
+            console.log("📡 Event received in listener → Totalidad:", e.detail.total);
+        });
+    })();
 </script>
 @endpush
 
