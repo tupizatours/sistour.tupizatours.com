@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            {{-- Prestatario (solo visible si es anticipo) --}}
+            {{-- Prestatario (solo visible si es anticipo) / no esta visible  --}}
             <div class="form-group mb-3 d-none" id="prestatarioWrapper">
                 <label for="prestatario"><strong>Prestatario</strong></label>
                 <select class="form-control" id="prestatario" name="prestatario">
@@ -33,7 +33,7 @@
                 </select>
             </div>
 
-            {{-- Tipo de servicio relacionado --}}
+            {{-- Tipo de servicio relacionado / es visible y deben aparecer los servicios realizados a la gestion --}}
             <div class="form-group mb-3">
                 <label for="tipo_servicio"><strong>Servicio a pagar</strong></label>
                 <select class="form-control" id="tipo_servicio" required>
@@ -56,13 +56,13 @@
                 <input type="number" class="form-control" id="subtotal" name="subtotal" value="0" readonly>
             </div>
 
-            {{-- Anticipo --}}
+            {{-- Anticipo deberia activarse si el checkbox esta activo--}}
             <div class="form-group mb-3">
                 <label for="anticipoActual"><strong>Anticipo</strong></label>
                 <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0">
             </div>
 
-            {{-- Total (Saldo) --}}
+            {{-- Total no est agreando el monto   --}}
             <div class="form-group mb-4">
                 <label for="total"><strong>Total</strong></label>
                 <input type="number" class="form-control" id="total" name="total" value="0" readonly>
@@ -104,23 +104,36 @@
             dservInput.value = tipo;
             dseridInput.value = recursoId;
 
-            updateSaldo();
+            updateTotal();
         }
 
         function updateTotal() {
             const anticipo = parseFloat(anticipoInput.value || 0);
             const subtotal = parseFloat(subtotalInput.value || 0);
-            const total = subtotal - anticipo;
+            let total = subtotal - anticipo;
+
+            if (total < 0) total = 0; // Previene totales negativos
             totalInput.value = total.toFixed(2);
         }
 
         // Mostrar/Ocultar prestatario si es anticipo
         toggleAnticipo.addEventListener('change', function () {
-            prestatarioWrapper.classList.toggle('d-none', !this.checked);
-        });
+                    prestatarioWrapper.classList.toggle('d-none', !this.checked);
+                });
 
-        tipoServicio.addEventListener('change', updateServicio);
-        anticipoInput.addEventListener('input', updateTotal);
+                tipoServicio.addEventListener('change', updateServicio);
+                anticipoInput.addEventListener('input', updateTotal);
+
+                toggleAnticipo.addEventListener('change', function () {
+            const isChecked = this.checked;
+            prestatarioWrapper.classList.toggle('d-none', !isChecked);
+            anticipoInput.disabled = !isChecked;
+
+            if (!isChecked) {
+                anticipoInput.value = 0;
+                updateTotal();
+            }
+        });
 
         updateServicio(); // inicial
     });
