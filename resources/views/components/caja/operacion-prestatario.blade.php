@@ -18,7 +18,7 @@
             <div class="form-group mb-3">
                 <div class="form-check">
                     <input class="form-check-input" type="checkbox" id="toggleAnticipo">
-                    <label class="form-check-label" for="toggleAnticipo"><strong>¿Es un anticipo?</strong></label>
+                    <label class="form-check-label" for="toggleAnticipo"><strong>Activar Anticipo</strong></label>
                 </div>
             </div>
 
