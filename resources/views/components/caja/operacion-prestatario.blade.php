@@ -22,7 +22,7 @@
                 </div>
             </div>
 
-            {{-- Prestatario (solo visible si es anticipo) / no esta visible  --}}
+            {{-- Prestatario (sólo si es anticipo) --}}
             <div class="form-group mb-3 d-none" id="prestatarioWrapper">
                 <label for="prestatario"><strong>Prestatario</strong></label>
                 <select class="form-control" id="prestatario" name="prestatario">
@@ -33,7 +33,7 @@
                 </select>
             </div>
 
-            {{-- Tipo de servicio relacionado / es visible y deben aparecer los servicios realizados a la gestion --}}
+            {{-- Tipo de servicio --}}
             <div class="form-group mb-3">
                 <label for="tipo_servicio"><strong>Servicio a pagar</strong></label>
                 <select class="form-control" id="tipo_servicio" required>
@@ -50,19 +50,19 @@
                 </select>
             </div>
 
-            {{-- Monto del servicio --}}
+            {{-- Monto del Servicio --}}
             <div class="form-group mb-3">
                 <label for="subtotal"><strong>Monto del Servicio</strong></label>
                 <input type="number" class="form-control" id="subtotal" name="subtotal" value="0" readonly>
             </div>
 
-            {{-- Anticipo deberia activarse si el checkbox esta activo--}}
+            {{-- Anticipo --}}
             <div class="form-group mb-3">
                 <label for="anticipoActual"><strong>Anticipo</strong></label>
-                <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0">
+                <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0" disabled>
             </div>
 
-            {{-- Total no est agreando el monto   --}}
+            {{-- Total --}}
             <div class="form-group mb-4">
                 <label for="total"><strong>Total</strong></label>
                 <input type="number" class="form-control" id="total" name="total" value="0" readonly>
@@ -110,21 +110,12 @@
         function updateTotal() {
             const anticipo = parseFloat(anticipoInput.value || 0);
             const subtotal = parseFloat(subtotalInput.value || 0);
-            let total = subtotal - anticipo;
+            const total = subtotal - anticipo;
 
-            if (total < 0) total = 0; // Previene totales negativos
-            totalInput.value = total.toFixed(2);
+            totalInput.value = (total < 0 ? 0 : total).toFixed(2);
         }
 
-        // Mostrar/Ocultar prestatario si es anticipo
         toggleAnticipo.addEventListener('change', function () {
-                    prestatarioWrapper.classList.toggle('d-none', !this.checked);
-                });
-
-                tipoServicio.addEventListener('change', updateServicio);
-                anticipoInput.addEventListener('input', updateTotal);
-
-                toggleAnticipo.addEventListener('change', function () {
             const isChecked = this.checked;
             prestatarioWrapper.classList.toggle('d-none', !isChecked);
             anticipoInput.disabled = !isChecked;
@@ -135,7 +126,11 @@
             }
         });
 
-        updateServicio(); // inicial
+        tipoServicio.addEventListener('change', updateServicio);
+        anticipoInput.addEventListener('input', updateTotal);
+
+        // Inicialización
+        updateServicio();
     });
 </script>
 @endpush
