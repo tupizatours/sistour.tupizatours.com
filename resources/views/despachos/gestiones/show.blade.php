@@ -639,33 +639,7 @@
 @endsection
 
 @section('footer_scripts')
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const buttonMinus = document.getElementById("button-minus");
-            const buttonPlus = document.getElementById("button-plus");
-            const cantPerInput = document.getElementById("cantper");
-            
-            // Valores mínimo (fijado en el máximo de capacidad) y el límite superior
-            const minPer = {{ $reserva->tour->max_per }};
-            const maxPer = 10; // Puedes ajustar este valor según tu necesidad
 
-            buttonPlus.addEventListener("click", function() {
-                let cantidad = parseInt(cantPerInput.value);
-                if (cantidad < maxPer) {
-                    cantidad++;
-                    cantPerInput.value = cantidad;
-                }
-            });
-
-            buttonMinus.addEventListener("click", function() {
-                let cantidad = parseInt(cantPerInput.value);
-                if (cantidad > minPer) {
-                    cantidad--;
-                    cantPerInput.value = cantidad;
-                }
-            });
-        });
-    </script>
     <script>
         window.addEventListener("load", function () {
             const campos = [
