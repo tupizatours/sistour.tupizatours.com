@@ -257,6 +257,18 @@ class GestionController extends Controller
             ];
         });
 
+        $prestatariosEnGestion = collect();
+
+        if ($gestion) {
+            $ids = collect([
+                $gestion->provag_id,
+                $gestion->procab_id,
+                $gestion->probic_id
+            ])->filter()->unique();
+
+        $prestatariosEnGestion = Propietario::whereIn('id', $ids)->get();
+        }
+        
         // Suma general para todos los clientes
         $totalGeneralHoteles = $clientesConDatos->sum('total_hoteles');
         $totalGeneralTickets = $clientesConDatos->sum('total_tickets');
@@ -293,7 +305,9 @@ class GestionController extends Controller
             'hottus',
             'categorias',
             'servicios',
-            'existePorpago'
+            'existePorpago',
+            'prestatariosEnGestion',
+
         ));
     }
 
