@@ -41,9 +41,11 @@
     <div class="card-footer">
         <dl class="col-md-12 row mb-0">
             <dt class="col-sm-9">
-                <label class="form-label">Totalidad de Gastos</label>
+                <label class="form-label">Totalidad Seleccionada</label>
             </dt>
-            <dd class="col-sm-3 text-right">Bs. {{ number_format($totalGeneralGasto, 2) }}</dd>
+            <dd class="col-sm-3 text-right">
+                <span id="totalidadSeleccionada">Bs. 0.00</span>
+            </dd>
         </dl>
     </div>
 </div>
@@ -52,6 +54,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('input.form-check-input[data-monto]');
+        const totalDisplay = document.getElementById('totalidadSeleccionada');
 
         function dispatchTotalidad() {
             let total = 0;
@@ -61,6 +64,12 @@
                 }
             });
 
+            // Mostrar en interfaz
+            if (totalDisplay) {
+                totalDisplay.textContent = `Bs. ${total.toFixed(2)}`;
+            }
+
+            // Enviar evento al componente de operaciones
             window.dispatchEvent(new CustomEvent('totalidadUpdated', {
                 detail: { total }
             }));
@@ -71,3 +80,4 @@
     });
 </script>
 @endpush
+
