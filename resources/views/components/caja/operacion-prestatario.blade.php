@@ -4,7 +4,7 @@
     'propietarios' => [],
 ])
 
-<div class="card mt-4">
+<div class="card">
     <div class="card-body">
         <form action="{{ route('cajacobros.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
