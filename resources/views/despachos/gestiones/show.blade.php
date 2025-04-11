@@ -609,11 +609,10 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div id="campos-dinamicos" style="display: none;"></div>
 
                             </form>
                         @endif
-                        
+                        <div id="campos-dinamicos" style="display: none;"></div>
                     </div>
                 </div>
             </div>
@@ -680,6 +679,12 @@
             const campoDinamicoContainer = document.getElementById("campos-dinamicos");
 
             function actualizarCampos(campo, valor) {
+                let container = document.getElementById("campos-dinamicos");
+                if (!container) {
+                    console.warn("⚠️ campos-dinamicos container not found.");
+                    return;
+                }
+
                 let input = document.getElementById(`input-${campo}`);
                 if (!input) {
                     input = document.createElement("input");
@@ -687,8 +692,9 @@
                     input.id = `input-${campo}`;
                     input.name = campo;
                     input.readOnly = true;
-                    campoDinamicoContainer.appendChild(input);
+                    container.appendChild(input);
                 }
+
                 input.value = valor;
             }
 
