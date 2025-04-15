@@ -157,6 +157,22 @@ Route::group(['middleware' => ['auth', 'activated', 'activity', 'twostep', 'chec
     Route::resource('cajas/porcobros', App\Http\Controllers\Caja\PorcobroController::class)->names('cajacobros');
     Route::resource('cajas/porpagos', App\Http\Controllers\Caja\PorpagoController::class)->names('cajapagos');
 
+    Route::get('/api/saldo-prestatario/{id}', function ($id) {
+        $reservaId = request('reserva_id');
+    
+        $anticipos = \App\Models\Caja\Anticipo::where('prestatario_id', $id)
+            ->where('reserva_id', $reservaId)
+            ->sum('monto');
+    
+        $pagos = \App\Models\Caja\Porpago::where('servicio_id', $id)
+            ->where('reserva_id', $reservaId)
+            ->sum('costo');
+    
+        return response()->json([
+            'saldo' => max($anticipos - $pagos, 0)
+        ]);
+    });    
+
     /*Configuración CRUD*/
     Route::resource('configuracion', App\Http\Controllers\ConfiguracionController::class)->names('configuracion');
     Route::resource('configuraciones/idiomas', App\Http\Controllers\Configuracion\IdiomaController::class)->names('confidiomas');
