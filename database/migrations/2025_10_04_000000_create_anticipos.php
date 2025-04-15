@@ -22,6 +22,8 @@ return new class extends Migration {
             // Relaciones sugeridas
             $table->foreign('reserva_id')->references('id')->on('reservas')->onDelete('cascade');
             $table->foreign('prestatario_id')->references('id')->on('propietarios')->onDelete('cascade');
+
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
         });       
     }
 

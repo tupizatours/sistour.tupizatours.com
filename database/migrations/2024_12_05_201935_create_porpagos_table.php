@@ -22,6 +22,7 @@ return new class extends Migration
             $table->decimal('costo', 10, 2)->default(0);
             $table->boolean('es_prestatario')->default(false); // <--- Campo agregado
             $table->string('estado')->default('pendiente');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->timestamps();
         });
         

@@ -19,6 +19,8 @@ class Porpago extends Model
         'costo',             // Monto total asignado
         'es_prestatario',    // Boolean para distinguir si es un servicio de prestatario
         'estado',            // Estado del pago (ej: pendiente, pagado)
+        'user_id',           // ← Nuevo: quien registra el movimiento
+
     ];
 
     protected $casts = [
@@ -53,5 +55,8 @@ class Porpago extends Model
     {
         // Este método se puede personalizar con morphTo o lógica condicional si deseas acceder dinámicamente al "pres_serv_id"
         return null;
+    }
+    public function user() {
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
     }
 }

@@ -13,6 +13,8 @@ class Anticipo extends Model
         'elemento_id',
         'tipo_servicio',
         'monto',
+        'user_id', // ← Nuevo: para saber quién entregó el anticipo
+
     ];
 
     public function reserva()
@@ -23,5 +25,8 @@ class Anticipo extends Model
     public function prestatario()
     {
         return $this->belongsTo(\App\Models\Propietario::class, 'prestatario_id');
+    }
+    public function user() {
+        return $this->belongsTo('App\Models\User', 'user_id', 'id');
     }
 }
