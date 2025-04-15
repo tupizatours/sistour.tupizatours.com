@@ -80,7 +80,6 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const toggleAnticipo = document.getElementById('toggleAnticipo');
-        const prestatarioWrapper = document.getElementById('prestatarioWrapper');
         const prestatarioSelect = document.getElementById('prestatario');
         const tipoServicioSelect = document.getElementById('tipo_servicio');
         const subtotalInput = document.getElementById('subtotal');
@@ -90,35 +89,35 @@
         const dseridInput = document.getElementById('dserid');
 
         let montoServicio = 0;
-        let montoTotalidad = 0;
 
+        // Actualiza el subtotal según el evento de totalidad
         window.addEventListener('totalidadUpdated', function (e) {
-            montoTotalidad = parseFloat(e.detail.total || 0);
-            updateSubtotal();
+            montoServicio = parseFloat(e.detail.total || 0);
+            subtotalInput.value = montoServicio.toFixed(2);
             updateTotal();
         });
 
-        function updateSubtotal() {
-            const selectedOption = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
-            montoServicio = parseFloat(selectedOption?.dataset?.costo || 0);
-            subtotalInput.value = (montoServicio + montoTotalidad).toFixed(2);
-        }
-
+        // Al cambiar el servicio seleccionado
         function updateServicio() {
             const option = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
             dservInput.value = option.value;
             dseridInput.value = option.dataset.id || '';
-            if (toggleAnticipo.checked) {
-                prestatarioSelect.value = option.dataset.pres || '';
+
+            if (toggleAnticipo.checked && option.dataset.pres) {
+                prestatarioSelect.value = option.dataset.pres;
             }
-            updateSubtotal();
+
+            // Ya no tocamos el subtotal aquí
             updateTotal();
         }
 
+        // Actualiza el total final
         function updateTotal() {
             const subtotal = parseFloat(subtotalInput.value || 0);
-            const anticipo = parseFloat(anticipoInput.value || 0);
-            totalInput.value = (subtotal - (toggleAnticipo.checked ? anticipo : 0)).toFixed(2);
+            const anticipo = toggleAnticipo.checked ? parseFloat(anticipoInput.value || 0) : 0;
+            const total = subtotal + anticipo;
+
+            totalInput.value = total.toFixed(2);
         }
 
         toggleAnticipo.addEventListener('change', function () {
@@ -130,7 +129,7 @@
         tipoServicioSelect.addEventListener('change', updateServicio);
         anticipoInput.addEventListener('input', updateTotal);
 
-        updateServicio(); // Init
+        updateServicio(); // Inicializa estado
     });
 </script>
 @endpush
