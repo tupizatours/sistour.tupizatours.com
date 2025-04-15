@@ -63,9 +63,7 @@
             </div>
 
             {{-- Alerta de saldo (inicialmente oculta) --}}
-            <div class="alert alert-warning d-none" id="saldoInsuficiente">
-                ⚠️ El monto excede el saldo disponible del prestatario.
-            </div>
+            <div class="alert alert-danger d-none" id="alerta-validacion"></div>
 
             {{-- Total a pagar --}}
             <div class="form-group mb-4">
@@ -85,13 +83,13 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const tipoServicioSelect = document.getElementById('tipo_servicio');
-        const prestatarioSelect = document.getElementById('prestatario');
-        const anticipoInput = document.getElementById('anticipoActual');
         const toggleAnticipo = document.getElementById('toggleAnticipo');
+        const prestatarioSelect = document.getElementById('prestatario');
+        const tipoServicioSelect = document.getElementById('tipo_servicio');
         const subtotalInput = document.getElementById('subtotal');
+        const anticipoInput = document.getElementById('anticipoActual');
         const totalInput = document.getElementById('total');
-        const saldoAlert = document.getElementById('saldoInsuficiente');
+        const alerta = document.getElementById('alerta-validacion');
         const dservInput = document.getElementById('dserv');
         const dseridInput = document.getElementById('dserid');
 
@@ -119,30 +117,58 @@
             const subtotal = parseFloat(subtotalInput.value || 0);
             const anticipo = toggleAnticipo.checked ? parseFloat(anticipoInput.value || 0) : 0;
             const total = subtotal + anticipo;
-
             totalInput.value = total.toFixed(2);
 
-            validarSaldo(total); // Disparar validación visual
+            validarContraCostoPorpago(total);
+            if (toggleAnticipo.checked) {
+                validarContraSaldoAnticipo(anticipo);
+            } else {
+                ocultarAlerta();
+            }
         }
 
-        function validarSaldo(total) {
-            const prestatarioId = prestatarioSelect.value;
+        function validarContraCostoPorpago(total) {
+            const tipo = tipoServicioSelect.value;
+            const servicioId = prestatarioSelect.value;
 
-            if (!prestatarioId || total === 0) {
-                saldoAlert.classList.add('d-none');
-                return;
-            }
+            if (!tipo || !servicioId) return;
 
-            fetch(`/api/saldo-prestatario/${prestatarioId}?reserva_id={{ $reserva->id }}`)
+            fetch(`/api/validar-monto-servicio?reserva_id={{ $reserva->id }}&tipo_servicio=${tipo}&servicio_id=${servicioId}`)
                 .then(res => res.json())
                 .then(data => {
-                    const saldoDisponible = parseFloat(data.saldo);
-                    if (total > saldoDisponible) {
-                        saldoAlert.classList.remove('d-none');
+                    if (total > data.saldo_disponible) {
+                        mostrarAlerta(`⚠️ El total excede el saldo permitido por el servicio: Bs. ${data.saldo_disponible.toFixed(2)}`);
                     } else {
-                        saldoAlert.classList.add('d-none');
+                        ocultarAlerta();
                     }
-                });
+                })
+                .catch(err => console.warn('Error validando contra porpago:', err));
+        }
+
+        function validarContraSaldoAnticipo(anticipo) {
+            const prestatarioId = prestatarioSelect.value;
+            if (!prestatarioId) return;
+
+            fetch(`/api/saldo-anticipo?reserva_id={{ $reserva->id }}&prestatario_id=${prestatarioId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (anticipo > data.saldo_disponible) {
+                        mostrarAlerta(`⚠️ El anticipo excede el saldo disponible del prestatario: Bs. ${data.saldo_disponible.toFixed(2)}`);
+                    } else {
+                        ocultarAlerta();
+                    }
+                })
+                .catch(err => console.warn('Error validando anticipo:', err));
+        }
+
+        function mostrarAlerta(mensaje) {
+            alerta.textContent = mensaje;
+            alerta.classList.remove('d-none');
+        }
+
+        function ocultarAlerta() {
+            alerta.classList.add('d-none');
+            alerta.textContent = '';
         }
 
         toggleAnticipo.addEventListener('change', function () {
@@ -151,11 +177,11 @@
             updateTotal();
         });
 
-        anticipoInput.addEventListener('input', updateTotal);
         tipoServicioSelect.addEventListener('change', updateServicio);
         prestatarioSelect.addEventListener('change', updateTotal);
+        anticipoInput.addEventListener('input', updateTotal);
 
-        updateServicio();
+        updateServicio(); // Init
     });
 </script>
 @endpush
