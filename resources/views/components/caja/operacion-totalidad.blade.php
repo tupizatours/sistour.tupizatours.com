@@ -5,6 +5,7 @@
     'totalGeneralServicios' => 0,
     'totalGeneralGasto' => 0,
     'prestatarios' => [],
+    'tiposTotalidadesPagadas' => [],
 ])
 
 <div class="card">
@@ -14,7 +15,7 @@
 
     <pre class="text-muted small">@json($tiposTotalidadesPagadas)</pre>
 
-    
+
     <div class="card-body">
         @foreach([
             'Hoteles' => $totalGeneralHoteles,
