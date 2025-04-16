@@ -60,8 +60,8 @@ class CajaController extends Controller
                         'tipo_servicio' => $tipo,
                     ],
                     [
-                        'servicio_id'    => $request->prestatario, // o null si no aplica
-                        'pres_serv_id'   => null,
+                        'servicio_id'    => null, // o null si no aplica
+                        'pres_serv_id'   => $request->prestatario,
                         'anticipo_id'    => null,
                         'costo'          => $monto,
                         'es_prestatario' => false,
