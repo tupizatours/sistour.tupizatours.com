@@ -47,7 +47,7 @@ class CajaController extends Controller
             ]);
         }
     
-        // 2. Recorrer totalidades seleccionadas (checkboxes[])
+        // 2. Recorrer totalidades seleccionadas (sin validación de saldo)
         if (isset($request->checkboxes) && is_array($request->checkboxes)) {
             foreach ($request->checkboxes as $clave => $info) {
                 if (!isset($info['selected'])) continue;
@@ -55,27 +55,6 @@ class CajaController extends Controller
                 $tipo = strtolower($clave); // hoteles, tickets, etc.
                 $monto = floatval($info['monto']);
     
-                // Opción: si quieres que todos se registren como NO prestatarios
-                $esPrestatario = true;
-    
-                // Validar contra saldo si hay prestatario
-                if ($prestatarioId && $anticipoMonto > 0) {
-                    $anticiposTotal = Anticipo::where('reserva_id', $request->reserva_id)
-                        ->where('prestatario_id', $prestatarioId)
-                        ->sum('monto');
-    
-                    $porpagosTotal = Porpago::where('reserva_id', $request->reserva_id)
-                        ->where('servicio_id', $prestatarioId)
-                        ->sum('costo');
-    
-                    $saldoDisponible = $anticiposTotal - $porpagosTotal;
-    
-                    if ($monto > $saldoDisponible) {
-                        return back()->with('error', "Saldo insuficiente para el item '$tipo'. Disponible: Bs. " . number_format($saldoDisponible, 2))->withInput();
-                    }
-                }
-    
-                // Crear o actualizar por tipo de totalidad
                 Porpago::updateOrCreate(
                     [
                         'reserva_id'    => $request->reserva_id,
@@ -87,7 +66,7 @@ class CajaController extends Controller
                         'pres_serv_id'   => null,
                         'anticipo_id'    => $anticipo?->id,
                         'costo'          => $monto,
-                        'es_prestatario' => $esPrestatario,
+                        'es_prestatario' => false, // por defecto, no es prestatario
                         'estado'         => 'pendiente',
                         'user_id'        => $userId,
                     ]
@@ -95,12 +74,30 @@ class CajaController extends Controller
             }
         }
     
-        return back()->with('success', 'Totalidades registradas correctamente.');
+        // 3. Registrar pago por anticipo (si existe dserv)
+        if ($tipoServicioAnticipo && $prestatarioId && $request->monto_servicio) {
+            Porpago::updateOrCreate(
+                [
+                    'reserva_id'    => $request->reserva_id,
+                    'tour_id'       => $request->tour_id,
+                    'tipo_servicio' => $tipoServicioAnticipo,
+                ],
+                [
+                    'servicio_id'    => $prestatarioId,
+                    'pres_serv_id'   => $elementoId,
+                    'anticipo_id'    => $anticipo?->id,
+                    'costo'          => floatval($request->monto_servicio) + $anticipoMonto,
+                    'es_prestatario' => true,
+                    'estado'         => 'pendiente',
+                    'user_id'        => $userId,
+                ]
+            );
+        }
+    
+        return back()->with('success', 'Operación registrada correctamente.');
     }
+    
   
-
-
-
     /**
      * Display a listing of the resource.
      */
