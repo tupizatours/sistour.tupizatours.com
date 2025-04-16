@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (total > data.saldo_disponible) {
-                    mostrarAlerta(`⚠️ El total supera el saldo disponible para este servicio (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
+                    mostrarAlerta(`El total supera el saldo disponible para este servicio (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
                 } else {
                     ocultarAlerta();
                 }
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (anticipo > data.saldo_disponible) {
-                    mostrarAlerta(`⚠️ El anticipo excede el saldo disponible del prestatario (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
+                    mostrarAlerta(`El anticipo excede el saldo disponible del prestatario (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
                 } else {
                     ocultarAlerta();
                 }
