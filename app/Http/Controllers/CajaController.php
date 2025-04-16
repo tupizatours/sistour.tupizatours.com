@@ -32,7 +32,7 @@ class CajaController extends Controller
         }
 
         $anticipo = null;
-        $anticipoMonto = floatval($request->anticipoActual ?? 0);
+        $anticipoMonto = floatval($request->monto_anticipo ?? 0);
         $userId = Auth::id();
 
         // Si hay anticipo, crear Anticipo y asociar

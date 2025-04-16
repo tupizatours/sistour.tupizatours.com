@@ -53,13 +53,13 @@
             {{-- Monto del servicio --}}
             <div class="form-group mb-3">
                 <label for="subtotal"><strong>Monto del Servicio</strong></label>
-                <input type="number" class="form-control" id="subtotal" name="subtotal" value="0" readonly>
+                <input type="number" class="form-control" id="monto_servicio" name="monto_servicio" value="0" readonly>
             </div>
 
             {{-- Anticipo --}}
             <div class="form-group mb-3">
                 <label for="anticipoActual"><strong>Monto de Anticipo</strong></label>
-                <input type="number" class="form-control" id="anticipoActual" name="anticipoActual" value="0" disabled>
+                <input type="number" class="form-control" id="monto_anticipo" name="monto_anticipo" value="0" disabled>
             </div>
 
             {{-- Alerta de validación --}}
@@ -87,8 +87,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const servicioAnticipoWrapper = document.getElementById('servicioAnticipoWrapper');
     const tipoServicioSelect = document.getElementById('tipo_servicio');
     const prestatarioSelect = document.getElementById('prestatario');
-    const subtotalInput = document.getElementById('subtotal');
-    const anticipoInput = document.getElementById('anticipoActual');
+    const servicioInput = document.getElementById('monto_servicio');
+    const anticipoInput = document.getElementById('monto_anticipo');
     const totalInput = document.getElementById('total');
     const alerta = document.getElementById('alerta-validacion');
     const dservInput = document.getElementById('dserv');
@@ -96,16 +96,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
     let montoServicio = 0;
 
-    // Evento recibido desde otro componente
     window.addEventListener('totalidadUpdated', function (e) {
         montoServicio = parseFloat(e.detail.total || 0);
-        subtotalInput.value = montoServicio.toFixed(2);
+        servicioInput.value = montoServicio.toFixed(2);
         updateTotal();
     });
 
     function updateServicio() {
         const option = tipoServicioSelect.options[tipoServicioSelect.selectedIndex];
-        dservInput.value = option.value;
+        dservInput.value = option.value || '';
         dseridInput.value = option.dataset.id || '';
 
         if (toggleAnticipo.checked && option.dataset.pres) {
@@ -116,18 +115,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function updateTotal() {
-        const subtotal = parseFloat(subtotalInput.value || 0);
+        const servicio = parseFloat(servicioInput.value || 0);
         const anticipo = toggleAnticipo.checked ? parseFloat(anticipoInput.value || 0) : 0;
-        const total = subtotal + anticipo;
+        const total = servicio + anticipo;
 
         totalInput.value = total.toFixed(2);
 
+        // Validaciones en cascada
         if (toggleAnticipo.checked) {
             validarContraSaldoAnticipo(anticipo);
-            validarContraCostoPorpago(total);
-        } else {
-            ocultarAlerta();
         }
+
+        validarContraCostoPorpago(total);
     }
 
     function validarContraCostoPorpago(total) {
@@ -140,7 +139,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (total > data.saldo_disponible) {
-                    mostrarAlerta(`⚠️ El total excede el saldo disponible para este servicio: Bs. ${data.saldo_disponible.toFixed(2)}`);
+                    mostrarAlerta(`⚠️ El total supera el saldo disponible para este servicio (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
                 } else {
                     ocultarAlerta();
                 }
@@ -155,7 +154,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (anticipo > data.saldo_disponible) {
-                    mostrarAlerta(`⚠️ El anticipo excede el saldo disponible del prestatario: Bs. ${data.saldo_disponible.toFixed(2)}`);
+                    mostrarAlerta(`⚠️ El anticipo excede el saldo disponible del prestatario (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
                 } else {
                     ocultarAlerta();
                 }
@@ -163,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function mostrarAlerta(mensaje) {
-        alerta.textContent = mensaje;
+        alerta.innerHTML = `<i class="bx bx-error-circle me-1"></i> ${mensaje}`;
         alerta.classList.remove('d-none');
     }
 
@@ -183,7 +182,8 @@ document.addEventListener('DOMContentLoaded', function () {
     prestatarioSelect.addEventListener('change', updateTotal);
     anticipoInput.addEventListener('input', updateTotal);
 
-    updateServicio(); // Init
+    updateServicio(); // init
 });
+
 </script>
 @endpush
