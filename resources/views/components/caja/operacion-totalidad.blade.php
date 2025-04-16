@@ -10,7 +10,6 @@
 <div class="card">
     <div class="card-header bg-transparent pt-3 pb-3">
         <h6 class="mb-0 title_page">PAGO DE TOTALIDAD DE SERVICIOS</h6>
-        <?php echo($tiposTotalidadesPagadas); ?>
     </div>
 
     <div class="card-body">
