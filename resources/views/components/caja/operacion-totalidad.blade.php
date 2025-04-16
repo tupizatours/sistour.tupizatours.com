@@ -13,9 +13,6 @@
         <h6 class="mb-0 title_page">PAGO DE TOTALIDAD DE SERVICIOS</h6>
     </div>
 
-    <pre class="text-muted small">@json($tiposTotalidadesPagadas)</pre>
-
-
     <div class="card-body">
         @foreach([
             'Hoteles' => $totalGeneralHoteles,
@@ -35,7 +32,7 @@
                             data-monto="{{ $monto }}"
                             id="check_{{ strtolower($label) }}"
                             name="checkboxes[{{ strtolower($label) }}][selected]"
-                            {{ in_array(strtolower($label), $tiposTotalidadesPagadas ?? []) ? 'disabled checked' : '' }} > 
+                            {{ in_array(strtolower($label), $tiposTotalidadesPagadas ?? []) ? 'disabled' : '' }} > 
 
                             @if (in_array(strtolower($label), $tiposTotalidadesPagadas ?? []))
                                 <small class="text-muted">(ya fue pagado)</small>
