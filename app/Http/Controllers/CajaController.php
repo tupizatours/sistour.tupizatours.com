@@ -48,13 +48,11 @@ class CajaController extends Controller
         }
     
         // 2. Recorrer totalidades seleccionadas (sin validación de saldo)
-        if (isset($request->checkboxes) && is_array($request->checkboxes)) {
-            foreach ($request->checkboxes as $clave => $info) {
-                if (!isset($info['selected'])) continue;
-    
-                $tipo = strtolower($clave); // hoteles, tickets, etc.
-                $monto = floatval($info['monto']);
-    
+        if ($request->filled('totalidades')) {
+            foreach ($request->totalidades as $totalidad) {
+                $tipo = strtolower($totalidad['nombre']);
+                $monto = floatval($totalidad['monto']);
+        
                 Porpago::updateOrCreate(
                     [
                         'reserva_id'    => $request->reserva_id,
@@ -62,17 +60,17 @@ class CajaController extends Controller
                         'tipo_servicio' => $tipo,
                     ],
                     [
-                        'servicio_id'    => $prestatarioId,
+                        'servicio_id'    => $request->prestatario, // o null si no aplica
                         'pres_serv_id'   => null,
-                        'anticipo_id'    => $anticipo?->id,
+                        'anticipo_id'    => null,
                         'costo'          => $monto,
-                        'es_prestatario' => false, // por defecto, no es prestatario
-                        'estado'         => 'pendiente',
+                        'es_prestatario' => false,
+                        'estado'         => 'pagado',
                         'user_id'        => $userId,
                     ]
                 );
             }
-        }
+        }        
     
         // 3. Registrar pago por anticipo (si existe dserv)
         if ($tipoServicioAnticipo && $prestatarioId) {

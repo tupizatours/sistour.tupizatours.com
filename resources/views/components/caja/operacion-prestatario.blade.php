@@ -190,18 +190,28 @@ document.addEventListener('DOMContentLoaded', function () {
     document.addEventListener('DOMContentLoaded', function () {
         const mainForm = document.querySelector('form[action="{{ route('cajacobros.store') }}"]');
         const sombra = document.getElementById('form-totalidades-sombra');
-    
-        mainForm.addEventListener('submit', function (e) {
-            const sombraInputs = sombra.querySelectorAll('input');
-    
-            sombraInputs.forEach(input => {
-                // Solo clonar checkboxes seleccionados o inputs ocultos
-                if (input.type === 'checkbox' && !input.checked) return;
-    
-                const clone = input.cloneNode(true);
-                mainForm.appendChild(clone);
+
+        mainForm.addEventListener('submit', function () {
+            const items = sombra.querySelectorAll('input[type="checkbox"]:checked');
+
+            items.forEach((checkbox, index) => {
+                const prefix = checkbox.name.match(/\[(.*?)\]/)[1]; // hoteles, tickets...
+                const nombreInput = sombra.querySelector(`input[name="totalidades_temp[${prefix}][nombre]"]`);
+                const montoInput = sombra.querySelector(`input[name="totalidades_temp[${prefix}][monto]"]`);
+
+                const nombre = nombreInput.value;
+                const monto = montoInput.value;
+
+                ['nombre', 'monto'].forEach(field => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = `totalidades[${index}][${field}]`;
+                    input.value = field === 'nombre' ? nombre : monto;
+                    mainForm.appendChild(input);
+                });
             });
         });
     });
+
     </script>
 @endpush
