@@ -24,12 +24,19 @@
                     <div class="form-check"> 
                         <input type="hidden" name="checkboxes[{{ strtolower($label) }}][nombre]" value="{{ $label }}">
                         <input type="hidden" name="checkboxes[{{ strtolower($label) }}][monto]" value="{{ $monto }}">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               data-nombre="{{ $label }}"
-                               data-monto="{{ $monto }}"
-                               id="check_{{ strtolower($label) }}"
-                               name="checkboxes[{{ strtolower($label) }}][selected]">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            data-nombre="{{ $label }}"
+                            data-monto="{{ $monto }}"
+                            id="check_{{ strtolower($label) }}"
+                            name="checkboxes[{{ strtolower($label) }}][selected]"
+                            {{ in_array(strtolower($label), $tiposTotalidadesPagadas ?? []) ? 'disabled checked' : '' }} > 
+
+                            @if (in_array(strtolower($label), $tiposTotalidadesPagadas ?? []))
+                                <small class="text-muted">(ya fue pagado)</small>
+                            @endif
+
                         <label class="form-check-label" for="check_{{ strtolower($label) }}">{{ $label }}</label>
                     </div>
                 </dt>
