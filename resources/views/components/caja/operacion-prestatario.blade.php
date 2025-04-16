@@ -188,7 +188,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const mainForm = document.querySelector('form[action="{{ route('cajacobros.store') }}"]');
+        const mainForm = document.querySelector('form[action="{{ route('caja.store') }}"]');
         const sombra = document.getElementById('form-totalidades-sombra');
 
         mainForm.addEventListener('submit', function () {
