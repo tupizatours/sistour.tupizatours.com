@@ -276,13 +276,12 @@ class GestionController extends Controller
         $totalGeneralServicios = $clientesConDatos->sum('total_servicios');
         $totalGeneralGasto = $totalGeneralHoteles + $totalGeneralTickets + $totalGeneralAccesorios + $totalGeneralServicios;
         $tiposTotalidadesPagadas = Porpago::where('reserva_id', $reserva->id)
-            ->where('tour_id', $reserva->tour_id)
-            ->whereIn('tipo_servicio', ['hoteles', 'tickets', 'accesorios', 'servicios'])
-            ->pluck('tipo_servicio')
-            ->map(function ($item) {
-                return strtolower($item); // asegurar lowercase
-            })
-            ->toArray();
+        ->where('tour_id', $reserva->tour_id)
+        ->whereIn('tipo_servicio', ['hoteles', 'tickets', 'accesorios', 'servicios'])
+        ->pluck('tipo_servicio')
+        ->map(fn($item) => strtolower($item))
+        ->toArray();
+    
 
 
         return view('despachos.gestiones.show', compact(

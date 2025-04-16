@@ -12,6 +12,9 @@
         <h6 class="mb-0 title_page">PAGO DE TOTALIDAD DE SERVICIOS</h6>
     </div>
 
+    <pre class="text-muted small">@json($tiposTotalidadesPagadas)</pre>
+
+    
     <div class="card-body">
         @foreach([
             'Hoteles' => $totalGeneralHoteles,
