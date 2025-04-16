@@ -22,17 +22,6 @@
                 </div>
             </div>
 
-            {{-- Prestatario obligatorio --}}
-            <div class="form-group mb-3">
-                <label for="prestatario"><strong>Prestatario</strong></label>
-                <select class="form-control" id="prestatario" name="prestatario" required>
-                    <option value="">Seleccionar</option>
-                    @foreach($propietarios as $prop)
-                        <option value="{{ $prop->id }}">{{ $prop->nombre }} {{ $prop->apellido }}</option>
-                    @endforeach
-                </select>
-            </div>
-
             {{-- Servicio anticipado (solo si está activado el anticipo) --}}
             <div class="form-group mb-3 d-none" id="servicioAnticipoWrapper">
                 <label for="tipo_servicio"><strong>Servicio a anticipar</strong></label>
@@ -47,6 +36,17 @@
                     @if($gestion->probic_id)
                         <option value="bicicleta" data-pres="{{ $gestion->probic_id }}" data-id="{{ $gestion->bicicleta_id }}" data-costo="{{ $gestion->bicicleta_t }}">Bicicleta</option>
                     @endif
+                </select>
+            </div>
+            
+            {{-- Prestatario obligatorio --}}
+            <div class="form-group mb-3">
+                <label for="prestatario"><strong>Prestatario</strong></label>
+                <select class="form-control" id="prestatario" name="prestatario" required>
+                    <option value="">Seleccionar</option>
+                    @foreach($propietarios as $prop)
+                        <option value="{{ $prop->id }}">{{ $prop->nombre }} {{ $prop->apellido }}</option>
+                    @endforeach
                 </select>
             </div>
 
