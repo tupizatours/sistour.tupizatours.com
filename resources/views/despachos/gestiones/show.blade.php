@@ -626,6 +626,8 @@
                         :totalGeneralServicios="$totalGeneralServicios"
                         :totalGeneralGasto="$totalGeneralGasto"
                         :prestatarios="$propietarios"
+                        :tiposTotalidadesPagadas="$tiposTotalidadesPagadas"
+
                     />
                     <x-caja.operacion-prestatario
                         :reserva="$reserva" 
