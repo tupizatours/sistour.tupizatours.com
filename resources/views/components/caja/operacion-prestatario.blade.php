@@ -33,9 +33,9 @@
                 </select>
             </div>
 
-            {{-- Servicio relacionado --}}
+            {{-- Este segmento deberia ser un segmento de servicio anticipar  --}}
             <div class="form-group mb-3">
-                <label for="tipo_servicio"><strong>Servicio a pagar</strong></label>
+                <label for="tipo_servicio"><strong>Servicio a anticipar</strong></label>
                 <select class="form-control" id="tipo_servicio" required>
                     <option value="">Seleccionar</option>
                     @if($gestion->provag_id)
