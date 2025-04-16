@@ -8,7 +8,7 @@
 
 <div class="card mt-4">
     <div class="card-body">
-        <form action="{{ route('cajacobros.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('caja.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="pagina" value="gestions">
             <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
