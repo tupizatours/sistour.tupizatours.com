@@ -75,7 +75,7 @@ class CajaController extends Controller
         }
     
         // 3. Registrar pago por anticipo (si existe dserv)
-        if ($tipoServicioAnticipo && $prestatarioId && $request->monto_servicio) {
+        if ($tipoServicioAnticipo && $prestatarioId) {
             Porpago::updateOrCreate(
                 [
                     'reserva_id'    => $request->reserva_id,
@@ -86,7 +86,6 @@ class CajaController extends Controller
                     'servicio_id'    => $prestatarioId,
                     'pres_serv_id'   => $elementoId,
                     'anticipo_id'    => $anticipo?->id,
-                    'costo'          => floatval($request->monto_servicio) + $anticipoMonto,
                     'es_prestatario' => true,
                     'estado'         => 'pendiente',
                     'user_id'        => $userId,
@@ -98,6 +97,7 @@ class CajaController extends Controller
     }
     
   
+
     /**
      * Display a listing of the resource.
      */
