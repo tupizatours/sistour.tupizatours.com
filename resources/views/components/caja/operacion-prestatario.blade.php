@@ -186,4 +186,22 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const mainForm = document.querySelector('form[action="{{ route('cajacobros.store') }}"]');
+        const sombra = document.getElementById('form-totalidades-sombra');
+    
+        mainForm.addEventListener('submit', function (e) {
+            const sombraInputs = sombra.querySelectorAll('input');
+    
+            sombraInputs.forEach(input => {
+                // Solo clonar checkboxes seleccionados o inputs ocultos
+                if (input.type === 'checkbox' && !input.checked) return;
+    
+                const clone = input.cloneNode(true);
+                mainForm.appendChild(clone);
+            });
+        });
+    });
+    </script>
 @endpush

@@ -36,6 +36,24 @@
                 <dd class="col-sm-3 text-right">Bs. {{ number_format($monto, 2) }}</dd>
             </dl>
         @endforeach
+
+        <form id="form-totalidades-sombra" style="display: none;">
+            @foreach([
+                'Hoteles' => $totalGeneralHoteles,
+                'Tickets' => $totalGeneralTickets,
+                'Accesorios' => $totalGeneralAccesorios,
+                'Servicios' => $totalGeneralServicios,
+            ] as $label => $monto)
+                <input type="hidden" name="checkboxes[{{ strtolower($label) }}][nombre]" value="{{ $label }}">
+                <input type="hidden" name="checkboxes[{{ strtolower($label) }}][monto]" value="{{ $monto }}">
+                <input type="checkbox"
+                       data-nombre="{{ $label }}"
+                       data-monto="{{ $monto }}"
+                       class="check-totalidad-sombra"
+                       id="sombra_{{ strtolower($label) }}"
+                       name="checkboxes[{{ strtolower($label) }}][selected]">
+            @endforeach
+        </form>
     </div>
 
     <div class="card-footer">
@@ -98,6 +116,24 @@
             console.log("📡 Event received in listener → Totalidad:", e.detail.total);
         });
     })();
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const visibles = document.querySelectorAll('input.form-check-input[data-monto]');
+        const sombraForm = document.getElementById('form-totalidades-sombra');
+    
+        visibles.forEach(visible => {
+            const tipo = visible.getAttribute('data-nombre').toLowerCase();
+            const sombra = sombraForm.querySelector(`#sombra_${tipo}`);
+    
+            if (sombra) {
+                // Mantener sincronización
+                visible.addEventListener('change', () => {
+                    sombra.checked = visible.checked;
+                });
+            }
+        });
+    });
 </script>
 @endpush
 

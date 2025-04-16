@@ -11,77 +11,94 @@ use Illuminate\Support\Facades\Validator;
 class CajaController extends Controller
 {
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $data = $request->all();
-
+    
         $validator = Validator::make($data, [
             'reserva_id' => 'required|exists:reservas,id',
             'tour_id'    => 'required|exists:tours,id',
-            'dserv'      => 'required|string',
-            'dserid'     => 'required|integer',
-            'subtotal'   => 'required|numeric|min:0.01',
-            'total'      => 'required|numeric|min:0',
         ]);
-
+    
         if ($validator->fails()) {
             return back()->withErrors($validator)->withInput();
         }
-
+    
+        $userId = Auth::id();
         $anticipo = null;
         $anticipoMonto = floatval($request->monto_anticipo ?? 0);
-        $userId = Auth::id();
-
-        // Si hay anticipo, crear Anticipo y asociar
+        $prestatarioId = $request->prestatario;
+        $elementoId = $request->dserid;
+        $tipoServicioAnticipo = $request->dserv;
+    
+        // 1. Registrar anticipo si existe
         if ($anticipoMonto > 0) {
-            if (!$request->prestatario) {
+            if (!$prestatarioId) {
                 return back()->with('error', 'Debes seleccionar un prestatario para el anticipo.')->withInput();
             }
-
+    
             $anticipo = Anticipo::create([
                 'reserva_id'     => $request->reserva_id,
-                'prestatario_id' => $request->prestatario,
-                'elemento_id'    => $request->dserid,
-                'tipo_servicio'  => $request->dserv,
+                'prestatario_id' => $prestatarioId,
+                'elemento_id'    => $elementoId,
+                'tipo_servicio'  => $tipoServicioAnticipo,
                 'monto'          => $anticipoMonto,
                 'user_id'        => $userId,
             ]);
         }
-
-        // Verificar saldo disponible de anticipos
-        $anticiposTotal = Anticipo::where('reserva_id', $request->reserva_id)
-            ->where('prestatario_id', $request->prestatario)
-            ->sum('monto');
-
-        $porpagosTotal = Porpago::where('reserva_id', $request->reserva_id)
-            ->where('servicio_id', $request->prestatario)
-            ->sum('costo');
-
-        $saldoDisponible = $anticiposTotal - $porpagosTotal;
-
-        if ($request->subtotal > $saldoDisponible) {
-            return back()->with('error', 'Saldo insuficiente para este prestatario. Disponible: Bs. ' . number_format($saldoDisponible, 2))->withInput();
+    
+        // 2. Recorrer totalidades seleccionadas (checkboxes[])
+        if (isset($request->checkboxes) && is_array($request->checkboxes)) {
+            foreach ($request->checkboxes as $clave => $info) {
+                if (!isset($info['selected'])) continue;
+    
+                $tipo = strtolower($clave); // hoteles, tickets, etc.
+                $monto = floatval($info['monto']);
+    
+                // Opción: si quieres que todos se registren como NO prestatarios
+                $esPrestatario = true;
+    
+                // Validar contra saldo si hay prestatario
+                if ($prestatarioId && $anticipoMonto > 0) {
+                    $anticiposTotal = Anticipo::where('reserva_id', $request->reserva_id)
+                        ->where('prestatario_id', $prestatarioId)
+                        ->sum('monto');
+    
+                    $porpagosTotal = Porpago::where('reserva_id', $request->reserva_id)
+                        ->where('servicio_id', $prestatarioId)
+                        ->sum('costo');
+    
+                    $saldoDisponible = $anticiposTotal - $porpagosTotal;
+    
+                    if ($monto > $saldoDisponible) {
+                        return back()->with('error', "Saldo insuficiente para el item '$tipo'. Disponible: Bs. " . number_format($saldoDisponible, 2))->withInput();
+                    }
+                }
+    
+                // Crear o actualizar por tipo de totalidad
+                Porpago::updateOrCreate(
+                    [
+                        'reserva_id'    => $request->reserva_id,
+                        'tour_id'       => $request->tour_id,
+                        'tipo_servicio' => $tipo,
+                    ],
+                    [
+                        'servicio_id'    => $prestatarioId,
+                        'pres_serv_id'   => null,
+                        'anticipo_id'    => $anticipo?->id,
+                        'costo'          => $monto,
+                        'es_prestatario' => $esPrestatario,
+                        'estado'         => 'pendiente',
+                        'user_id'        => $userId,
+                    ]
+                );
+            }
         }
-
-        // Registrar Porpago
-        Porpago::create([
-            'reserva_id'    => $request->reserva_id,
-            'tour_id'       => $request->tour_id,
-            'tipo_servicio' => $request->dserv,
-            'servicio_id'   => $request->prestatario,
-            'pres_serv_id'  => $request->dserid,
-            'anticipo_id'   => $anticipo?->id,
-            'costo'         => $request->total,
-            'es_prestatario' => true,
-            'estado'        => 'pendiente',
-            'user_id'       => $userId,
-        ]);
-
-        return back()->with('success', 'Operación registrada correctamente.');
+    
+        return back()->with('success', 'Totalidades registradas correctamente.');
     }
+  
+
 
 
     /**
@@ -133,6 +150,4 @@ class CajaController extends Controller
     {
         //
     }
-
-   
 }
