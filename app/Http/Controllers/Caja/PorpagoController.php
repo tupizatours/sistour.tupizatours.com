@@ -115,9 +115,20 @@ class PorpagoController extends Controller
 
         // Si no hay, saldo 0
         if ($anticipos->isEmpty()) {
-            return response()->json(['saldo_disponible' => 0]);
+            // Buscar servicios asignados en porpagos con es_prestatario = true
+            $porpagos = Porpago::where('reserva_id', $reservaId)
+                ->where('servicio_id', $prestatarioId)
+                ->where('es_prestatario', true)
+                ->get();
+        
+            $cupoMaximo = $porpagos->sum('costo');
+        
+            return response()->json([
+                'saldo_disponible' => $cupoMaximo,
+                'es_primera_vez' => true
+            ]);
         }
-
+        
         $saldo = $anticipos->sum('monto'); // Puedes restar pagos si están relacionados
 
         return response()->json([

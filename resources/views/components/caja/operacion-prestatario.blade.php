@@ -129,23 +129,6 @@ document.addEventListener('DOMContentLoaded', function () {
         validarContraCostoPorpago(total);
     }
 
-    function validarContraCostoPorpago(total) {
-        const tipo = tipoServicioSelect.value;
-        const servicioId = prestatarioSelect.value;
-
-        if (!tipo || !servicioId) return;
-
-        fetch(`/api/validar-monto-servicio?reserva_id={{ $reserva->id }}&tipo_servicio=${tipo}&servicio_id=${servicioId}`)
-            .then(res => res.json())
-            .then(data => {
-                if (total > data.saldo_disponible) {
-                    mostrarAlerta(`El total supera el saldo disponible para este servicio (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
-                } else {
-                    ocultarAlerta();
-                }
-            });
-    }
-
     function validarContraSaldoAnticipo(anticipo) {
         const prestatarioId = prestatarioSelect.value;
         if (!prestatarioId) return;
@@ -154,10 +137,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(res => res.json())
             .then(data => {
                 if (anticipo > data.saldo_disponible) {
-                    mostrarAlerta(`El anticipo excede el saldo disponible del prestatario (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`);
+                    const mensaje = data.es_primera_vez
+                        ? `⚠️ El monto del anticipo excede el cupo disponible según las prestaciones asignadas (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`
+                        : `⚠️ El monto del anticipo excede el saldo restante (máx: Bs. ${data.saldo_disponible.toFixed(2)}).`;
+
+                    mostrarAlerta(mensaje);
                 } else {
                     ocultarAlerta();
                 }
+
             });
     }
 
