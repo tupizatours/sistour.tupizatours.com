@@ -22,6 +22,18 @@
                 </div>
             </div>
 
+            {{-- Prestatario obligatorio --}}
+            <div class="form-group mb-3">
+                <label for="prestatario"><strong>Prestatario</strong></label>
+                <select class="form-control" id="prestatario" name="prestatario" required>
+                    <option value="">Seleccionar</option>
+                    @foreach($propietarios as $prop)
+                        <option value="{{ $prop->id }}">{{ $prop->nombre }} {{ $prop->apellido }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+
             {{-- Servicio anticipado (solo si está activado el anticipo) --}}
             <div class="form-group mb-3 d-none" id="servicioAnticipoWrapper">
                 <label for="tipo_servicio"><strong>Servicio a anticipar</strong></label>
@@ -39,16 +51,6 @@
                 </select>
             </div>
             
-            {{-- Prestatario obligatorio --}}
-            <div class="form-group mb-3">
-                <label for="prestatario"><strong>Prestatario</strong></label>
-                <select class="form-control" id="prestatario" name="prestatario" required>
-                    <option value="">Seleccionar</option>
-                    @foreach($propietarios as $prop)
-                        <option value="{{ $prop->id }}">{{ $prop->nombre }} {{ $prop->apellido }}</option>
-                    @endforeach
-                </select>
-            </div>
 
             {{-- Monto del servicio --}}
             <div class="form-group mb-3">
@@ -113,7 +115,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
         updateTotal();
     }
-
+    
+    
     function updateTotal() {
         const servicio = parseFloat(servicioInput.value || 0);
         const anticipo = toggleAnticipo.checked ? parseFloat(anticipoInput.value || 0) : 0;
@@ -170,7 +173,26 @@ document.addEventListener('DOMContentLoaded', function () {
     prestatarioSelect.addEventListener('change', updateTotal);
     anticipoInput.addEventListener('input', updateTotal);
 
+    prestatarioSelect.addEventListener('change', function () {
+        const selectedPresId = this.value;
+
+        if (!selectedPresId || !toggleAnticipo.checked) return;
+
+        // Buscar en el select de servicios la opción con data-pres igual al prestatario
+        const options = tipoServicioSelect.options;
+        for (let i = 0; i < options.length; i++) {
+            if (options[i].dataset.pres === selectedPresId) {
+                tipoServicioSelect.selectedIndex = i;
+                updateServicio(); // ← actualiza hidden inputs y valores
+                break;
+            }
+        }
+    });
+
+
     updateServicio(); // init
+
+    
 });
 
 </script>
