@@ -49,20 +49,20 @@ class RescliController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->pagina == "add_turista"){
+        if ($request->pagina == "add_turista") {
             $request->validate([
                 'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048', // Máximo 2MB
             ]);
 
             $alergias = json_encode($request->alergias);
             $alimentacion = json_encode($request->alimentacion);
-            
+
             $tickets = json_decode($request->input('tickets_seleccionados'), true);
             $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
             $accessories = json_decode($request->input('accesorios_seleccionados'), true);
             $services = json_decode($request->input('servicios_seleccionados'), true);
 
-            if($imagen = $request->File('file')) {
+            if ($imagen = $request->File('file')) {
                 $rutaGuardarmg = 'files_documentos';
                 $nombreOriginal = $imagen->getClientOriginalName();
                 $extension = $imagen->getClientOriginalExtension();
@@ -119,7 +119,7 @@ class RescliController extends Controller
 
             //$response = \Mail::to('danielmayurilevano@gmail.com')->send(new ReservaTour($data, $tour_id));
 
-            return redirect('ventas/reservas/'.$request->reserva_id)->with('success','Nueva Cotización agregada.');
+            return redirect('ventas/reservas/' . $request->reserva_id)->with('success', 'Nueva Cotización agregada.');
         }
     }
 
@@ -129,11 +129,11 @@ class RescliController extends Controller
     public function show($id)
     {
         $rescli = Resercliente::find($id);
-    
+
         if (!$rescli) {
             return redirect()->back()->with('error', 'Reserva no encontrada.');
         }
-    
+
         $sumaMonto = Pago::where('rescli_id', $id)->where('estatus', 1)->sum('conversion') ?? 0;
         $reservas = Reserva::all();
         $tours = Tour::all();
@@ -153,15 +153,31 @@ class RescliController extends Controller
         $qrs = Qr::all();
         $cobros = Cobro::all();
         $pagos = Pago::all();
-    
+
         return view('ventas.resclis.show', compact(
-            'sumaMonto', 'pagos', 'cobros', 'rescli', 'reservas', 'links', 
-            'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 
-            'tours', 'countries', 'hottus', 'hoteles', 'categorias', 
-            'servicios', 'tickets', 'turistas', 'accesorios'
+            'sumaMonto',
+            'pagos',
+            'cobros',
+            'rescli',
+            'reservas',
+            'links',
+            'onlines',
+            'qrs',
+            'habitaciones',
+            'alimentos',
+            'alergias',
+            'tours',
+            'countries',
+            'hottus',
+            'hoteles',
+            'categorias',
+            'servicios',
+            'tickets',
+            'turistas',
+            'accesorios'
         ));
     }
-    
+
 
     /**
      * Show the form for editing the specified resource.
@@ -181,55 +197,50 @@ class RescliController extends Controller
         $links = Link::all();
         $onlines = Online::all();
         $qrs = Qr::all();
-        
+
         return view('ventas.resclis.edit', compact('rescli', 'reservas', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'countries', 'hottus', 'categorias', 'servicios'));
     }
 
     /**
      * Update the specified resource in storage.
-     */  
+     */
 
     public function update(Request $request, $id)
     {
         if ($request->pagina == "file_panel" || $request->pagina == "user_external") {
-            $alergias = json_encode($request->alergias);
+            $alergias     = json_encode($request->alergias);
             $alimentacion = json_encode($request->alimentacion);
-    
-            $tickets = json_decode($request->input('tickets_seleccionados'), true);
-            $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
+
+            $tickets    = json_decode($request->input('tickets_seleccionados'), true);
+            $rooms      = json_decode($request->input('habitaciones_seleccionadas'), true);
             $accessories = json_decode($request->input('accesorios_seleccionados'), true);
-            $services = json_decode($request->input('servicios_seleccionados'), true);
-    
-            // Buscar el registro actual
+            $services   = json_decode($request->input('servicios_seleccionados'), true);
+
             $in = Resercliente::find($id);
-    
-            // Si no se sube una nueva imagen, mantener la imagen anterior
             $fotoQr = $in->file;
-    
+
+            // Procesar imagen si se sube una nueva
             if ($imagen = $request->file('file')) {
                 $rutaGuardarmg = 'files_documentos';
-                $nombreOriginal = time() . '_' . $imagen->getClientOriginalName(); // Agregar timestamp para evitar conflictos
+                $nombreOriginal = time() . '_' . $imagen->getClientOriginalName();
                 $extension = $imagen->getClientOriginalExtension();
-    
-                // Verificar si existe una imagen anterior y eliminarla
+
+                // Eliminar imagen anterior si existe
                 if ($in->file && file_exists(public_path("$rutaGuardarmg/{$in->file}"))) {
                     unlink(public_path("$rutaGuardarmg/{$in->file}"));
                 }
-    
+
                 if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                    // Procesar y redimensionar imagen
-                    $imagenResized = Image::make($imagen)->fit(300, 300);
+                    $imagenResized = \Image::make($imagen)->fit(300, 300);
                     $imagenResized->save(public_path("$rutaGuardarmg/$nombreOriginal"));
-                } elseif ($extension === 'pdf' || in_array($extension, ['doc', 'docx'])) {
-                    // Guardar directamente archivos PDF o Word
+                } elseif (in_array($extension, ['pdf', 'doc', 'docx'])) {
                     $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
                 }
-    
-                // Guardar el nuevo nombre en la base de datos
+
                 $fotoQr = $nombreOriginal;
             }
-    
-            // Datos a actualizar
+
+            // Datos para actualizar Resercliente
             $rs = [
                 'pre_per'      => $request->pre_uni,
                 'total'        => $request->tour_total,
@@ -244,25 +255,37 @@ class RescliController extends Controller
                 'alergias'     => $alergias,
                 'alimentacion' => $alimentacion,
                 'nota'         => $request->nota,
-                'file'         => $fotoQr, // Mantener o actualizar la imagen
+                'file'         => $fotoQr,
                 'tickets'      => $tickets,
                 'habitaciones' => $rooms,
                 'accesorios'   => $accessories,
                 'servicios'    => $services,
             ];
-    
-            // Actualizar registro en la base de datos
+
+            // Actualizar registro de Resercliente
             $in->update($rs);
 
+            // 🔁 RE-CALCULAR el total de la reserva sumando todos los rescli
+            $reservaId = $request->reserva_id;
+            $reservaClientes = Resercliente::where('reserva_id', $reservaId)->get();
+
+            $totalRecalculado = $reservaClientes->sum('total');
+
+            // Actualizar la tabla reservas con el nuevo total
+            Reserva::where('id', $reservaId)->update([
+                'total' => $totalRecalculado,
+            ]);
+
+            // Si viene del externo, mostrar mensaje especial
             if ($request->pagina == "user_external") {
-                return view ('reservas.confirmacion-user', ['nombre' => $request->nombres]);
+                return view('reservas.confirmacion-user', ['nombre' => $request->nombres]);
             }
-    
-            return redirect('ventas/reservas/' . $request->reserva_id)
+
+            return redirect('ventas/reservas/' . $reservaId)
                 ->with('success', 'Reserva actualizada correctamente.');
         }
     }
-    
+
     /**
      * Remove the specified resource from storage.
      */
@@ -281,12 +304,9 @@ class RescliController extends Controller
         $links = Link::all();
         $onlines = Online::all();
         $qrs = Qr::all();
-        
+
         return view('ventas.resclis.user', compact('rescli', 'reservas', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'countries', 'hottus', 'categorias', 'servicios'));
     }
 
-    public function destroy($id)
-    {
-
-    }
+    public function destroy($id) {}
 }
