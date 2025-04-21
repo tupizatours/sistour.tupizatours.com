@@ -67,104 +67,104 @@ class ReservaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048', // Máximo 2MB
+            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048',
         ]);
-
-        $alergias = json_encode($request->alergias);
-        $alimentacion = json_encode($request->alimentacion);
-        
-        $tickets = json_decode($request->input('tickets_seleccionados'), true);
-        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
-        $accessories = json_decode($request->input('accesorios_seleccionados'), true);
-        $services = json_decode($request->input('servicios_seleccionados'), true);
-
-        if($imagen = $request->File('file')) {
+    
+        // Datos adicionales
+        $alergias = json_encode($request->alergias ?? []);
+        $alimentacion = json_encode($request->alimentacion ?? []);
+    
+        $tickets = json_decode($request->input('tickets_seleccionados'), true) ?? [];
+        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true) ?? [];
+        $accessories = json_decode($request->input('accesorios_seleccionados'), true) ?? [];
+        $services = json_decode($request->input('servicios_seleccionados'), true) ?? [];
+    
+        // Manejo de archivo
+        if ($imagen = $request->file('file')) {
             $rutaGuardarmg = 'files_documentos';
-            $nombreOriginal = $imagen->getClientOriginalName();
+            $nombreOriginal = time() . '_' . $imagen->getClientOriginalName();
             $extension = $imagen->getClientOriginalExtension();
-
+    
             if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                // Procesar imagen
-                $imagenResized = Image::make($imagen)->fit(300, 300);
-                $imagenResized->save(public_path($rutaGuardarmg . '/' . $nombreOriginal));
+                Image::make($imagen)->fit(300, 300)->save(public_path("$rutaGuardarmg/$nombreOriginal"));
             } elseif ($extension === 'pdf') {
-                // Guardar directamente el PDF
                 $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
             }
-
-            $fotoQr = "$nombreOriginal";
+    
+            $fotoQr = $nombreOriginal;
         }
-
-        // Crea la reserva y guarda los datos
-        $in = [
-            'codigo'        => str_random(10),
-            'subtotal'      => $request->pre_tot,
-            'total'         => $request->tour_total,
-            'tour_id'       => $request->tour_id,
-            'tprivado'      => $request->tprivado,
-            'pre_per'       => $request->pre_uni,
-            'can_per'       => $request->cantper,
-            'pre_pri'       => $request->pre_tot,
-            'can_pri'       => $request->max_per,
-            'fecha'         => $request->fecha_limite,
-            'estado'        => 2,
-            'estatus'       => $request->estatus,
-        ];
-
-        $store = Reserva::create($in);
-
-        // Crear registros en Resercliente
-        for ($i = 0; $i < $request->cantper; $i++) {
+    
+        // 🧠 Lógica de cálculo
+        $precioUnidad = floatval($request->pre_uni);
+        $cantidad = intval($request->cantper);
+        $esPrivado = $request->tprivado;
+        $precioPrivado = floatval($request->pre_tot); // asumido como total por grupo si es privado
+    
+        $subtotal = $esPrivado ? $precioPrivado : ($precioUnidad * $cantidad);
+        $totalAdicional = 0;
+    
+        foreach (array_merge($tickets, $rooms, $accessories, $services) as $item) {
+            $totalAdicional += isset($item['price']) ? floatval($item['price']) : 0;
+        }
+    
+        $total = $subtotal + $totalAdicional;
+    
+        // Crear reserva
+        $reserva = Reserva::create([
+            'codigo'    => Str::random(10),
+            'subtotal'  => $subtotal,
+            'total'     => $total,
+            'tour_id'   => $request->tour_id,
+            'tprivado'  => $esPrivado,
+            'pre_per'   => $precioUnidad,
+            'can_per'   => $cantidad,
+            'pre_pri'   => $precioPrivado,
+            'can_pri'   => $request->max_per,
+            'fecha'     => $request->fecha_limite,
+            'estado'    => 2,
+            'estatus'   => $request->estatus,
+        ]);
+    
+        // Crear turistas asociados
+        for ($i = 0; $i < $cantidad; $i++) {
+            $rescli = [
+                'codigo'        => Str::random(10),
+                'pre_per'       => $precioUnidad,
+                'reserva_id'    => $reserva->id,
+                'estado'        => 1,
+                'estatus'       => $request->estatus,
+                'esPrincipal'   => $i === 0,
+            ];
+    
             if ($i === 0) {
-                // Primer registro, guarda todos los datos
-                $rs = [
-                    'codigo'            => str_random(10),
-                    'pre_per'           => $request->pre_uni,
-                    //'subtotal'          => $request->pre_tot,
-                    'total'             => $request->tour_total,
-                    'reserva_id'        => $store->id,
-                    'nombres'           => $request->nombres,
-                    'apellidos'         => $request->apellidos,
-                    'edad'              => $request->edad,
-                    'nacionalidad'      => $request->nacionalidad,
-                    'documento'         => $request->documento,
-                    'celular'           => $request->celular,
-                    'sexo'              => $request->sexo,
-                    'correo'            => $request->email,
-                    'alergias'          => $alergias,
-                    'alimentacion'      => $alimentacion,
-                    'nota'              => $request->nota,
-                    'file'              => $fotoQr,
-                    'tickets'           => $tickets,
-                    'habitaciones'      => $rooms,
-                    'accesorios'        => $accessories,
-                    'servicios'         => $services,
-                    'estado'            => 1,
-                    'estatus'           => $request->estatus,
-                    'esPrincipal'       => true, // Primer registro como principal
-                ];
-            } else {
-                // Registros subsiguientes, guarda solo los campos especificados
-                $rs = [
-                    'codigo'            => str_random(10),
-                    'pre_per'           => $request->pre_uni,
-                    'reserva_id'        => $store->id,
-                    'estado'            => 1,
-                    'estatus'           => $request->estatus,
-                    'esPrincipal'       => false, // Registros adicionales no son principales
-                ];
+                $rescli = array_merge($rescli, [
+                    'total'         => $total,
+                    'nombres'       => $request->nombres,
+                    'apellidos'     => $request->apellidos,
+                    'edad'          => $request->edad,
+                    'nacionalidad'  => $request->nacionalidad,
+                    'documento'     => $request->documento,
+                    'celular'       => $request->celular,
+                    'sexo'          => $request->sexo,
+                    'correo'        => $request->email,
+                    'alergias'      => $alergias,
+                    'alimentacion'  => $alimentacion,
+                    'nota'          => $request->nota,
+                    'file'          => $fotoQr,
+                    'tickets'       => $tickets,
+                    'habitaciones'  => $rooms,
+                    'accesorios'    => $accessories,
+                    'servicios'     => $services,
+                ]);
             }
-            
-            Resercliente::create($rs);
+    
+            Resercliente::create($rescli);
         }
-
-        $data = $request->all();
-        $tour_id = $request->tour_id;
-
-        //$response = \Mail::to('danielmayurilevano@gmail.com')->send(new ReservaTour($data, $tour_id));
-
-        return redirect('ventas/reservas/'.$request->reserva_id)->with('success','Nueva Cotización agregada.');
+    
+        return redirect()->route('ventas.reservas.show', $reserva->id)
+            ->with('success', 'Reserva creada correctamente.');
     }
+    
 
     /**
      * Display the specified resource.

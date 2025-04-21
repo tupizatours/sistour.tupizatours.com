@@ -1101,34 +1101,4 @@
         // Ejecutar la función al cargar la página
         ekUpload();
     </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const continuarButtons = document.querySelectorAll(".continuar");
-            const regresarButtons = document.querySelectorAll(".regresar");
-
-            continuarButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const currentSection = button.closest(".fase");
-                    const nextSectionId = button.getAttribute("data-next");
-
-                    if (nextSectionId) {
-                        currentSection.style.display = "none"; // Oculta la sección actual
-                        document.getElementById(nextSectionId).style.display = "block"; // Muestra la siguiente sección
-                    }
-                });
-            });
-
-            regresarButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    const currentSection = button.closest(".fase");
-                    const prevSectionId = button.getAttribute("data-prev");
-
-                    if (prevSectionId) {
-                        currentSection.style.display = "none"; // Oculta la sección actual
-                        document.getElementById(prevSectionId).style.display = "block"; // Muestra la sección anterior
-                    }
-                });
-            });
-        });
-    </script>
 @endsection
