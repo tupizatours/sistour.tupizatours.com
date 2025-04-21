@@ -97,18 +97,20 @@ class ReservaController extends Controller
         // 🧠 Lógica de cálculo
         $precioUnidad = floatval($request->pre_uni);
         $cantidad = intval($request->cantper);
-        $esPrivado = $request->tprivado;
-        $precioPrivado = floatval($request->pre_tot); // asumido como total por grupo si es privado
-    
-        $subtotal = $esPrivado ? $precioPrivado : ($precioUnidad * $cantidad);
+        $esPrivado = $request->tprivado ? true : false;
+        $precioPrivado = floatval($request->pre_tot); // usado si es privado
+
+        $pre_pri = $esPrivado ? $precioPrivado : ($precioUnidad * $cantidad);
+        $subtotal = $pre_pri; // sin adicionales todavía
+
         $totalAdicional = 0;
-    
+
         foreach (array_merge($tickets, $rooms, $accessories, $services) as $item) {
             $totalAdicional += isset($item['price']) ? floatval($item['price']) : 0;
         }
-    
+
         $total = $subtotal + $totalAdicional;
-    
+
         // Crear reserva
         $reserva = Reserva::create([
             'codigo'    => Str::random(10),
@@ -118,13 +120,13 @@ class ReservaController extends Controller
             'tprivado'  => $esPrivado,
             'pre_per'   => $precioUnidad,
             'can_per'   => $cantidad,
-            'pre_pri'   => $precioPrivado,
+            'pre_pri'   => $pre_pri,
             'can_pri'   => $request->max_per,
             'fecha'     => $request->fecha_limite,
             'estado'    => 2,
             'estatus'   => $request->estatus,
         ]);
-    
+        
         // Crear turistas asociados
         for ($i = 0; $i < $cantidad; $i++) {
             $rescli = [
