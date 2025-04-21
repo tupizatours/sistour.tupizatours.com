@@ -98,18 +98,24 @@ class ReservaController extends Controller
         $precioUnidad = floatval($request->pre_uni);
         $cantidad = intval($request->cantper);
         $esPrivado = $request->tprivado ? true : false;
-        $precioPrivado = floatval($request->pre_tot); // usado si es privado
 
-        $pre_pri = $esPrivado ? $precioPrivado : ($precioUnidad * $cantidad);
-        $subtotal = $pre_pri; // sin adicionales todavía
+        // Calcular pre_pri correctamente
+        $pre_pri = $esPrivado 
+            ? floatval($request->pre_tot) // Si es privado, viene fijo
+            : $precioUnidad * $cantidad;
 
-        $totalAdicional = 0;
+        // Cargar los adicionales desde los inputs ocultos
+        $tickets = json_decode($request->input('tickets_seleccionados'), true);
+        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
+        $accessories = json_decode($request->input('accesorios_seleccionados'), true);
+        $services = json_decode($request->input('servicios_seleccionados'), true);
 
-        foreach (array_merge($tickets, $rooms, $accessories, $services) as $item) {
-            $totalAdicional += isset($item['price']) ? floatval($item['price']) : 0;
-        }
+        $adicionales = collect(array_merge($tickets, $rooms, $accessories, $services))
+            ->pluck('price')
+            ->sum();
 
-        $total = $subtotal + $totalAdicional;
+        $subtotal = $pre_pri;
+        $total = $subtotal + $adicionales;
 
         // Crear reserva
         $reserva = Reserva::create([
