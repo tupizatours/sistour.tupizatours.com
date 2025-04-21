@@ -916,8 +916,15 @@
             function updateSubtotal() {
                 const cantidad = parseInt(cantPerInput.value) || 0;
                 const subtotal = cantidad * preUni;
-                tourSbt.innerText = `Bs. ${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
-                tourTotal.value = `${(subtotal + totalTickets + totalAccesorios).toFixed(2)}`;
+                
+                tourSbt.innerText = `Bs. ${subtotal.toFixed(2)}`;
+                
+                // Guardar solo el valor base en pre_tot
+                document.getElementById("pre_tot").value = subtotal.toFixed(2);
+
+                // El total final sí puede sumar los adicionales
+                tourTotal.value = `${(subtotal + totalTickets + totalAccesorios + totalServicios + totalHabitaciones).toFixed(2)}`;
+
                 cantPersDisplay.innerText = `${cantidad} ${cantidad === 1 ? 'persona' : 'personas'}`;
             }
 
