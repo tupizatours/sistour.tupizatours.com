@@ -72,11 +72,19 @@
                                 </dd>
                             </dl>
 
+                            <!-- Total de la reserva -->
+                            <dl class="col-md-2">
+                                <dt class="col-sm-12">Total REserva</dt>
+                                <dd class="col-sm-12" id="totalReserva" data-total="{{ $reserva->total }}">
+                                    {{ 'Bs. '.number_format($reserva->total, 2, '.', ',') }}
+                                </dd>
+                            </dl>
+
+                            <!-- Total de la pagado -->
                             <dl class="col-md-2">
                                 <dt class="col-sm-12">Total Pagado</dt>
-                                <dd class="col-sm-12">
-                                    @php $tot_dir = 0; @endphp
-
+                                @php $tot_dir = 0; @endphp
+                                <dd class="col-sm-12"  id="totalPagado"  data-pagado="{{ $tot_dir }}">
                                     @foreach($resclis as $rescli)
                                         @if($rescli->estatus == "1")
                                             @php
@@ -129,21 +137,11 @@
                             </dl>
 
                             <dl class="col-md-2">
-                                <form action="{{ route('desges.store') }}" method="POST" enctype="multipart/form-data">
+                                <form action="{{ route('desges.store') }}" method="POST" enctype="multipart/form-data" id="form-despachar">
                                     @csrf
-                                    <p>
-                                        Total reserva
-                                        <span id="totalReserva" data-total="{{ $reserva->total }}">Bs. {{ number_format($reserva->total, 2, '.', '') }}</span>
-                                    </p>
-
-                                    <p>
-                                        Total Pagado
-                                        <span id="totalPagado" data-total="{{ $resclis->sum('pagado') }}">Bs. {{ number_format($resclis->sum('pagado'), 2, '.', '') }}</span>
-                                    </p>
-
                                     <input type="hidden" value="{{ $reserva->id }}" id="reserva_id" name="reserva_id">
-
-                                    <button type="submit" class="btn btn-success col-md-12">Despachar</button>
+                                
+                                    <button type="button" class="btn btn-success col-md-12" id="btn-despachar">Despachar</button>
                                 </form>
                             </dl>
                         </div>
@@ -319,23 +317,23 @@
     </script>
 
     <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const btnDespachar = document.getElementById('btn-despachar');
+            const form = document.getElementById('form-despachar');
 
-    document.getElementById('despacharReservaBtn').addEventListener('click', function() {
-        const totalReserva = parseFloat(document.getElementById('totalReserva').getAttribute('data-total')) || 0;
-        const totalPagado = parseFloat(document.getElementById('totalPagado').getAttribute('data-total')) || 0;
+            btnDespachar.addEventListener('click', function () {
+                const totalPagado = parseFloat(document.getElementById('totalPagado').dataset.pagado || 0);
+                const totalReserva = parseFloat(document.getElementById('totalReserva').dataset.total || 0);
 
-        if (Math.abs(totalPagado - totalReserva) < 0.01) {
-            // Si están iguales (margen flotante por decimales)
-            if (confirm('¿Estás seguro de despachar esta reserva? Esta acción no se puede deshacer.')) {
-                // Redirigir o disparar submit
-                document.getElementById('form-despachar').submit(); // si tienes un form oculto
-            }
-        } else {
-            alert('⚠️ El total pagado no coincide con el total de la reserva. No se puede despachar.');
-        }
-    });
-
-
-    </script>
-        
+                if (Math.abs(totalPagado - totalReserva) < 0.01) {
+                    // Confirmación opcional
+                    if (confirm("¿Deseas despachar esta reserva?")) {
+                        form.submit();
+                    }
+                } else {
+                    alert('⚠️ El total pagado no coincide con el total de la reserva. No se puede despachar.');
+                }
+            });
+        });
+    </script>  
 @endsection
