@@ -107,20 +107,22 @@ class GestionController extends Controller
             return redirect('despachos/gestiones/' . $request->reserva_id);
         } else {
         
-            $reserva = Reserva::findOrFail($request->reserva_id);
-            $totalPagado = Resercliente::where('reserva_id', $reserva->id)
+            $$reserva = Reserva::findOrFail($request->reserva_id);
+
+            $totalPagado = Resercliente::where('reserclientes.reserva_id', $reserva->id)
                 ->join('pagos', 'reserclientes.id', '=', 'pagos.rescli_id')
                 ->where('pagos.estatus', 1)
                 ->sum('pagos.conversion');
-        
+            
             if (round($totalPagado, 2) != round($reserva->total, 2)) {
                 return redirect()->back()->with('error', 'No se puede despachar. El total pagado no coincide con el total de la reserva.');
             }
-        
+            
             $reserva->estado = 3;
             $reserva->save();
-        
+            
             return redirect('despachos/gestiones/' . $request->reserva_id);
+            
         }
     }
 
