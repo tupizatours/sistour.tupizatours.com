@@ -154,7 +154,7 @@ class GestionController extends Controller
         $existePorpago = Porpago::where('reserva_id', $reserva->id)
             ->where('tour_id', $reserva->tour_id)
             ->get();
-            
+
         $resclis = Resercliente::where('reserva_id', $id)->get(); // Filtrar Resercliente por reserva_id
 
         $gestion = Gestion::with([
@@ -296,16 +296,13 @@ class GestionController extends Controller
         ->toArray();
 
         foreach ($resclis as $rescli) {
-            $pagado = Pago::where('rescli_id', $rescli->id)->where('estatus', 1)->sum('conversion');
-        
-            if ($rescli->esPrincipal) {
-                // Calcular total considerando que este cliente cubre más personas
-                $totalCliente = $reserva->total - (($reserva->can_per - 1) * $reserva->pre_per);
-            } else {
-                // Si el cliente tiene un total ya definido, úsalo, si no, usa pre_per
-                $totalCliente = $rescli->total ?? $rescli->pre_per;
-            }
-        
+            $pagado = Pago::where('rescli_id', $rescli->id)
+                ->where('estatus', 1)
+                ->sum('conversion');
+
+            // 👇 Usa total si está definido, si no, cae en pre_per como fallback
+            $totalCliente = $rescli->total ?? $rescli->pre_per;
+
             $rescli->pagado = $pagado;
             $rescli->total_cliente = $totalCliente;
             $rescli->saldo_pendiente = max($totalCliente - $pagado, 0);
