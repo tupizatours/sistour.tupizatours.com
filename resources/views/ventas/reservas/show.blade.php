@@ -100,29 +100,24 @@
                                     {{ 'Bs. '.number_format($tot_dir, 2, '.', ',') }}
                                 </dd>
                             </dl>
-
-                            <dl class="col-md-3">
+                            
+                            <div class="col-md-12 d-flex justify-content-end mt-3">
                                 <form action="{{ route('venreservas.update', $reserva->id) }}" method="POST">
                                     @csrf
                                     @method('PUT')
-                                
-                                    <dt class="col-sm-12">Capacidad</dt>
-                                    <dd class="col-sm-12">
-                                        <div class="input-group input-spinner">
-                                            <button class="btn btn-white" type="button" id="button-minus"> - </button>
-                                                <input type="text" id="cantper" name="cantper" class="form-control form_cantidad text-center" value="{{ $reserva->can_pri }}" readonly />
-                                            <button class="btn btn-white" type="button" id="button-plus"> + </button>
-
-                                            <button type="submit" class="btn btn-success">
-                                                Actualizar
-                                            </button>
-                                        </div>
-                                    </dd>
-
-                                    <input type="hidden" value="{{ $reserva->id }}" id="reserva_id" name="reserva_id" />
-                                    <input type="hidden" value="reservas" id="reservas" name="reservas" />
+                            
+                                    <div class="input-group input-spinner">
+                                        <button class="btn btn-white" type="button" id="button-minus"> - </button>
+                                        <input type="text" id="cantper" name="cantper" class="form-control form_cantidad text-center" value="{{ $reserva->can_pri }}" readonly />
+                                        <button class="btn btn-white" type="button" id="button-plus"> + </button>
+                                        <button type="submit" class="btn btn-success">Actualizar</button>
+                                    </div>
+                            
+                                    <input type="hidden" value="{{ $reserva->id }}" name="reserva_id" />
+                                    <input type="hidden" value="reservas" name="reservas" />
                                 </form>
-                            </dl>
+                            </div>
+                            
                         </div>
 
                         <div class="row">
