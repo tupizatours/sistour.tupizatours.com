@@ -175,23 +175,6 @@
                                                 <!-- Saldo Pendiente -->
                                                 <td>{{ 'Bs. ' . number_format($rescli->saldo_pendiente, 2, '.', ',') }}</td>
 
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
-                                                            $pagado = $pag_tot - $rescli->pagado;
-                                                            
-                                                        @endphp
-
-                                                        {{ 'Bs. '.number_format($pag_tot - $sumaMonto, 2, '.', ',') }}
-                                                    @else
-                                                        @if($rescli->total)
-                                                            {{ 'Bs. '.number_format($rescli->total - $sumaMonto, 2, '.', ',') }}
-                                                        @else
-                                                            {{ 'Bs. '.number_format($rescli->pre_per - $sumaMonto, 2, '.', ',') }}
-                                                        @endif
-                                                    @endif
-                                                </td>
                                                 
                                                 <td>
                                                     <div class="d-flex order-actions">
