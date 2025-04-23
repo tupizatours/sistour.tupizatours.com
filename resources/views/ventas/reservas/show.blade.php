@@ -131,6 +131,15 @@
                             <dl class="col-md-2">
                                 <form action="{{ route('desges.store') }}" method="POST" enctype="multipart/form-data">
                                     @csrf
+                                    <p>
+                                        Total reserva
+                                        <span id="totalReserva" data-total="{{ $reserva->total }}">Bs. {{ number_format($reserva->total, 2, '.', '') }}</span>
+                                    </p>
+
+                                    <p>
+                                        Total Pagado
+                                        <span id="totalPagado" data-total="{{ $resclis->sum('pagado') }}">Bs. {{ number_format($resclis->sum('pagado'), 2, '.', '') }}</span>
+                                    </p>
 
                                     <input type="hidden" value="{{ $reserva->id }}" id="reserva_id" name="reserva_id">
 
@@ -307,6 +316,26 @@
                 });
             });
         });
+    </script>
+
+    <script>
+
+    document.getElementById('despacharReservaBtn').addEventListener('click', function() {
+        const totalReserva = parseFloat(document.getElementById('totalReserva').getAttribute('data-total')) || 0;
+        const totalPagado = parseFloat(document.getElementById('totalPagado').getAttribute('data-total')) || 0;
+
+        if (Math.abs(totalPagado - totalReserva) < 0.01) {
+            // Si están iguales (margen flotante por decimales)
+            if (confirm('¿Estás seguro de despachar esta reserva? Esta acción no se puede deshacer.')) {
+                // Redirigir o disparar submit
+                document.getElementById('form-despachar').submit(); // si tienes un form oculto
+            }
+        } else {
+            alert('⚠️ El total pagado no coincide con el total de la reserva. No se puede despachar.');
+        }
+    });
+
+
     </script>
         
 @endsection
