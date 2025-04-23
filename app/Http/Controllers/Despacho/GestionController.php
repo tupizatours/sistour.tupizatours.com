@@ -110,14 +110,14 @@ class GestionController extends Controller
             $$reserva = Reserva::findOrFail($request->reserva_id);
 
             $totalPagado = Resercliente::join('pagos', 'reserclientes.id', '=', 'pagos.rescli_id')
-            ->where('reserclientes.reserva_id', $reserva->id) // 👈 prefijo necesario
+            ->where('reserclientes.reserva_id', $reserva->id) // 👈 este es el fix
             ->where('pagos.estatus', 1)
             ->sum('pagos.conversion');
 
            if (bccomp($totalPagado, $reserva->total, 2) !== 0) {
                 return redirect()->back()->with('error', '⚠️ No se puede despachar. El total pagado no coincide con el total de la reserva.');
             }
-            
+
             $reserva->estado = 3;
             $reserva->save();
             
