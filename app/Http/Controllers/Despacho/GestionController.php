@@ -107,7 +107,7 @@ class GestionController extends Controller
             return redirect('despachos/gestiones/' . $request->reserva_id);
         } else {
         
-            $$reserva = Reserva::findOrFail($request->reserva_id);
+            $reserva = Reserva::findOrFail($request->reserva_id);
 
             $totalPagado = Resercliente::join('pagos', 'reserclientes.id', '=', 'pagos.rescli_id')
             ->where('reserclientes.reserva_id', $reserva->id) // 👈 este es el fix
