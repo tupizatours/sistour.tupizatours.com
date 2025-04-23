@@ -567,7 +567,11 @@
                         
                                 <div class="row g-3 pt-3 pb-2 col-md-12">
                                     <div class="form-group mb-2 mt-2 col-md-12">
-                                        @if($saldoPagado == $tot_dir)
+
+                                        @php
+                                            $saldoTotalPendiente = $resclis->sum('saldo_pendiente');
+                                        @endphp
+                                        @if($saldoTotalPendiente == 0)
                                             <button type="submit" class="btn btn-primary col-md-12 font-14">GUARDAR</button>
                                         @else
                                             <strong style="color:red">DEBE PAGAR EL SALDO DE LA RESERVA</strong>

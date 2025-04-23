@@ -73,17 +73,10 @@
                             </dl>
 
                             <!-- Total de la reserva -->
-
-                            @php
-                                $totalCalculado = $resclis->sum(function ($rescli) {
-                                    return $rescli->total ?? $rescli->pre_per;
-                                });
-                            @endphp
-                                                        
                             <dl class="col-md-2">
                                 <dt class="col-sm-12">Total Reserva</dt>
-                                <dd class="col-sm-12" id="totalReserva" data-total="{{ $totalCalculado }}">
-                                    {{ 'Bs. '.number_format($totalCalculado, 2, '.', ',') }}
+                                <dd class="col-sm-12" id="totalReserva" data-total="{{ $reserva->total }}">
+                                    {{ 'Bs. '.number_format($reserva->total, 2, '.', ',') }}
                                 </dd>
                             </dl>
 
