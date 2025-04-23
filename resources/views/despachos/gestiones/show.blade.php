@@ -139,86 +139,38 @@
                                 </thead>
 
                                 <tbody>
-                                    @php
-                                        $saldoPagado = 0
-                                    @endphp
                                     @foreach($resclis as $rescli)
                                         @if($rescli->estatus == "1")
-                                            @php
-                                                $originalDate = $rescli->created_at;
-                                                $newDate = date("d-m-Y", strtotime($originalDate));
-                                            @endphp
-
                                             <tr>
                                                 <td style="text-transform: uppercase;">
-                                                    @if($rescli->estado == 1)
-                                                        {{ $reserva->codigo }}
-                                                    @elseif($rescli->estado == 2)
-                                                        {{ $rescli->codigo }}
-                                                    @endif
+                                                    {{ $rescli->estado == 1 ? $reserva->codigo : $rescli->codigo }}
                                                 </td>
-
-                                                <td>{{ $newDate }}</td>
-                                                <td>{{ $rescli->nombres.' '.$rescli->apellidos }}</td>
+                                
+                                                <td>{{ $rescli->created_at->format('d-m-Y') }}</td>
+                                                <td>{{ $rescli->nombres . ' ' . $rescli->apellidos }}</td>
                                                 <td>{{ $rescli->nacionalidad }}</td>
-                                                <td>@if($rescli->edad) {{ $rescli->edad }} @endif</td>
+                                                <td>{{ $rescli->edad ?? '' }}</td>
                                                 <td>{{ $rescli->sexo }}</td>
                                                 <td>{{ $rescli->celular }}</td>
                                                 <td>{{ $rescli->correo }}</td>
-                                                
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
-                                                            $saldoPagado += $pag_tot;
-                                                            $pagado = $pag_tot - $rescli->pagado;
-                                                        @endphp
-
-                                                        {{ 'Bs. '.number_format($pag_tot, 2, '.', '') }}
-                                                    @else
-                                                        @if($rescli->total)
-                                                            {{ 'Bs. '.number_format($rescli->total, 2, '.', ',') }}
-                                                            @php $saldoPagado += $rescli->total; @endphp
-                                                        @else
-                                                            {{ 'Bs. '.number_format($rescli->pre_per, 2, '.', ',') }}
-                                                            @php $saldoPagado += $rescli->pre_per; @endphp
-                                                        @endif
-                                                    @endif
-                                                </td>
-
-                                                @php
-                                                    $sumaMonto = Pago::where('rescli_id', $rescli->id)->sum('conversion');
-                                                    
-                                                @endphp
-
-                                                <td>{{ 'Bs. '.number_format($sumaMonto, 2, '.', ',') }}</td>
-                                                
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
-                                                            $pagado = $pag_tot - $rescli->pagado;
-                                                            
-                                                        @endphp
-
-                                                        {{ 'Bs. '.number_format($pag_tot - $sumaMonto, 2, '.', ',') }}
-                                                    @else
-                                                        @if($rescli->total)
-                                                            {{ 'Bs. '.number_format($rescli->total - $sumaMonto, 2, '.', ',') }}
-                                                        @else
-                                                            {{ 'Bs. '.number_format($rescli->pre_per - $sumaMonto, 2, '.', ',') }}
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                                
+                                
+                                                <!-- Total -->
+                                                <td>{{ 'Bs. ' . number_format($rescli->total_cliente, 2, '.', ',') }}</td>
+                                
+                                                <!-- Pagado -->
+                                                <td>{{ 'Bs. ' . number_format($rescli->pagado, 2, '.', ',') }}</td>
+                                
+                                                <!-- Saldo Pendiente -->
+                                                <td>{{ 'Bs. ' . number_format($rescli->saldo_pendiente, 2, '.', ',') }}</td>
+                                
+                                                <!-- Acciones -->
                                                 <td>
                                                     <div class="d-flex order-actions">
                                                         <button type="button" class="btn text-primary" data-bs-toggle="modal" data-bs-target="#ModalCambiarEstado{{ $reserva->id }}">
-                                                            <i class="bx bx-undo"></i> {{-- ícono de flecha inversa --}}
+                                                            <i class="bx bx-undo"></i>
                                                         </button>
                                                     </div>
-                                                
-                                                    <!-- Modal -->
+                                
                                                     <div class="modal fade" id="ModalCambiarEstado{{ $reserva->id }}" tabindex="-1" aria-hidden="true">
                                                         <div class="modal-dialog modal-dialog-centered">
                                                             <div class="modal-content">
@@ -227,16 +179,16 @@
                                                                     @method('PUT')
                                                                     <input type="hidden" name="pagina" value="estado_reserva">
                                                                     <input type="hidden" name="estado" value="2">
-                                                
+                                
                                                                     <div class="modal-header bg-light">
                                                                         <h5 class="modal-title">Revertir estado de la reserva</h5>
                                                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                                                                     </div>
-                                                
+                                
                                                                     <div class="modal-body">
                                                                         ¿Deseas cambiar el estado de esta reserva a <strong>"en revisión"</strong>?
                                                                     </div>
-                                                
+                                
                                                                     <div class="modal-footer">
                                                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                                                                         <button type="submit" class="btn btn-warning">Aceptar</button>
@@ -249,7 +201,7 @@
                                             </tr>
                                         @endif
                                     @endforeach
-                                </tbody>
+                                </tbody>                                
                             </table>
                         </div>
                     </div>
