@@ -84,19 +84,17 @@
                             <dl class="col-md-2">
                                 <dt class="col-sm-12">Total Pagado</dt>
                                 @php $tot_dir = 0; @endphp
-                                <dd class="col-sm-12"  id="totalPagado"  data-pagado="{{ $tot_dir }}">
-                                    @foreach($resclis as $rescli)
-                                        @if($rescli->estatus == "1")
-                                            @php
-                                                $sumaMonto = Pago::where('rescli_id', $rescli->id)
-                                                                ->where('estatus', 1)
-                                                                ->sum('conversion');
-
-                                                $tot_dir += $sumaMonto;
-                                            @endphp
-                                        @endif
-                                    @endforeach
-
+                                @foreach($resclis as $rescli)
+                                    @if($rescli->estatus == "1")
+                                        @php
+                                            $sumaMonto = Pago::where('rescli_id', $rescli->id)
+                                                            ->where('estatus', 1)
+                                                            ->sum('conversion');
+                                            $tot_dir += $sumaMonto;
+                                        @endphp
+                                    @endif
+                                @endforeach
+                                <dd class="col-sm-12" id="totalPagado" data-pagado="{{ $tot_dir }}">
                                     {{ 'Bs. '.number_format($tot_dir, 2, '.', ',') }}
                                 </dd>
                             </dl>
