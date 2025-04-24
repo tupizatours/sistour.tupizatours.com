@@ -70,10 +70,8 @@ class PagoController extends Controller
         $rescli->pagado += $conversion;
         $rescli->save();
     
-        if (($rescli->total - $rescli->pagado) <= 0) {
-            $reserva->estado = '2';
-            $reserva->save();
-        }
+        $reserva->estado = '2';
+        $reserva->save();
     
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
     
