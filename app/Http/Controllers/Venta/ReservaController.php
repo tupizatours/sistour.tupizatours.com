@@ -94,34 +94,31 @@ class ReservaController extends Controller
             $fotoQr = $nombreOriginal;
         }
     
-        // 🧠 Lógica de cálculo
+        // 🧠 Lógica de cálculo unitaria y adicional
         $precioUnidad = floatval($request->pre_uni);
         $cantidad = intval($request->cantper);
         $esPrivado = $request->tprivado ? true : false;
 
-        // Calcular pre_pri correctamente
-        $pre_pri = $esPrivado 
-            ? floatval($request->pre_tot) // Si es privado, viene fijo
-            : $precioUnidad * $cantidad;
-
-        // Cargar los adicionales desde los inputs ocultos
-        $tickets = json_decode($request->input('tickets_seleccionados'), true);
-        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true);
-        $accessories = json_decode($request->input('accesorios_seleccionados'), true);
-        $services = json_decode($request->input('servicios_seleccionados'), true);
+        $tickets = json_decode($request->input('tickets_seleccionados'), true) ?? [];
+        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true) ?? [];
+        $accessories = json_decode($request->input('accesorios_seleccionados'), true) ?? [];
+        $services = json_decode($request->input('servicios_seleccionados'), true) ?? [];
 
         $adicionales = collect(array_merge($tickets, $rooms, $accessories, $services))
             ->pluck('price')
             ->sum();
 
-        $subtotal = $pre_pri;
-        $total = $subtotal + $adicionales;
+        $pre_pri = $esPrivado 
+            ? floatval($request->pre_tot)
+            : $precioUnidad * $cantidad;
 
-        // Crear reserva
+        $totalReserva = 0;
+
+        // Crear reserva inicialmente sin total
         $reserva = Reserva::create([
             'codigo'    => Str::random(10),
-            'subtotal'  => $subtotal,
-            'total'     => $total,
+            'subtotal'  => 0, // será recalculado luego
+            'total'     => 0, // será recalculado luego
             'tour_id'   => $request->tour_id,
             'tprivado'  => $esPrivado,
             'pre_per'   => $precioUnidad,
@@ -132,21 +129,26 @@ class ReservaController extends Controller
             'estado'    => 2,
             'estatus'   => $request->estatus,
         ]);
-        
+
         // Crear turistas asociados
         for ($i = 0; $i < $cantidad; $i++) {
+            $esPrincipal = $i === 0;
+
+            $totalUnitario = $precioUnidad + ($esPrincipal ? $adicionales : 0);
+            $totalReserva += $totalUnitario;
+
             $rescli = [
                 'codigo'        => Str::random(10),
                 'pre_per'       => $precioUnidad,
+                'total'         => $totalUnitario,
                 'reserva_id'    => $reserva->id,
                 'estado'        => 1,
                 'estatus'       => $request->estatus,
-                'esPrincipal'   => $i === 0,
+                'esPrincipal'   => $esPrincipal,
             ];
-    
-            if ($i === 0) {
+
+            if ($esPrincipal) {
                 $rescli = array_merge($rescli, [
-                    'total'         => $total,
                     'nombres'       => $request->nombres,
                     'apellidos'     => $request->apellidos,
                     'edad'          => $request->edad,
@@ -165,14 +167,17 @@ class ReservaController extends Controller
                     'servicios'     => $services,
                 ]);
             }
-    
+
             Resercliente::create($rescli);
         }
-    
-        return redirect()->route('ventas.reservas.show', $reserva->id)
-            ->with('success', 'Reserva creada correctamente.');
+
+        // Actualizar totales reales
+        $reserva->update([
+            'subtotal' => $precioUnidad * $cantidad,
+            'total'    => $totalReserva,
+        ]);
+
     }
-    
 
     /**
      * Display the specified resource.
