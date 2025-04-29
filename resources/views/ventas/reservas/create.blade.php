@@ -172,521 +172,548 @@
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
     
-    <form action="{{ route('reservas.store') }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
+    <form action="{{ route('venreservas.store') }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
         @csrf
 
-        <div class="row">
-            <div class="col-md-2"></div>
+        @php
+            use App\Models\Servicio\Hotel;
+            use App\Models\Servicio\Ticket;
+            use App\Models\Servicio\Turista;
+            use App\Models\Servicio\Accesorio;
+        @endphp
 
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card border-primary mb-0">
-                        <div class="card-body pt-5 pb-5 p-4 fase" id="primera_fase">
-                            @php
-                                $originalDate = $tour->created_at;
-                                $newDate = date("m/d/Y", strtotime($originalDate));
-                            @endphp
+        @foreach($tours as $tour)
+            @if($tour->id == $_GET['tour_id'])
+                <?php
+                    $ticket_ids = json_decode($tour->tickets, true) ?? [];
+                    $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
+                    $turista_ids = json_decode($tour->turistas, true) ?? [];
+                    $hotel_ids = array_merge(...json_decode($tour->hoteles, true) ?? []);
 
-                            <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}" />
-                            <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}" />
-                            <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}" />
-                            <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}" />
-                            <input type="hidden" id="created_at" name="created_at" value="{{ $newDate }}" />
-                            <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}" />
-                            <input type="hidden" id="estatus" name="estatus" value="1" />
+                    // Filtrar solo los elementos necesarios
+                    $tickets = Ticket::whereIn('id', $ticket_ids)->get();
+                    $accesorios = Accesorio::whereIn('id', $accesorio_ids)->get();
+                    $turistas = Turista::whereIn('id', $turista_ids)->get();
+                    $hoteles = Hotel::whereIn('id', $hotel_ids)->with('habitaciones')->get();
 
-                            <h5 class="card-title text-black text-center"><b>{{ $tour->titulo }}</b></h5>
+                    $hotelesSeleccionados = json_decode($tour->hoteles, true);
+                ?>
 
-                            <dl class="row">
-                                <dt class="col-sm-3">Precio</dt>
-                                <dd class="col-sm-9 text-right">{{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}</dd>
-                            </dl>
-                            
-                            <hr>
+                    <div class="row">
+                        <div class="col-md-2"></div>
 
-                            <dl class="row">
-                                <dt class="col-sm-3">Personas</dt>
-                                <dd class="col-sm-9 text-right">
-                                    <div class="input-group input-spinner justify-content-end">
-                                        <button class="btn btn-white" type="button" id="button-minus"> - </button>
-                                            <input type="text" id="cantper" name="cantper" class="form-control form_cantidad text-center" value="1">
-                                        <button class="btn btn-white" type="button" id="button-plus"> + </button>
-                                    </div>
-                                </dd>
-                            </dl>
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card border-primary mb-0">
+                                    <div class="card-body pt-5 pb-5 p-4 fase" id="primera_fase">
+                                        @php
+                                            $originalDate = $tour->created_at;
+                                            $newDate = date("m/d/Y", strtotime($originalDate));
+                                        @endphp
 
-                            <p class="card-text">{{ $tour->descripcion }}</p>
+                                        <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}" />
+                                        <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}" />
+                                        <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}" />
+                                        <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}" />
+                                        <input type="hidden" id="created_at" name="created_at" value="{{ $newDate }}" />
+                                        <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}" />
+                                        <input type="hidden" id="estatus" name="estatus" value="1" />
 
-                            <hr>
+                                        <h5 class="card-title text-black text-center"><b>{{ $tour->titulo }}</b></h5>
 
-                            <dl class="row">
-                                <dt class="col-sm-3">Fecha del tour</dt>
-                                <dd class="col-sm-9 text-right">
-                                    <div class="input-group input-spinner justify-content-end">
-                                        <input type="date" class="form-control form_date text-center" id="fecha_limite" name="fecha_limite" />
-                                    </div>
-                                </dd>
-                            </dl>
-
-                            <hr>
-
-                            <div class="form-check form-switch">
-                                <input class="form-check-input" value="1" type="checkbox" role="switch" id="tprivado" />
-                                <label class="form-check-label" for="tprivado">Deseas privado</label>
-                            </div>
-
-                            <hr>
-
-                            <div class="d-flex align-items-center gap-2">
-                                <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
-                                <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
-                            </div>
-                        </div>
-
-                        <div class="card-body pt-5 pb-5 p-4 fase" id="segunda_fase" style="display: none;">
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label for="nombres" class="form-label">Nombres <span>*</span></label>
-                                    <input type="text" class="form-control" id="nombres" name="nombres" required />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="apellidos" class="form-label">Apellidos <span>*</span></label>
-                                    <input type="text" class="form-control" id="apellidos" name="apellidos" required />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="edad" class="form-label">Edad <span>*</span></label>
-                                    <input type="number" class="form-control" id="edad" name="edad" required />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="nacionalidad" class="form-label">Nacionalidad <span>*</span></label>
-                                    <select class="form-select" id="nacionalidad" name="nacionalidad" type="select">
-                                        <option value="">Seleccionar</option>
-                                        @foreach($countries as $countrie)
-                                            <option value="{{ $countrie->iso }}">{{ $countrie->nombre }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="documento" class="form-label">Número de documento <span>*</span></label>
-                                    <input type="number" class="form-control" id="documento" name="documento" required />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="celular" class="form-label">Celular <span>*</span></label>
-                                    <input type="number" class="form-control" id="celular" name="celular" required />
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="sexo" class="form-label">Sexo <span>*</span></label>
-                                    <select class="form-control" id="sexo" name="sexo" type="select" required>
-                                        <option value="">Seleccionar</option>
-                                        <option value="Hombre">Hombre</option>
-                                        <option value="Mujer">Mujer</option>
-                                    </select>
-                                </div>
-
-                                <div class="col-md-6">
-                                    <label for="email" class="form-label">Email <span>*</span></label>
-                                    <input type="email" class="form-control" id="email" name="email" required >
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="alergias" class="form-label">Alergias</label>
-                                    <select class="form-select" id="alergias" name="alergias[]" type="select" data-placeholder="Seleccionar" multiple>
-                                        @foreach($alergias as $alergia)
-                                            <option value="{{ $alergia->id }}">{{ $alergia->titulo }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="alimentacion" class="form-label">Tipo alimentación</label>
-                                    <select class="form-select" id="alimentacion" name="alimentacion[]" type="select" data-placeholder="Seleccionar" multiple>
-                                        @foreach($alimentos as $alimento)
-                                            <option value="{{ $alimento->id }}">{{ $alimento->titulo }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="nota" class="form-label">Nota adicional</label>
-                                    <input type="text" class="form-control" id="nota" name="nota" />
-                                </div>
-
-                                <div class="col-md-12">
-                                    <label for="alimentacion" class="form-label">
-                                        Es importante subir una imagen del documento de identidad para su seguridad y la nuestra. <strong>(campo requerido *)</strong>
-                                    </label>
-
-                                    <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-                                    <label for="file-upload" id="file-drag">
-                                        <img id="file-image" src="#" alt="Preview" class="hidden">
-                                        <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
+                                        <dl class="row">
+                                            <dt class="col-sm-3">Precio</dt>
+                                            <dd class="col-sm-9 text-right">{{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}</dd>
+                                        </dl>
                                         
-                                        <div id="start">
-                                            <i class="fa fa-download" aria-hidden="true"></i>
-                                            <div id="pdf-upload">Selecciona el archivo a cargar</div>
-                                            <div id="notimage" class="hidden">Selecciona una imagen</div>
-                                            <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
+                                        <hr>
+
+                                        <dl class="row">
+                                            <dt class="col-sm-3">Personas</dt>
+                                            <dd class="col-sm-9 text-right">
+                                                <div class="input-group input-spinner justify-content-end">
+                                                    <button class="btn btn-white" type="button" id="button-minus"> - </button>
+                                                        <input type="text" id="cantper" name="cantper" class="form-control form_cantidad text-center" value="1">
+                                                    <button class="btn btn-white" type="button" id="button-plus"> + </button>
+                                                </div>
+                                            </dd>
+                                        </dl>
+
+                                        <p class="card-text">{{ $tour->descripcion }}</p>
+
+                                        <hr>
+
+                                        <dl class="row">
+                                            <dt class="col-sm-3">Fecha del tour</dt>
+                                            <dd class="col-sm-9 text-right">
+                                                <div class="input-group input-spinner justify-content-end">
+                                                    <input type="date" class="form-control form_date text-center" id="fecha_limite" name="fecha_limite" />
+                                                </div>
+                                            </dd>
+                                        </dl>
+
+                                        <hr>
+
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" value="1" type="checkbox" role="switch" id="tprivado" />
+                                            <label class="form-check-label" for="tprivado">Deseas privado</label>
                                         </div>
 
-                                        <div id="response" class="hidden">
-                                            <div id="messages"></div>
-                                            
-                                            <progress class="progress" id="file-progress" value="0">
-                                                <span>0</span>%
-                                            </progress>
-                                        </div>
-                                    </label>
-                                </div>
+                                        <hr>
 
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="javascript:regresar2();" class="btn btn-danger regresar2 col-md-6" data-prev="primera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
-                                        <a href="javascript:continuar2();" class="btn btn-primary continuar2 col-md-6" data-next="tercera_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <!-- a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev=""><i class="bx bx-microphone"></i>Cancelar</a -->
+                                            <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+                                        </div>
                                     </div>
-                                </div>
-                            </div>
-                        </div>
 
+                                    <div class="card-body pt-5 pb-5 p-4 fase" id="segunda_fase" style="display: none;">
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label for="nombres" class="form-label">Nombres <span>*</span></label>
+                                                <input type="text" class="form-control" id="nombres" name="nombres" required />
+                                            </div>
 
-                        <div class="card-body pt-5 pb-5 p-4 fase" id="tercera_fase" style="display: none;"><!--- -->
-                            <ul class="nav nav-tabs nav-primary" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#tourtickets" role="tab" aria-selected="true">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Tickets</div>
-                                        </div>
-                                    </a>
-                                </li>
+                                            <div class="col-md-6">
+                                                <label for="apellidos" class="form-label">Apellidos <span>*</span></label>
+                                                <input type="text" class="form-control" id="apellidos" name="apellidos" required />
+                                            </div>
 
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#tourhoteles" role="tab" aria-selected="false" tabindex="-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Hoteles</div>
-                                        </div>
-                                    </a>
-                                </li>
+                                            <div class="col-md-6">
+                                                <label for="edad" class="form-label">Edad <span>*</span></label>
+                                                <input type="number" class="form-control" id="edad" name="edad" required />
+                                            </div>
 
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#touraccesorios" role="tab" aria-selected="false" tabindex="-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Accesorios</div>
-                                        </div>
-                                    </a>
-                                </li>
+                                            <div class="col-md-6">
+                                                <label for="nacionalidad" class="form-label">Nacionalidad <span>*</span></label>
+                                                <select class="form-select" id="nacionalidad" name="nacionalidad" type="select">
+                                                    <option value="">Seleccionar</option>
+                                                    @foreach($countries as $countrie)
+                                                        <option value="{{ $countrie->iso }}">{{ $countrie->nombre }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
 
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#tourservicios" role="tab" aria-selected="false" tabindex="-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Servicios</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                                            <div class="col-md-6">
+                                                <label for="documento" class="form-label">Número de documento <span>*</span></label>
+                                                <input type="number" class="form-control" id="documento" name="documento" required />
+                                            </div>
 
-                            <div class="tab-content py-3">
-                                <div class="tab-pane fade show active" id="tourtickets" role="tabpanel">
-                                    <div class="col-md-12">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="select_all_tickets">
-                                            <label class="form-check-label" for="select_all_tickets">
-                                                <strong>Seleccionar todos</strong>
-                                            </label>
-                                        </div>
-                                        @foreach($tickets as $ticket)
-                                            <div class="form-check">
-                                                <input class="form-check-input ticket-checkbox" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" id="ticket_{{ $ticket->id }}" 
-                                                    data-name="{{ $ticket->titulo }}"
-                                                    data-nac="{{ number_format($ticket->nacionales, 2, '.', '') }}"
-                                                    data-ext="{{ number_format($ticket->extranjeros, 2, '.', '') }}">
-                                                <label class="form-check-label" for="ticket_{{ $ticket->id }}">
-                                                    {{ $ticket->titulo }}
-                                                    <span class="seccion-mexico hidden">Bs. {{ number_format($ticket->nacionales, 2, '.', '') }}</span>
-                                                    <span class="seccion-otros hidden">Bs. {{ number_format($ticket->extranjeros, 2, '.', '') }}</span>
+                                            <div class="col-md-6">
+                                                <label for="celular" class="form-label">Celular <span>*</span></label>
+                                                <input type="number" class="form-control" id="celular" name="celular" required />
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="sexo" class="form-label">Sexo <span>*</span></label>
+                                                <select class="form-control" id="sexo" name="sexo" type="select" required>
+                                                    <option value="">Seleccionar</option>
+                                                    <option value="Hombre">Hombre</option>
+                                                    <option value="Mujer">Mujer</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label for="email" class="form-label">Email <span>*</span></label>
+                                                <input type="email" class="form-control" id="email" name="email" required >
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label for="alergias" class="form-label">Alergias</label>
+                                                <select class="form-select" id="alergias" name="alergias[]" type="select" data-placeholder="Seleccionar" multiple>
+                                                    @foreach($alergias as $alergia)
+                                                        <option value="{{ $alergia->id }}">{{ $alergia->titulo }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label for="alimentacion" class="form-label">Tipo alimentación</label>
+                                                <select class="form-select" id="alimentacion" name="alimentacion[]" type="select" data-placeholder="Seleccionar" multiple>
+                                                    @foreach($alimentos as $alimento)
+                                                        <option value="{{ $alimento->id }}">{{ $alimento->titulo }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label for="nota" class="form-label">Nota adicional</label>
+                                                <input type="text" class="form-control" id="nota" name="nota" />
+                                            </div>
+
+                                            <div class="col-md-12">
+                                                <label for="alimentacion" class="form-label">
+                                                    Es importante subir una imagen del documento de identidad para su seguridad y la nuestra. <strong>(campo requerido *)</strong>
+                                                </label>
+
+                                                <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
+
+                                                <label for="file-upload" id="file-drag">
+                                                    <img id="file-image" src="#" alt="Preview" class="hidden">
+                                                    <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
+                                                    
+                                                    <div id="start">
+                                                        <i class="fa fa-download" aria-hidden="true"></i>
+                                                        <div id="pdf-upload">Selecciona el archivo a cargar</div>
+                                                        <div id="notimage" class="hidden">Selecciona una imagen</div>
+                                                        <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
+                                                    </div>
+
+                                                    <div id="response" class="hidden">
+                                                        <div id="messages"></div>
+                                                        
+                                                        <progress class="progress" id="file-progress" value="0">
+                                                            <span>0</span>%
+                                                        </progress>
+                                                    </div>
                                                 </label>
                                             </div>
-                                        @endforeach
+
+                                            <div class="col-md-12">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <a href="javascript:regresar2();" class="btn btn-danger regresar2 col-md-6" data-prev="primera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
+                                                    <a href="javascript:continuar2();" class="btn btn-primary continuar2 col-md-6" data-next="tercera_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
-                                    @php
-                                        $hotelesSeleccionados = json_decode($tour->hoteles, true);
-                                        use App\Models\Servicio\Hotel;
-                                    @endphp
 
-                                    @foreach($hotelesSeleccionados as $key => $hotelIds)
-                                    <div class="row g-3">
-                                        <div class="col-md-12 form-check">
-                                            <label class="form-label" for="noche_{{ $key }}">
-                                                Dia {{ $key }}
-                                            </label>
+                                    <div class="card-body pt-5 pb-5 p-4 fase" id="tercera_fase" style="display: none;"><!--- -->
+                                        <ul class="nav nav-tabs nav-primary" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link active" data-bs-toggle="tab" href="#tourtickets" role="tab" aria-selected="true">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Tickets</div>
+                                                    </div>
+                                                </a>
+                                            </li>
 
-                                            @foreach ($hoteles as $hotel)
-                                                @if(in_array($hotel->id, $hotelIds)) 
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#tourhoteles" role="tab" aria-selected="false" tabindex="-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Hoteles</div>
+                                                    </div>
+                                                </a>
+                                            </li>
+
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#touraccesorios" role="tab" aria-selected="false" tabindex="-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Accesorios</div>
+                                                    </div>
+                                                </a>
+                                            </li>
+
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#tourservicios" role="tab" aria-selected="false" tabindex="-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Servicios</div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content py-3">
+                                            <div class="tab-pane fade show active" id="tourtickets" role="tabpanel">
+                                                <div class="col-md-12">
                                                     <div class="form-check">
-                                                        <!-- Checkbox para el hotel -->
-                                                        <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                        <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
-                                                            {{ $hotel->titulo }}
+                                                        <input class="form-check-input" type="checkbox" id="select_all_tickets">
+                                                        <label class="form-check-label" for="select_all_tickets">
+                                                            <strong>Seleccionar todos</strong>
+                                                        </label>
+                                                    </div>
+                                                    @foreach($tickets as $ticket)
+                                                        <div class="form-check">
+                                                            <input class="form-check-input ticket-checkbox" type="checkbox" name="ticket_id[]" value="{{ $ticket->id }}" id="ticket_{{ $ticket->id }}" 
+                                                                data-name="{{ $ticket->titulo }}"
+                                                                data-nac="{{ number_format($ticket->nacionales, 2, '.', '') }}"
+                                                                data-ext="{{ number_format($ticket->extranjeros, 2, '.', '') }}">
+                                                            <label class="form-check-label" for="ticket_{{ $ticket->id }}">
+                                                                {{ $ticket->titulo }}
+                                                                <span class="seccion-mexico hidden">Bs. {{ number_format($ticket->nacionales, 2, '.', '') }}</span>
+                                                                <span class="seccion-otros hidden">Bs. {{ number_format($ticket->extranjeros, 2, '.', '') }}</span>
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
+                                                @php
+                                                    $hotelesSeleccionados = json_decode($tour->hoteles, true);
+                                                    use App\Models\Servicio\Hotel;
+                                                @endphp
+
+                                                @foreach($hotelesSeleccionados as $key => $hotelIds)
+                                                <div class="row g-3">
+                                                    <div class="col-md-12 form-check">
+                                                        <label class="form-label" for="noche_{{ $key }}">
+                                                            Dia {{ $key }}
                                                         </label>
 
-                                                        @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                            <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                <!-- ID único para los radio buttons y name basado en el día para selección única -->
-                                                                <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
-                                                                    id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
-                                                                    name="habitacion_dia_{{ $key }}"
-                                                                    data-name="{{ $habitacion->titulo }}"
-                                                                    data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                    data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
-                                                                    data-dia="{{ $key }}"  />
+                                                        @foreach ($hoteles as $hotel)
+                                                            @if(in_array($hotel->id, $hotelIds)) 
+                                                                <div class="form-check">
+                                                                    <!-- Checkbox para el hotel -->
+                                                                    <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                                    <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
+                                                                        {{ $hotel->titulo }}
+                                                                    </label>
+
+                                                                    @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
+                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
+                                                                            <!-- ID único para los radio buttons y name basado en el día para selección única -->
+                                                                            <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
+                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
+                                                                                name="habitacion_dia_{{ $key }}"
+                                                                                data-name="{{ $habitacion->titulo }}"
+                                                                                data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                                data-dia="{{ $key }}"  />
 
 
-                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
-                                                                    {{ $habitacion->titulo }}
-                                                                    <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
-                                                                    <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
-                                                                </label>
-                                                            </div>
+                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
+                                                                                {{ $habitacion->titulo }}
+                                                                                <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
+                                                                                <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
+                                                                            </label>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            @endif
                                                         @endforeach
                                                     </div>
-                                                @endif
-                                            @endforeach
+                                                </div>
+                                                @endforeach
+                                            </div>
+                                            <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
+                                                <div class="col-md-12">
+                                                    @foreach($accesorios as $accesorio)
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="accesorio_id[]" value="{{ $accesorio->id }}" id="accesorio_{{ $accesorio->id }}" 
+                                                                data-aname="{{ $accesorio->titulo }}"
+                                                                data-aprecio="{{ number_format($accesorio->venta, 2, '.', '') }}" />
+                                                            
+                                                            <label class="form-check-label" for="accesorio_{{ $accesorio->id }}">
+                                                                {{ $accesorio->titulo }} <span>{{ 'Bs. '.number_format($accesorio->venta, 2, '.', '') }}</span>
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="tourservicios" role="tabpanel">
+                                                <div class="col-md-12">
+                                                    @foreach($turistas as $turista)
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox" name="servicio_id[]" value="{{ $turista->id }}" id="turista_{{ $turista->id }}" 
+                                                                data-sname="{{ $turista->titulo }}"
+                                                                data-sprecio="{{ number_format($turista->venta, 2, '.', '') }}" />
+                                                            
+                                                            <label class="form-check-label" for="turista_{{ $turista->id }}">
+                                                                {{ $turista->titulo }} <span>{{ 'Bs. '.number_format($turista->venta, 2, '.', '') }}</span>
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="segunda_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
+                                                    <a href="javascript:;" class="btn btn-primary continuar col-md-6" data-next="cuarta_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    @endforeach
-                                </div>
-                                <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
-                                    <div class="col-md-12">
-                                        @foreach($accesorios as $accesorio)
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="accesorio_id[]" value="{{ $accesorio->id }}" id="accesorio_{{ $accesorio->id }}" 
-                                                    data-aname="{{ $accesorio->titulo }}"
-                                                    data-aprecio="{{ number_format($accesorio->venta, 2, '.', '') }}" />
-                                                
-                                                <label class="form-check-label" for="accesorio_{{ $accesorio->id }}">
-                                                    {{ $accesorio->titulo }} <span>{{ 'Bs. '.number_format($accesorio->venta, 2, '.', '') }}</span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
 
-                                <div class="tab-pane fade" id="tourservicios" role="tabpanel">
-                                    <div class="col-md-12">
-                                        @foreach($turistas as $turista)
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" name="servicio_id[]" value="{{ $turista->id }}" id="turista_{{ $turista->id }}" 
-                                                    data-sname="{{ $turista->titulo }}"
-                                                    data-sprecio="{{ number_format($turista->venta, 2, '.', '') }}" />
-                                                
-                                                <label class="form-check-label" for="turista_{{ $turista->id }}">
-                                                    {{ $turista->titulo }} <span>{{ 'Bs. '.number_format($turista->venta, 2, '.', '') }}</span>
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                </div>
-                            </div>
+                                    <div class="card-body pt-5 pb-5 p-4 fase" id="cuarta_fase" style="display: none;">
+                                        <ul class="nav nav-tabs nav-primary" role="tablist">
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link active" data-bs-toggle="tab" href="#credito" role="tab" aria-selected="true">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Tarjeta de crédito</div>
+                                                    </div>
+                                                </a>
+                                            </li>
 
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="segunda_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
-                                        <a href="javascript:;" class="btn btn-primary continuar col-md-6" data-next="cuarta_fase">Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i></a>
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#transferencia" role="tab" aria-selected="false" tabindex="-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">Transferencia bancaria</div>
+                                                    </div>
+                                                </a>
+                                            </li>
+
+                                            <li class="nav-item" role="presentation">
+                                                <a class="nav-link" data-bs-toggle="tab" href="#qr" role="tab" aria-selected="false" tabindex="-1">
+                                                    <div class="d-flex align-items-center">
+                                                        <div class="tab-title">QR bancario</div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                        <div class="tab-content py-3">
+                                            <div class="tab-pane fade show active" id="credito" role="tabpanel">
+                                                <div class="col-md-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table mb-0">
+                                                            <tbody>
+                                                                @foreach($links as $link)
+                                                                    @if($link->estatus == "1")
+                                                                        <tr>
+                                                                            <td>{{ $link->nombre }}</td>
+                                                                            <td>{{ $link->descripcion }}</td>
+                                                                            <td>
+                                                                                <a href="{{ $link->url }}" target="_BLANK" class="btn btn-primary btn-sm radius-30 px-4 col-md-12">
+                                                                                    Pagar ahora
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="transferencia" role="tabpanel">
+                                                <div class="col-md-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table mb-0">
+                                                            <tbody>
+                                                                @foreach($onlines as $online)
+                                                                    @if($online->estatus == "1")
+                                                                        <tr>
+                                                                            <td>{{ $online->nombre }}</td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="tab-pane fade" id="qr" role="tabpanel">
+                                                <div class="col-md-12">
+                                                    <div class="table-responsive">
+                                                        <table class="table mb-0">
+                                                            <tbody>
+                                                                @foreach($qrs as $qr)
+                                                                    @if($qr->estatus == "1")
+                                                                        <tr>
+                                                                            <td>
+                                                                                <img src="{{ asset('panelqrs') }}/{{ $qr->file }}" alt="" width="200" height="200">
+                                                                            </td>
+                                                                        </tr>
+                                                                    @endif
+                                                                @endforeach
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-12">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="tercera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
+                                                    <button type="submit" class="btn btn-primary continuar col-md-6">Reservar <i class="fadeIn animated bx bx-arrow-to-right"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="card-body pt-5 pb-5 p-4 fase" id="cuarta_fase" style="display: none;">
-                            <ul class="nav nav-tabs nav-primary" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link active" data-bs-toggle="tab" href="#credito" role="tab" aria-selected="true">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Tarjeta de crédito</div>
-                                        </div>
-                                    </a>
-                                </li>
+                        <div class="col-md-5">
+                            <div class="card">
+                                <div class="card border-primary mb-0">
+                                    <div class="card-body pt-5 pb-5 p-4">
+                                        <dl class="row col-md-12" id="porpre">
+                                            <dt class="col-sm-5">Precio / persona</dt>
+                                            <dd class="col-sm-7 text-right" id="precio_count">
+                                                {{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}
+                                            </dd>
 
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#transferencia" role="tab" aria-selected="false" tabindex="-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">Transferencia bancaria</div>
-                                        </div>
-                                    </a>
-                                </li>
+                                            <dt class="col-sm-5">Cantidad de persona</dt>
+                                            <dd class="col-sm-7 text-right" id="cant_pers"></dd>
+                                        </dl>
+                                        
+                                        <dl class="row col-md-12" id="totpre" style="display: none;">
+                                            <dt class="col-sm-5">Precio</dt>
+                                            <dd class="col-sm-7 text-right" id="max_precio"></dd>
 
-                                <li class="nav-item" role="presentation">
-                                    <a class="nav-link" data-bs-toggle="tab" href="#qr" role="tab" aria-selected="false" tabindex="-1">
-                                        <div class="d-flex align-items-center">
-                                            <div class="tab-title">QR bancario</div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
+                                            <dt class="col-sm-5">Cantidad de persona</dt>
+                                            <dd class="col-sm-7 text-right" id="max_personas"></dd>
+                                        </dl>
 
-                            <div class="tab-content py-3">
-                                <div class="tab-pane fade show active" id="credito" role="tabpanel">
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <tbody>
-                                                    @foreach($links as $link)
-                                                        @if($link->estatus == "1")
-                                                            <tr>
-                                                                <td>{{ $link->nombre }}</td>
-                                                                <td>{{ $link->descripcion }}</td>
-                                                                <td>
-                                                                    <a href="{{ $link->url }}" target="_BLANK" class="btn btn-primary btn-sm radius-30 px-4 col-md-12">
-                                                                        Pagar ahora
-                                                                    </button>
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                        <dl class="col-md-12 row tickets_cont" id="tickets_cont" style="display: none;">
+                                            <dt class="col-sm-12">
+                                                <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
+                                            </dt>
 
-                                <div class="tab-pane fade" id="transferencia" role="tabpanel">
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <tbody>
-                                                    @foreach($onlines as $online)
-                                                        @if($online->estatus == "1")
-                                                            <tr>
-                                                                <td>{{ $online->nombre }}</td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
+                                            <dt class="col-sm-5" id="tic_name"></dt>
+                                            <dd class="col-sm-7 text-right" id="tic_pre"></dd>
+                                        </dl>
 
-                                <div class="tab-pane fade" id="qr" role="tabpanel">
-                                    <div class="col-md-12">
-                                        <div class="table-responsive">
-                                            <table class="table mb-0">
-                                                <tbody>
-                                                    @foreach($qrs as $qr)
-                                                        @if($qr->estatus == "1")
-                                                            <tr>
-                                                                <td>
-                                                                    <img src="{{ asset('panelqrs') }}/{{ $qr->file }}" alt="" width="200" height="200">
-                                                                </td>
-                                                            </tr>
-                                                        @endif
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+                                        <dl class="col-md-12 row habitaciones_cont" id="habitaciones_cont" style="display: none;">
+                                            <dt class="col-sm-12">
+                                                <span class="btn btn-inverse-success mb-3 col-md-12">Habitaciones</span>
+                                            </dt>
 
-                            <div class="row g-3">
-                                <div class="col-md-12">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="tercera_fase"><i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar</a>
-                                        <button type="submit" class="btn btn-primary continuar col-md-6">Reservar <i class="fadeIn animated bx bx-arrow-to-right"></i></button>
+                                            <dt class="col-sm-9" id="hab_name"></dt>
+                                            <dd class="col-sm-3 text-right" id="hab_pre"></dd>
+                                        </dl>
+
+                                        <dl class="col-md-12 row accesorios_cont" id="accesorios_cont" style="display: none;">
+                                            <dt class="col-sm-12">
+                                                <span class="btn btn-inverse-success mb-3 col-md-12">Accesorios</span>
+                                            </dt>
+
+                                            <dt class="col-sm-5" id="acc_name"></dt>
+                                            <dd class="col-sm-7 text-right" id="acc_pre"></dd>
+                                        </dl>
+
+                                        <dl class="col-md-12 row servicios_cont" id="servicios_cont" style="display: none;">
+                                            <dt class="col-sm-12">
+                                                <span class="btn btn-inverse-success mb-3 col-md-12">Servicios</span>
+                                            </dt>
+
+                                            <dt class="col-sm-5" id="ser_name"></dt>
+                                            <dd class="col-sm-7 text-right" id="ser_pre"></dd>
+                                        </dl>
+
+                                        <dl class="row col-md-12">
+                                            <dt class="col-sm-3"></dt>
+                                            <dd class="col-sm-9 text-right">
+                                                <b>Subtotal:</b> <span id="tour_Sbt">{{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}</span>
+                                            </dd>
+                                        </dl>
+
+                                        <input type="hidden" name="tickets_seleccionados" id="tickets_seleccionados" value="">
+                                        <input type="hidden" name="habitaciones_seleccionadas" id="habitaciones_seleccionadas" value="">
+                                        <input type="hidden" name="accesorios_seleccionados" id="accesorios_seleccionados" value="">
+                                        <input type="hidden" name="servicios_seleccionados" id="servicios_seleccionados" value="">
+                                        <input type="hidden" name="tour_total" id="tour_total" value="">
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <div class="col-md-5">
-                <div class="card">
-                    <div class="card border-primary mb-0">
-                        <div class="card-body pt-5 pb-5 p-4">
-                            <dl class="row col-md-12" id="porpre">
-                                <dt class="col-sm-5">Precio / persona</dt>
-                                <dd class="col-sm-7 text-right" id="precio_count">
-                                    {{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}
-                                </dd>
-
-                                <dt class="col-sm-5">Cantidad de persona</dt>
-                                <dd class="col-sm-7 text-right" id="cant_pers"></dd>
-                            </dl>
-                            
-                            <dl class="row col-md-12" id="totpre" style="display: none;">
-                                <dt class="col-sm-5">Precio</dt>
-                                <dd class="col-sm-7 text-right" id="max_precio"></dd>
-
-                                <dt class="col-sm-5">Cantidad de persona</dt>
-                                <dd class="col-sm-7 text-right" id="max_personas"></dd>
-                            </dl>
-
-                            <dl class="col-md-12 row tickets_cont" id="tickets_cont" style="display: none;">
-                                <dt class="col-sm-12">
-                                    <span class="btn btn-inverse-success mb-3 col-md-12">Tickets</span>
-                                </dt>
-
-                                <dt class="col-sm-5" id="tic_name"></dt>
-                                <dd class="col-sm-7 text-right" id="tic_pre"></dd>
-                            </dl>
-
-                            <dl class="col-md-12 row habitaciones_cont" id="habitaciones_cont" style="display: none;">
-                                <dt class="col-sm-12">
-                                    <span class="btn btn-inverse-success mb-3 col-md-12">Habitaciones</span>
-                                </dt>
-
-                                <dt class="col-sm-9" id="hab_name"></dt>
-                                <dd class="col-sm-3 text-right" id="hab_pre"></dd>
-                            </dl>
-
-                            <dl class="col-md-12 row accesorios_cont" id="accesorios_cont" style="display: none;">
-                                <dt class="col-sm-12">
-                                    <span class="btn btn-inverse-success mb-3 col-md-12">Accesorios</span>
-                                </dt>
-
-                                <dt class="col-sm-5" id="acc_name"></dt>
-                                <dd class="col-sm-7 text-right" id="acc_pre"></dd>
-                            </dl>
-
-                            <dl class="col-md-12 row servicios_cont" id="servicios_cont" style="display: none;">
-                                <dt class="col-sm-12">
-                                    <span class="btn btn-inverse-success mb-3 col-md-12">Servicios</span>
-                                </dt>
-
-                                <dt class="col-sm-5" id="ser_name"></dt>
-                                <dd class="col-sm-7 text-right" id="ser_pre"></dd>
-                            </dl>
-
-                            <dl class="row col-md-12">
-                                <dt class="col-sm-3"></dt>
-                                <dd class="col-sm-9 text-right">
-                                    <b>Subtotal:</b> <span id="tour_Sbt">{{ 'Bs. '.number_format($tour->pre_uni, 2, '.', '') }}</span>
-                                </dd>
-                            </dl>
-
-                            <input type="hidden" name="tickets_seleccionados" id="tickets_seleccionados" value="">
-                            <input type="hidden" name="habitaciones_seleccionadas" id="habitaciones_seleccionadas" value="">
-                            <input type="hidden" name="accesorios_seleccionados" id="accesorios_seleccionados" value="">
-                            <input type="hidden" name="servicios_seleccionados" id="servicios_seleccionados" value="">
-                            <input type="hidden" name="tour_total" id="tour_total" value="">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+            @endif
+        @endforeach
     </form>
 @endsection
+
 @section('footer_scripts')
     <script>
         document.addEventListener("DOMContentLoaded", function() {
