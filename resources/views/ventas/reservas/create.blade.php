@@ -177,17 +177,25 @@
             @foreach($tours as $tour)
                 @if($tour->id == $_GET['tour_id'])
                     @php
+                        // Decodificar los arrays JSON de tickets, accesorios, turistas y hoteles
                         $ticket_ids = json_decode($tour->tickets, true) ?? [];
                         $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
                         $turista_ids = json_decode($tour->turistas, true) ?? [];
-                        $hotel_ids = array_merge(...json_decode($tour->hoteles, true) ?? []);
-                        
+                        $hotel_ids = json_decode($tour->hoteles, true) ?? []; 
+            
+                        // Asegurarnos de que no haya subarreglos en $hotel_ids
+                        if (is_array($hotel_ids) && count($hotel_ids) > 0 && is_array($hotel_ids[0])) {
+                            // Si es un arreglo de arreglos, lo aplanamos
+                            $hotel_ids = array_merge(...$hotel_ids);
+                        }
+            
                         // Filtrar los tickets, accesorios, turistas y hoteles
                         $tickets = $tickets->whereIn('id', $ticket_ids);
                         $accesorios = $accesorios->whereIn('id', $accesorio_ids);
                         $turistas = $turistas->whereIn('id', $turista_ids);
-                        $hoteles = $hoteles->whereIn('id', $hotel_ids)->with('habitaciones');
+                        $hoteles = $hoteles->whereIn('id', $hotel_ids); // Aplicamos el filtro a los hoteles
                     @endphp
+                    
                     <div class="row">
                         <div class="col-md-2"></div>
 
