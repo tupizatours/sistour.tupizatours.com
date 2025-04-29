@@ -183,20 +183,38 @@
                     $turista_ids = json_decode($tour->turistas, true) ?? [];
                     $hotel_ids = json_decode($tour->hoteles, true) ?? [];
 
-                    // Aplanar los arrays de IDs si es necesario (si son arrays de arrays)
-                    if (is_array($hotel_ids) && count($hotel_ids) > 0) {
-                        // Si el array es un array de arrays, lo aplanamos
-                        $hotel_ids = array_merge(...$hotel_ids);
+                    // Aplanar los arrays si son anidados, usando array_merge recursivamente
+                    function flattenArray($array) {
+                        $flat = [];
+                        foreach ($array as $value) {
+                            if (is_array($value)) {
+                                $flat = array_merge($flat, flattenArray($value));
+                            } else {
+                                $flat[] = $value;
+                            }
+                        }
+                        return $flat;
                     }
 
-                    // Asegurarse de que no hay valores anidados en ticket_ids, accesorio_ids, turista_ids
-                    // Limpiar cada uno de los arrays para asegurarnos de que son arrays planos de enteros
-                    $ticket_ids = array_map('intval', array_filter((array)$ticket_ids));
-                    $accesorio_ids = array_map('intval', array_filter((array)$accesorio_ids));
-                    $turista_ids = array_map('intval', array_filter((array)$turista_ids));
-                    $hotel_ids = array_map('intval', array_filter((array)$hotel_ids));
+                    // Aplanar los arrays de IDs
+                    $ticket_ids = flattenArray($ticket_ids);
+                    $accesorio_ids = flattenArray($accesorio_ids);
+                    $turista_ids = flattenArray($turista_ids);
+                    $hotel_ids = flattenArray($hotel_ids);
 
-                    // Depuración: Verificar los valores de los IDs para asegurarnos de que no están anidados
+                    // Eliminar cualquier valor nulo o vacío y asegurarse de que sean enteros
+                    $ticket_ids = array_filter(array_map('intval', $ticket_ids));
+                    $accesorio_ids = array_filter(array_map('intval', $accesorio_ids));
+                    $turista_ids = array_filter(array_map('intval', $turista_ids));
+                    $hotel_ids = array_filter(array_map('intval', $hotel_ids));
+
+                    // Asegurarse de que no haya arrays vacíos o nulos
+                    $ticket_ids = array_unique($ticket_ids);
+                    $accesorio_ids = array_unique($accesorio_ids);
+                    $turista_ids = array_unique($turista_ids);
+                    $hotel_ids = array_unique($hotel_ids);
+
+                    // Depuración: Verificar los valores de los arrays
                     dd([
                         'ticket_ids' => $ticket_ids,
                         'accesorio_ids' => $accesorio_ids,
