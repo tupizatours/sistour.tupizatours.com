@@ -181,24 +181,20 @@
             use App\Models\Servicio\Turista;
             use App\Models\Servicio\Accesorio;
         @endphp
-
-        @foreach($tours as $tour)
-            @if($tour->id == $_GET['tour_id'])
-                <?php
-                    $ticket_ids = json_decode($tour->tickets, true) ?? [];
-                    $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
-                    $turista_ids = json_decode($tour->turistas, true) ?? [];
-                    $hotel_ids = array_merge(...json_decode($tour->hoteles, true) ?? []);
-
-                    // Filtrar solo los elementos necesarios
-                    $tickets = Ticket::whereIn('id', $ticket_ids)->get();
-                    $accesorios = Accesorio::whereIn('id', $accesorio_ids)->get();
-                    $turistas = Turista::whereIn('id', $turista_ids)->get();
-                    $hoteles = Hotel::whereIn('id', $hotel_ids)->with('habitaciones')->get();
-
-                    $hotelesSeleccionados = json_decode($tour->hoteles, true);
-                ?>
-
+            @foreach($tours as $tour)
+                @if($tour->id == $_GET['tour_id'])
+                    @php
+                        $ticket_ids = json_decode($tour->tickets, true) ?? [];
+                        $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
+                        $turista_ids = json_decode($tour->turistas, true) ?? [];
+                        $hotel_ids = array_merge(...json_decode($tour->hoteles, true) ?? []);
+                        
+                        // Filtrar los tickets, accesorios, turistas y hoteles
+                        $tickets = $tickets->whereIn('id', $ticket_ids);
+                        $accesorios = $accesorios->whereIn('id', $accesorio_ids);
+                        $turistas = $turistas->whereIn('id', $turista_ids);
+                        $hoteles = $hoteles->whereIn('id', $hotel_ids)->with('habitaciones');
+                    @endphp
                     <div class="row">
                         <div class="col-md-2"></div>
 

@@ -46,6 +46,7 @@ class ReservaController extends Controller
      */
     public function create()
     {
+        // Obtener todos los datos de los modelos relacionados
         $resclis = Resercliente::all();
         $reservas = Reserva::all();
         $tours = Tour::all();
@@ -59,9 +60,21 @@ class ReservaController extends Controller
         $links = Link::all();
         $onlines = Online::all();
         $qrs = Qr::all();
-        
-        return view('ventas.reservas.create', compact('resclis', 'reservas', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'countries', 'hottus', 'categorias', 'servicios'));
+    
+        // Obtener los modelos necesarios que se usan en la vista
+        $tickets = Ticket::all();
+        $accesorios = Accesorio::all();
+        $turistas = Turista::all();
+        $hoteles = Hotel::all(); // Suponiendo que también quieres cargar todos los hoteles
+    
+        // Pasar todos los datos a la vista
+        return view('ventas.reservas.create', compact(
+            'resclis', 'reservas', 'links', 'onlines', 'qrs', 'habitaciones', 
+            'alimentos', 'alergias', 'tours', 'countries', 'hottus', 'categorias', 
+            'servicios', 'tickets', 'accesorios', 'turistas', 'hoteles'
+        ));
     }
+    
 
     /**
      * Store a newly created resource in storage.
