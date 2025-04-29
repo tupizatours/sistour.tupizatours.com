@@ -65,7 +65,7 @@ class ReservaController extends Controller
         $tickets = Ticket::all();
         $accesorios = Accesorio::all();
         $turistas = Turista::all();
-        $hoteles = Hotel::all(); // Suponiendo que también quieres cargar todos los hoteles
+        $hoteles = Hotel::all(); // Obtener todos los hoteles
     
         // Pasar todos los datos a la vista
         return view('ventas.reservas.create', compact(
