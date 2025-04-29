@@ -430,52 +430,49 @@
 
                                             <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
                                                 @php
+                                                    // Decodificar los hoteles seleccionados para este tour
                                                     $hotelesSeleccionados = json_decode($tour->hoteles, true);
-                                                    use App\Models\Servicio\Hotel;
                                                 @endphp
-
+                                            
                                                 @foreach($hotelesSeleccionados as $key => $hotelIds)
-                                                <div class="row g-3">
-                                                    <div class="col-md-12 form-check">
-                                                        <label class="form-label" for="noche_{{ $key }}">
-                                                            Dia {{ $key }}
-                                                        </label>
-
-                                                        @foreach ($hoteles as $hotel)
-                                                            @if(in_array($hotel->id, $hotelIds)) 
-                                                                <div class="form-check">
-                                                                    <!-- Checkbox para el hotel -->
-                                                                    <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
-                                                                    <label class="form-check-label" for="hotele_{{ $hotel->id }}_{{ $key }}">
-                                                                        {{ $hotel->titulo }}
-                                                                    </label>
-
-                                                                    @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
-                                                                        <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
-                                                                            <!-- ID único para los radio buttons y name basado en el día para selección única -->
-                                                                            <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
-                                                                                id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
-                                                                                name="habitacion_dia_{{ $key }}"
-                                                                                data-name="{{ $habitacion->titulo }}"
-                                                                                data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
-                                                                                data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
-                                                                                data-dia="{{ $key }}"  />
-
-
-                                                                            <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
-                                                                                {{ $habitacion->titulo }}
-                                                                                <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
-                                                                                <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
-                                                                            </label>
-                                                                        </div>
-                                                                    @endforeach
-                                                                </div>
-                                                            @endif
-                                                        @endforeach
+                                                    <div class="row g-3">
+                                                        <div class="col-md-12 form-check">
+                                                            <label class="form-label" for="noche_{{ $key }}">
+                                                                Día {{ $key }}
+                                                            </label>
+                                            
+                                                            @foreach ($hoteles as $hotel) 
+                                                                @if(in_array($hotel->id, $hotelIds)) 
+                                                                    <div class="form-check">
+                                                                        <input class="form-check-input" type="checkbox" value="{{ $hotel->id }}" id="hotel_{{ $hotel->id }}_{{ $key }}" />
+                                                                        <label class="form-check-label" for="hotel_{{ $hotel->id }}_{{ $key }}">
+                                                                            {{ $hotel->titulo }}
+                                                                        </label>
+                                            
+                                                                        @foreach($habitaciones->where('hotel_id', $hotel->id) as $habitacion)
+                                                                            <div class="form-check form_habi{{ $habitacion->id }}{{ $key }}">
+                                                                                <input class="form-check-input" type="radio" value="{{ $habitacion->id }}"
+                                                                                       id="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}"
+                                                                                       name="habitacion_dia_{{ $key }}"
+                                                                                       data-name="{{ $habitacion->titulo }}"
+                                                                                       data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
+                                                                                       data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}" 
+                                                                                       data-dia="{{ $key }}" />
+                                                                                <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $key }}">
+                                                                                    {{ $habitacion->titulo }}
+                                                                                    <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>
+                                                                                    <span class="seccion-otros hidden">Bs. {{ number_format($habitacion->extranjeros, 2, '.', '') }}</span>
+                                                                                </label>
+                                                                            </div>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
+                                                        </div>
                                                     </div>
-                                                </div>
                                                 @endforeach
                                             </div>
+                                            
                                             <div class="tab-pane fade" id="touraccesorios" role="tabpanel">
                                                 <div class="col-md-12">
                                                     @foreach($accesorios as $accesorio)
