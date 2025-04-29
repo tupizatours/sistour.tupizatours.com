@@ -174,13 +174,6 @@
     
     <form action="{{ route('venreservas.store') }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
         @csrf
-
-        @php
-            use App\Models\Servicio\Hotel;
-            use App\Models\Servicio\Ticket;
-            use App\Models\Servicio\Turista;
-            use App\Models\Servicio\Accesorio;
-        @endphp
             @foreach($tours as $tour)
                 @if($tour->id == $_GET['tour_id'])
                     @php
