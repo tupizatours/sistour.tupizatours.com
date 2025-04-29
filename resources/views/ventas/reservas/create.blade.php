@@ -183,16 +183,18 @@
                     $turista_ids = json_decode($tour->turistas, true) ?? [];
                     $hotel_ids = json_decode($tour->hoteles, true) ?? [];
 
-                    // Aplanar los arrays de IDs si es necesario
+                    // Aplanar los arrays de IDs si es necesario (si son arrays de arrays)
                     if (is_array($hotel_ids) && count($hotel_ids) > 0) {
                         // Si el array es un array de arrays, lo aplanamos
                         $hotel_ids = array_merge(...$hotel_ids);
                     }
 
                     // Asegurarse de que no hay valores anidados en ticket_ids, accesorio_ids, turista_ids
-                    $ticket_ids = is_array($ticket_ids) ? $ticket_ids : [];
-                    $accesorio_ids = is_array($accesorio_ids) ? $accesorio_ids : [];
-                    $turista_ids = is_array($turista_ids) ? $turista_ids : [];
+                    // Limpiar cada uno de los arrays para asegurarnos de que son arrays planos de enteros
+                    $ticket_ids = array_map('intval', array_filter((array)$ticket_ids));
+                    $accesorio_ids = array_map('intval', array_filter((array)$accesorio_ids));
+                    $turista_ids = array_map('intval', array_filter((array)$turista_ids));
+                    $hotel_ids = array_map('intval', array_filter((array)$hotel_ids));
 
                     // Depuración: Verificar los valores de los IDs para asegurarnos de que no están anidados
                     dd([
@@ -208,6 +210,7 @@
                     $turistas = $turistas->whereIn('id', $turista_ids);
                     $hoteles = $hoteles->whereIn('id', $hotel_ids); // Aplicamos el filtro a los hoteles
                 @endphp
+ 
                     <div class="row">
                         <div class="col-md-2"></div>
 
