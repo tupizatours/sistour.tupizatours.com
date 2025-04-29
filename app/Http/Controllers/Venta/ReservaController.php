@@ -24,6 +24,8 @@ use App\Models\Configuracion\Online;
 use App\Models\Configuracion\Qr;
 use DB;
 use Image;
+use Illuminate\Support\Str;
+
 
 class ReservaController extends Controller
 {
