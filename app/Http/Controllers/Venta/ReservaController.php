@@ -60,13 +60,15 @@ class ReservaController extends Controller
         $links = Link::all();
         $onlines = Online::all();
         $qrs = Qr::all();
-    
+        
         // Obtener los modelos necesarios que se usan en la vista
         $tickets = Ticket::all();
         $accesorios = Accesorio::all();
         $turistas = Turista::all();
-        $hoteles = Hotel::all(); // Obtener todos los hoteles
-    
+        
+        // Obtener los hoteles con la relación habitaciones
+        $hoteles = Hotel::whereIn('id', $hotel_ids)->with('habitaciones')->get();
+        
         // Pasar todos los datos a la vista
         return view('ventas.reservas.create', compact(
             'resclis', 'reservas', 'links', 'onlines', 'qrs', 'habitaciones', 
@@ -74,6 +76,7 @@ class ReservaController extends Controller
             'servicios', 'tickets', 'accesorios', 'turistas', 'hoteles'
         ));
     }
+
     
 
     /**
