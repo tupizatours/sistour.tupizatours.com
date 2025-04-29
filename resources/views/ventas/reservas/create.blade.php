@@ -175,29 +175,39 @@
     <form action="{{ route('venreservas.store') }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
         @csrf
         @foreach($tours as $tour)
-    @if($tour->id == $_GET['tour_id'])
-            @php
-                // Decodificar los arrays JSON de tickets, accesorios, turistas y hoteles
-                $ticket_ids = json_decode($tour->tickets, true) ?? [];
-                $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
-                $turista_ids = json_decode($tour->turistas, true) ?? [];
-                $hotel_ids = json_decode($tour->hoteles, true) ?? []; 
+            @if($tour->id == $_GET['tour_id'])
+                @php
+                    // Decodificar los arrays JSON de tickets, accesorios, turistas y hoteles
+                    $ticket_ids = json_decode($tour->tickets, true) ?? [];
+                    $accesorio_ids = json_decode($tour->accesorios, true) ?? [];
+                    $turista_ids = json_decode($tour->turistas, true) ?? [];
+                    $hotel_ids = json_decode($tour->hoteles, true) ?? [];
 
-                // Aplanar el arreglo de hoteles en caso de que esté anidado
-                if (is_array($hotel_ids)) {
-                    // Verificamos si es un array de arrays, y si es así, lo aplanamos
-                    $hotel_ids = array_merge(...array_map('is_array', $hotel_ids) ? $hotel_ids : [$hotel_ids]);
-                }
+                    // Aplanar los arrays de IDs si es necesario
+                    if (is_array($hotel_ids) && count($hotel_ids) > 0) {
+                        // Si el array es un array de arrays, lo aplanamos
+                        $hotel_ids = array_merge(...$hotel_ids);
+                    }
 
-                // Depuración: Verificar los valores de hotel_ids
-                dd($hotel_ids);
+                    // Asegurarse de que no hay valores anidados en ticket_ids, accesorio_ids, turista_ids
+                    $ticket_ids = is_array($ticket_ids) ? $ticket_ids : [];
+                    $accesorio_ids = is_array($accesorio_ids) ? $accesorio_ids : [];
+                    $turista_ids = is_array($turista_ids) ? $turista_ids : [];
 
-                // Filtrar los tickets, accesorios, turistas y hoteles
-                $tickets = $tickets->whereIn('id', $ticket_ids);
-                $accesorios = $accesorios->whereIn('id', $accesorio_ids);
-                $turistas = $turistas->whereIn('id', $turista_ids);
-                $hoteles = $hoteles->whereIn('id', $hotel_ids); // Aplicamos el filtro a los hoteles
-            @endphp
+                    // Depuración: Verificar los valores de los IDs para asegurarnos de que no están anidados
+                    dd([
+                        'ticket_ids' => $ticket_ids,
+                        'accesorio_ids' => $accesorio_ids,
+                        'turista_ids' => $turista_ids,
+                        'hotel_ids' => $hotel_ids
+                    ]);
+
+                    // Filtrar los tickets, accesorios, turistas y hoteles
+                    $tickets = $tickets->whereIn('id', $ticket_ids);
+                    $accesorios = $accesorios->whereIn('id', $accesorio_ids);
+                    $turistas = $turistas->whereIn('id', $turista_ids);
+                    $hoteles = $hoteles->whereIn('id', $hotel_ids); // Aplicamos el filtro a los hoteles
+                @endphp
                     <div class="row">
                         <div class="col-md-2"></div>
 
