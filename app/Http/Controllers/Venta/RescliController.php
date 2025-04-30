@@ -231,7 +231,7 @@ class RescliController extends Controller
                 }
 
                 if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
-                    $imagenResized = \Image::make($imagen)->fit(300, 300);
+                    $imagenResized = Image::make($imagen)->fit(300, 300);
                     $imagenResized->save(public_path("$rutaGuardarmg/$nombreOriginal"));
                 } elseif (in_array($extension, ['pdf', 'doc', 'docx'])) {
                     $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
