@@ -44,61 +44,56 @@ class ReservaController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
-        // Obtener todos los datos de los modelos relacionados
-        $resclis = Resercliente::all();
-        $reservas = Reserva::all();
-        $tours = Tour::all();
-        $countries = Country::all();
-        $hottus = HotelTour::all();
-        $categorias = Categoria::all();
-        $servicios = Servicio::all();
-        $alergias = Alergia::all();
-        $alimentos = Alimentacion::all();
-        $habitaciones = Habitacion::all();
-        $links = Link::all();
-        $onlines = Online::all();
-        $qrs = Qr::all();
-
-        // Obtener los modelos necesarios que se usan en la vista
-        $tickets = Ticket::all();
-        $accesorios = Accesorio::all();
-        $turistas = Turista::all();
-
-        // Obtener los hoteles con la relación habitaciones
-        foreach ($tours as $tour) {
-            // Asegúrate de que el tour tiene una propiedad 'hoteles'
-            $hotel_ids = json_decode($tour->hoteles, true) ?? []; // Si 'hoteles' es un JSON con los IDs
-
-            $hoteles = Hotel::whereIn('id', $hotel_ids)->with('habitaciones')->get(); // Obtener los hoteles con sus habitaciones
+        // Asegurarse de que venga el ID del tour por GET
+        $tourId = $request->query('tour_id');
+    
+        if (!$tourId) {
+            return redirect()->back()->with('error', 'No se ha especificado un tour.');
         }
-
-        // Pasar todos los datos a la vista
+    
+        // Obtener el tour solicitado
+        $tour = Tour::findOrFail($tourId);
+    
+        // Decodificar los elementos seleccionados en el tour
+        $ticket_ids     = json_decode($tour->tickets, true) ?? [];
+        $accesorio_ids  = json_decode($tour->accesorios, true) ?? [];
+        $turista_ids    = json_decode($tour->turistas, true) ?? [];
+        $hotel_ids_flat = array_merge(...(json_decode($tour->hoteles, true) ?? []));
+    
+        // Datos relacionados específicos para este tour
+        $tickets     = Ticket::whereIn('id', $ticket_ids)->get();
+        $accesorios  = Accesorio::whereIn('id', $accesorio_ids)->get();
+        $turistas    = Turista::whereIn('id', $turista_ids)->get();
+        $hoteles     = Hotel::whereIn('id', $hotel_ids_flat)->with('habitaciones')->get();
+        $habitaciones = Habitacion::all(); // Se requieren para match de radios en cada hotel
+    
+        // Datos auxiliares para el formulario
+        $countries   = Country::all();
+        $alergias    = Alergia::all();
+        $alimentos   = Alimentacion::all();
+        $links       = Link::where('estatus', 1)->get();
+        $onlines     = Online::where('estatus', 1)->get();
+        $qrs         = Qr::where('estatus', 1)->get();
+    
+        // Pasar a la vista solo lo que el formulario necesita
         return view('ventas.reservas.create', compact(
-            'resclis',
-            'reservas',
-            'links',
-            'onlines',
-            'qrs',
-            'habitaciones',
-            'alimentos',
-            'alergias',
-            'tours',
-            'countries',
-            'hottus',
-            'categorias',
-            'servicios',
+            'tour',
             'tickets',
+            'hoteles',
+            'habitaciones',
             'accesorios',
             'turistas',
-            'hoteles'
+            'countries',
+            'alergias',
+            'alimentos',
+            'links',
+            'onlines',
+            'qrs'
         ));
     }
-
-
-
-
+    
     /**
      * Store a newly created resource in storage.
      */
