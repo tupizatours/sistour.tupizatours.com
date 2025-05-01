@@ -41,7 +41,7 @@
 
     <hr>
 
-    <div class="d-flex align-items-center">
+    <div class="d-flex justify-content-center gap-2">
         <a href="javascript:;" class="btn btn-primary continuar col-md-12" data-next="segunda_fase">
             Continuar <i class="fadeIn animated bx bx-arrow-to-right"></i>
         </a>

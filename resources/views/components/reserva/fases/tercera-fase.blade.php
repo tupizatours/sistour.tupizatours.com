@@ -139,7 +139,7 @@
 
     <div class="row g-3">
         <div class="col-md-12">
-            <div class="d-flex align-items-center gap-2">
+            <div class="d-flex justify-content-center gap-2">
                 <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="segunda_fase">
                     <i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar
                 </a>

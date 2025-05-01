@@ -95,7 +95,7 @@
     {{-- Botones finales --}}
     <div class="row g-3">
         <div class="col-md-12">
-            <div class="d-flex align-items-center ">
+            <div class="d-flex justify-content-center gap-2">
                 <a href="javascript:;" class="btn btn-danger regresar col-md-4" data-prev="tercera_fase">
                     <i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar
                 </a>
