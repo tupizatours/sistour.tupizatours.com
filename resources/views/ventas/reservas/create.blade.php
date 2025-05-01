@@ -171,30 +171,7 @@
 
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
-    <form action="{{ route('reservas.store') }}" method="POST" id="file-upload-form" enctype="multipart/form-data">
-        @csrf
-
-        {{-- Datos necesarios --}}
-        <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}">
-        <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}">
-        <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}">
-        <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}">
-        <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}">
-        <input type="hidden" id="estatus" name="estatus" value="1">
-
-        <div class="row">
-            <div class="col-md-7">
-                @include('components.reserva.fases.primer-fase', ['tour' => $tour])
-                @include('components.reserva.fases.segunda-fase', compact('countries', 'alergias', 'alimentos'))
-                @include('components.reserva.fases.tercera-fase', compact('tour', 'tickets', 'hoteles', 'habitaciones', 'accesorios', 'turistas'))
-                @include('components.reserva.fases.cuarta-fase', compact('links', 'onlines', 'qrs'))
-            </div>
-
-            <div class="col-md-5">
-                @include('components.reserva.resumen-final', ['tour' => $tour])
-            </div>
-        </div>
-    </form>
+    @include('components.reserva.fases.primer-fase', ['tour' => $tour])
 @endsection
 
 @section('footer_scripts')
