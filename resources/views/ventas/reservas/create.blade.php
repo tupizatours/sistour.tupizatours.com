@@ -171,8 +171,39 @@
 
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
-    @include('components.reserva.fases.primer-fase', ['tour' => $tour])
+    <form action="{{ route('reservas.store') }}" method="POST" id="file-upload-form" enctype="multipart/form-data">
+        @csrf
+
+        {{-- Datos necesarios --}}
+        <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}">
+        <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}">
+        <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}">
+        <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}">
+        <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}">
+        <input type="hidden" id="estatus" name="estatus" value="1">
+
+        <div class="row">
+            <div class="col-md-7">
+                <x-reserva.fases.primer-fase :tour="$tour" />
+                <x-reserva.fases.segunda-fase :countries="$countries" :alergias="$alergias" :alimentos="$alimentos" />
+                <x-reserva.fases.tercera-fase
+                :tour="$tour"
+                :tickets="$tickets"
+                :hoteles="$hoteles"
+                :habitaciones="$habitaciones"
+                :accesorios="$accesorios"
+                :turistas="$turistas"
+                />                
+                <x-reserva.fases.cuarta-fase :links="$links" :onlines="$onlines" :qrs="$qrs" />
+            </div>
+
+            <div class="col-md-5">
+                <x-reserva.resumen-final :tour="$tour" />
+            </div>
+        </div>
+    </form>
 @endsection
+
 
 @section('footer_scripts')
     <script>
@@ -185,7 +216,6 @@
             const preTot = parseFloat($("pre_tot").value);
             const maxPer = parseFloat($("max_per").value);
             const horLim = parseInt($("hor_lim").value);
-            const tourSbt = $("tour_Sbt");
             const tourTotal = $("tour_total");
 
             // Secciones y botones
