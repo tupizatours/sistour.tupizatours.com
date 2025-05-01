@@ -95,11 +95,11 @@
     {{-- Botones finales --}}
     <div class="row g-3">
         <div class="col-md-12">
-            <div class="d-flex align-items-center gap-2">
-                <a href="javascript:;" class="btn btn-danger regresar col-md-6" data-prev="tercera_fase">
+            <div class="d-flex align-items-center ">
+                <a href="javascript:;" class="btn btn-danger regresar col-md-4" data-prev="tercera_fase">
                     <i class="fadeIn animated bx bx-arrow-to-left"></i>Regresar
                 </a>
-                <button type="submit" class="btn btn-primary continuar col-md-6">
+                <button type="submit" class="btn btn-primary continuar col-md-4">
                     Reservar <i class="fadeIn animated bx bx-arrow-to-right"></i>
                 </button>
             </div>
