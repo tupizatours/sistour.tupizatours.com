@@ -61,6 +61,9 @@
 
         {{-- Hoteles --}}
         <div class="tab-pane fade" id="tourhoteles" role="tabpanel">
+            @php
+                $hotelesSeleccionados = json_decode($tour->hoteles, true) ?? [];
+            @endphp
             @foreach($hotelesSeleccionados as $dia => $hotelIds)
                 <div class="row g-3">
                     <div class="col-md-12 form-check">
