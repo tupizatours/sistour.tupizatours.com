@@ -13,7 +13,7 @@ class CreateEmailLog extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('email_log', function (Blueprint $table) {
+        Schema::create('email_log', function (Blueprint $table) {
             $table->id();
             $table->dateTime('date');
             $table->string('from')->nullable();
@@ -24,7 +24,7 @@ class CreateEmailLog extends Migration
             $table->text('body');
             $table->text('headers')->nullable();
             $table->longText('attachments')->nullable();
-        });*/
+        });
     }
 
     /**

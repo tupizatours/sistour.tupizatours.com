@@ -13,7 +13,7 @@ class CreateThemesTable extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('themes', function (Blueprint $table) {
+        Schema::create('themes', function (Blueprint $table) {
             $table->bigIncrements('id')->index();
             $table->string('name')->index()->unique();
             $table->string('link')->unique();
@@ -22,7 +22,7 @@ class CreateThemesTable extends Migration
             $table->morphs('taggable');
             $table->timestamps();
             $table->softDeletes();
-        });*/
+        });
     }
 
     /**

@@ -13,7 +13,7 @@ class CreatePermissionRoleTable extends Migration
      */
     public function up(): void
     {
-        /*$connection = config('roles.connection');
+        $connection = config('roles.connection');
         $table = config('roles.permissionsRoleTable');
         $permissionsTable = config('roles.permissionsTable');
         $rolesTable = config('roles.rolesTable');
@@ -29,7 +29,7 @@ class CreatePermissionRoleTable extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
-        }*/
+        }
     }
 
     /**

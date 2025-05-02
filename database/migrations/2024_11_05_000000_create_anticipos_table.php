@@ -13,7 +13,8 @@ return new class extends Migration {
             $table->unsignedBigInteger('reserva_id');
             $table->unsignedBigInteger('prestatario_id'); // el dueño del recurso (caballo, vagoneta, etc.)
             $table->unsignedBigInteger('elemento_id');    // el recurso específico (caballo_id, vagoneta_id, etc.)
-        
+            $table->unsignedBigInteger('user_id')->nullable();
+
             $table->decimal('monto', 10, 2)->default(0);  // monto del anticipo
             $table->string('tipo_servicio');             // 'vagoneta', 'caballo', 'bicicleta', etc.
         

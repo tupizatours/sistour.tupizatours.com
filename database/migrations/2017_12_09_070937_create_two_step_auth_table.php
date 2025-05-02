@@ -14,7 +14,7 @@ class CreateTwoStepAuthTable extends Migration
      */
     public function up(): void
     {
-        /*$twoStepAuth = new TwoStepAuth();
+        $twoStepAuth = new TwoStepAuth();
         $connection = $twoStepAuth->getConnectionName();
         $table = $twoStepAuth->getTableName();
         $tableCheck = Schema::connection($connection)->hasTable($table);
@@ -31,7 +31,7 @@ class CreateTwoStepAuthTable extends Migration
                 $table->dateTime('requestDate')->nullable();
                 $table->timestamps();
             });
-        }*/
+        }
     }
 
     /**

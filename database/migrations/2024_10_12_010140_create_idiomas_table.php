@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('idiomas', function (Blueprint $table) {
+        Schema::create('idiomas', function (Blueprint $table) {
             $table->id();
             $table->string('codigo')->nullable();
             $table->string('titulo')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });*/
+        });
     }
 
     /**

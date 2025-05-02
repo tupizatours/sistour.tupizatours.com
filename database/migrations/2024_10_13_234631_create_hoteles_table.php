@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('hoteles', function (Blueprint $table) {
+        Schema::create('hoteles', function (Blueprint $table) {
             $table->id();
             $table->string('titulo')->nullable();
             $table->string('tipo')->nullable();
             $table->string('estado')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });*/
+        });
     }
 
     /**

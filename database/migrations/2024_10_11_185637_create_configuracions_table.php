@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('configuracions', function (Blueprint $table) {
+        Schema::create('configuracions', function (Blueprint $table) {
             $table->id();
             $table->text('logo')->nullable();
             $table->text('favicon')->nullable();
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('titulo')->nullable();
             $table->string('estatus')->nullable();
             $table->timestamps();
-        });*/
+        });
     }
 
     /**

@@ -13,7 +13,7 @@ class CreateSocialLoginsTable extends Migration
      */
     public function up(): void
     {
-        /*Schema::create('social_logins', function (Blueprint $table) {
+        Schema::create('social_logins', function (Blueprint $table) {
             // Structure
             $table->bigIncrements('id');
             $table->unsignedBigInteger('user_id')->unsigned()->index();
@@ -23,7 +23,7 @@ class CreateSocialLoginsTable extends Migration
 
             // Relationships
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
-        });*/
+        });
     }
 
     /**

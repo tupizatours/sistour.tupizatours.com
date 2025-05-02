@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up(): void
     {
-        /*
+        
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name')->unique();
@@ -34,7 +34,7 @@ class CreateUsersTable extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        */
+        
     }
 
     /**

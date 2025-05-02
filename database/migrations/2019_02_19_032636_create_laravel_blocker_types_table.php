@@ -14,7 +14,7 @@ class CreateLaravelBlockerTypesTable extends Migration
      */
     public function up(): void
     {
-        /*$blocked = new BlockedType();
+        $blocked = new BlockedType();
         $connection = $blocked->getConnectionName();
         $table = $blocked->getTableName();
         $tableCheck = Schema::connection($connection)->hasTable($table);
@@ -27,7 +27,7 @@ class CreateLaravelBlockerTypesTable extends Migration
                 $table->timestamps();
                 $table->softDeletes();
             });
-        }*/
+        }
     }
 
     /**
