@@ -149,4 +149,10 @@
             </div>
         </div>
     </div>
+
+    <input type="hidden" name="tickets_seleccionados" id="tickets_seleccionados" />
+    <input type="hidden" name="habitaciones_seleccionadas" id="habitaciones_seleccionadas" />
+    <input type="hidden" name="accesorios_seleccionados" id="accesorios_seleccionados" />
+    <input type="hidden" name="servicios_seleccionados" id="servicios_seleccionados" />
+    <input type="hidden" name="tour_total" id="tour_total" />
 </div>

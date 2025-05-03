@@ -22,141 +22,6 @@
         @import url(https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css);
         @import url('https://fonts.googleapis.com/css?family=Roboto');
 
-        .uploader {
-        display: block;
-        clear: both;
-        margin: 0 auto;
-        width: 100%;
-
-        #file-drag {
-            float: left;
-            clear: both;
-            width: 100%;
-            padding: 2rem 1.5rem;
-            text-align: center;
-            background: #fff;
-            border-radius: 7px;
-            border: 3px solid #eee;
-            transition: all .2s ease;
-            user-select: none;
-
-            &:hover {
-            border-color: $theme;
-            }
-            &.hover {
-            border: 3px solid $theme;
-            box-shadow: inset 0 0 0 6px #eee;
-            
-            #start {
-                i.fa {
-                transform: scale(0.8);
-                opacity: 0.3;
-                }
-            }
-            }
-        }
-
-        #start {
-            float: left;
-            clear: both;
-            width: 100%;
-            &.hidden {
-            display: none;
-            }
-            i.fa {
-            font-size: 50px;
-            margin-bottom: 1rem;
-            transition: all .2s ease-in-out;
-            }
-        }
-        #response {
-            float: left;
-            clear: both;
-            width: 100%;
-            &.hidden {
-            display: none;
-            }
-            #messages {
-            margin-bottom: .5rem;
-            }
-        }
-
-        #file-image {
-            display: inline;
-            margin: 0 auto .5rem auto;
-            width: auto;
-            height: auto;
-            max-width: 180px;
-            &.hidden {
-            display: none;
-            }
-        }
-        
-        #notimage {
-            display: block;
-            float: left;
-            clear: both;
-            width: 100%;
-            &.hidden {
-            display: none;
-            }
-        }
-
-        progress,
-        .progress {
-            // appearance: none;
-            display: inline;
-            clear: both;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 180px;
-            height: 8px;
-            border: 0;
-            border-radius: 4px;
-            background-color: #eee;
-            overflow: hidden;
-        }
-
-        .progress[value]::-webkit-progress-bar {
-            border-radius: 4px;
-            background-color: #eee;
-        }
-
-        .progress[value]::-webkit-progress-value {
-            background: linear-gradient(to right, darken($theme,8%) 0%, $theme 50%);
-            border-radius: 4px; 
-        }
-        .progress[value]::-moz-progress-bar {
-            background: linear-gradient(to right, darken($theme,8%) 0%, $theme 50%);
-            border-radius: 4px; 
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-        .btn {
-            display: inline-block;
-            margin: .5rem .5rem 1rem .5rem;
-            clear: both;
-            font-family: inherit;
-            font-weight: 700;
-            font-size: 14px;
-            text-decoration: none;
-            text-transform: initial;
-            border: none;
-            border-radius: .2rem;
-            outline: none;
-            padding: 0 1rem;
-            height: 36px;
-            line-height: 36px;
-            color: #fff;
-            transition: all 0.2s ease-in-out;
-            box-sizing: border-box;
-            background: $theme;
-            border-color: $theme;
-            cursor: pointer;
-        }
-        }
         .hidden {
             display: none;
         }
@@ -166,42 +31,112 @@
         .tab-pane .form-check-label span {
             float: right;
         }
+        .uploader {
+            #file-drag {
+                background: #f9f9f9;
+                border: 2px dashed #ccc;
+                padding: 2rem;
+                text-align: center;
+                border-radius: 10px;
+                transition: 0.3s ease-in-out;
+
+                &.hover {
+                    border-color: #007bff;
+                    background: #eef7ff;
+                }
+            }
+
+            #preview-container {
+                margin-bottom: 1rem;
+
+                img#file-image {
+                    max-width: 160px;
+                    max-height: 160px;
+                    object-fit: cover;
+                    display: block;
+                    margin: 0 auto;
+                    border-radius: 6px;
+
+                    &.hidden {
+                        display: none;
+                    }
+                }
+
+                iframe#pdf-preview {
+                    width: 100%;
+                    height: 300px;
+                    border: none;
+
+                    &.hidden {
+                        display: none;
+                    }
+                }
+            }
+
+            input[type="file"] {
+                display: none;
+            }
+
+            #file-info {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .progress {
+                width: 100%;
+                max-width: 180px;
+                height: 8px;
+                border-radius: 4px;
+                margin: 1rem auto;
+                display: block;
+            }
+        }
+
+
     </style>
 @endsection
 
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
-    <form action="{{ route('reservas.store') }}" method="POST" id="file-upload-form" enctype="multipart/form-data">
-        @csrf
+    <div class="row">
+        <div class="col-md-7">
 
-        {{-- Datos necesarios --}}
-        <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}">
-        <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}">
-        <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}">
-        <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}">
-        <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}">
-        <input type="hidden" id="estatus" name="estatus" value="1">
+            <div class="card">
+                <div class="card border-primary mb-0">
+                    <form action="{{ route('venreservas.store') }}" method="POST" id="file-upload-form" enctype="multipart/form-data">
+                        @csrf
 
-        <div class="row">
-            <div class="col-md-7">
-                <x-reserva.fases.primer-fase :tour="$tour" />
-                <x-reserva.fases.segunda-fase :countries="$countries" :alergias="$alergias" :alimentos="$alimentos" />
-                <x-reserva.fases.tercera-fase
-                :tour="$tour"
-                :tickets="$tickets"
-                :hoteles="$hoteles"
-                :habitaciones="$habitaciones"
-                :accesorios="$accesorios"
-                :turistas="$turistas"
-                />                
-                <x-reserva.fases.cuarta-fase :links="$links" :onlines="$onlines" :qrs="$qrs" />
-            </div>
+                        {{-- Datos necesarios --}}
+                        <input type="hidden" id="hor_lim" name="hor_lim" value="{{ $tour->hor_lim }}">
+                        <input type="hidden" id="max_per" name="max_per" value="{{ $tour->max_per }}">
+                        <input type="hidden" id="pre_tot" name="pre_tot" value="{{ $tour->pre_tot }}">
+                        <input type="hidden" id="pre_uni" name="pre_uni" value="{{ $tour->pre_uni }}">
+                        <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}">
+                        <input type="hidden" id="estatus" name="estatus" value="1">
 
-            <div class="col-md-5">
-                <x-reserva.resumen-final :tour="$tour" />
+                        <x-reserva.fases.primer-fase :tour="$tour" />
+                        <x-reserva.fases.segunda-fase :countries="$countries" :alergias="$alergias" :alimentos="$alimentos" />
+                        <x-reserva.fases.tercera-fase
+                        :tour="$tour"
+                        :tickets="$tickets"
+                        :hoteles="$hoteles"
+                        :habitaciones="$habitaciones"
+                        :accesorios="$accesorios"
+                        :turistas="$turistas"
+                        />                
+                        <x-reserva.fases.cuarta-fase :links="$links" :onlines="$onlines" :qrs="$qrs" />
+                    
+                    </form>
+                </div>
             </div>
         </div>
-    </form>
+
+        <div class="col-md-5">
+            <x-reserva.resumen-final :tour="$tour" />
+        </div>
+    </div>
+
 @endsection
 
 
@@ -217,6 +152,7 @@
             const maxPer = parseFloat($("max_per").value);
             const horLim = parseInt($("hor_lim").value);
             const tourTotal = $("tour_total");
+            const tourSbt = $("tour_Sbt");
 
             // Secciones y botones
             const porPre = $("porpre"), totPre = $("totpre");
@@ -301,11 +237,11 @@
                 document.querySelectorAll(selectors[type].check).forEach(el => {
                     el.addEventListener("change", () => {
                         updateGroupTotal(type);
+                        updateAllTotals(); // <-- asegúrate de que esté presente aquí
                         saveSelections();
                     });
                 });
             });
-
             // Guardar selecciones como JSON
             const saveSelections = () => {
                 const mapToJson = (selector, builderFn) =>
@@ -402,5 +338,83 @@
             saveSelections();
         });
 
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#alergias').select2({
+                theme: "bootstrap-5",
+                width: '100%',
+                placeholder: 'Seleccionar',
+                closeOnSelect: false
+            });
+    
+            $('#alimentacion').select2({
+                theme: "bootstrap-5",
+                width: '100%',
+                placeholder: 'Seleccionar',
+                closeOnSelect: false
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const $ = id => document.getElementById(id);
+
+            const fileInput = $("file-upload");
+            const fileDrag = $("file-drag");
+            const fileImage = $("file-image");
+            const pdfPreview = $("pdf-preview");
+            const pdfLabel = $("pdf-upload");
+            const fileProgress = $("file-progress");
+            const fileUploadBtn = $("file-upload-btn");
+
+            if (!fileInput || !fileDrag) return;
+
+            const handleHover = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                fileDrag.classList.toggle("hover", e.type === 'dragover');
+            };
+
+            const previewFile = (file) => {
+                const fileName = file.name.toLowerCase();
+                const isImage = /\.(gif|jpe?g|png)$/i.test(fileName);
+                const isPDF = /\.pdf$/i.test(fileName);
+
+                fileImage.classList.add("hidden");
+                pdfPreview.classList.add("hidden");
+
+                if (isImage) {
+                    fileImage.src = URL.createObjectURL(file);
+                    fileImage.classList.remove("hidden");
+                    pdfLabel.textContent = file.name;
+                } else if (isPDF) {
+                    pdfPreview.src = URL.createObjectURL(file);
+                    pdfPreview.classList.remove("hidden");
+                    pdfLabel.textContent = file.name;
+                } else {
+                    pdfLabel.textContent = "Archivo no soportado";
+                    alert("Selecciona una imagen o PDF válido.");
+                }
+            };
+
+            const handleFileSelect = (e) => {
+                const files = e.target.files || e.dataTransfer.files;
+                handleHover(e);
+                [...files].forEach(previewFile);
+            };
+
+            ["dragover", "dragleave", "drop"].forEach(event =>
+                fileDrag.addEventListener(event, handleHover, false)
+            );
+
+            fileInput.addEventListener("change", handleFileSelect, false);
+            fileDrag.addEventListener("drop", handleFileSelect, false);
+
+            // botón que dispara la selección
+            fileUploadBtn.addEventListener("click", () => {
+                fileInput.click();
+            });
+        });
     </script>
 @endsection

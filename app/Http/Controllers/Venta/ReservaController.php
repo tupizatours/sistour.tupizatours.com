@@ -145,6 +145,8 @@ class ReservaController extends Controller
             ? floatval($request->pre_tot)
             : $precioUnidad * $cantidad;
 
+        $esExterno = $request->input('pagina') === 'user_external';
+
         $totalReserva = 0;
 
         // Crear reserva inicialmente sin total
@@ -159,27 +161,32 @@ class ReservaController extends Controller
             'pre_pri'   => $pre_pri,
             'can_pri'   => $request->max_per,
             'fecha'     => $request->fecha_limite,
-            'estado'    => 2,
+            'estado'    => $esExterno ? 1 : 2,
             'estatus'   => $request->estatus,
         ]);
 
         // Crear turistas asociados
         for ($i = 0; $i < $cantidad; $i++) {
             $esPrincipal = $i === 0;
-
-            $totalUnitario = $precioUnidad + ($esPrincipal ? $adicionales : 0);
-            $totalReserva += $totalUnitario;
-
+        
+            $sub = $precioUnidad;
+            $res_total = $esPrincipal
+                ? $precioUnidad + $adicionales  // Principal paga los adicionales
+                : $precioUnidad;                // Otros solo pagan su unidad
+        
+            $totalReserva += $res_total;
+        
             $rescli = [
-                'codigo'        => Str::random(10),
-                'pre_per'       => $precioUnidad,
-                'total'         => $totalUnitario,
-                'reserva_id'    => $reserva->id,
-                'estado'        => 1,
-                'estatus'       => $request->estatus,
-                'esPrincipal'   => $esPrincipal,
+                'codigo'      => Str::random(10),
+                'pre_per'     => $precioUnidad,
+                'subtotal'    => $sub,
+                'total'       => $res_total,
+                'reserva_id'  => $reserva->id,
+                'estado'      => 1,
+                'estatus'     => $request->estatus,
+                'esPrincipal' => $esPrincipal,
             ];
-
+        
             if ($esPrincipal) {
                 $rescli = array_merge($rescli, [
                     'nombres'       => $request->nombres,
@@ -200,15 +207,18 @@ class ReservaController extends Controller
                     'servicios'     => $services,
                 ]);
             }
-
+        
             Resercliente::create($rescli);
         }
-
+        
         // Actualizar totales reales
         $reserva->update([
             'subtotal' => $precioUnidad * $cantidad,
             'total'    => $totalReserva,
         ]);
+
+        return redirect($esExterno ? '/tienda' : '/ventas/reservas')
+       ->with('success', 'Reserva creada correctamente.');
     }
 
     /**

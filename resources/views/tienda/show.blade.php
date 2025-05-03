@@ -169,6 +169,8 @@
                             <input type="hidden" id="created_at" name="created_at" value="{{ $newDate }}" />
                             <input type="hidden" id="tour_id" name="tour_id" value="{{ $tour->id }}" />
                             <input type="hidden" id="estatus" name="estatus" value="1" />
+                            <input type="hidden" value="user_external" id="pagina" name="pagina" />
+
 
                             <h5 class="card-title text-black text-center"><b>{{ $tour->titulo }}</b></h5>
 

@@ -72,32 +72,31 @@
             <input type="text" class="form-control" id="nota" name="nota" />
         </div>
 
-        <div class="col-md-12">
-            <label for="file-upload" class="form-label">
+        <div class="col-md-12 uploader">
+            <p class="text-center text-muted mb-2">
                 Es importante subir una imagen o PDF del documento de identidad para su seguridad y la nuestra. <strong>(campo requerido *)</strong>
-            </label>
-            <input class="form-control form-control-solid" id="file-upload" name="file" type="file" accept=".pdf, .doc, .docx, image/*" required />
-
-            <label for="file-upload" id="file-drag">
-                <img id="file-image" src="#" alt="Preview" class="hidden">
-                <iframe id="pdf-preview" style="display: none;" class="hidden" width="100%" height="500px"></iframe>
-
-                <div id="start">
-                    <i class="fa fa-download" aria-hidden="true"></i>
-                    <div id="pdf-upload">Selecciona el archivo a cargar</div>
-                    <div id="notimage" class="hidden">Selecciona una imagen</div>
-                    <span id="file-upload-btn" class="btn btn-primary">Selecciona un archivo</span>
+            </p>
+        
+            <input id="file-upload" name="file" type="file" accept=".pdf,image/*" required />
+        
+            <div id="file-drag">
+                <div id="preview-container">
+                    <img id="file-image" class="hidden" alt="Previsualización" />
+                    <iframe id="pdf-preview" class="hidden"></iframe>
                 </div>
-
-                <div id="response" class="hidden">
-                    <div id="messages"></div>
-
-                    <progress class="progress" id="file-progress" value="0">
-                        <span>0</span>%
-                    </progress>
+        
+                <div id="file-info">
+                    <div class="mb-2 text-muted" id="pdf-upload">Ningún archivo seleccionado</div>
+                    <button type="button" class="btn btn-primary" id="file-upload-btn">
+                        Seleccionar archivo
+                    </button>
                 </div>
-            </label>
+        
+                <progress class="progress" id="file-progress" value="0"></progress>
+                <div id="messages"></div>
+            </div>
         </div>
+        
 
         <div class="col-md-12">
             <div class="d-flex justify-content-center gap-2">
