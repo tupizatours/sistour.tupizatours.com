@@ -77,6 +77,23 @@
                 padding: 10px 15px;
             }
         }
+
+        ul.turistas-lista {
+            padding: 0;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        ul.turistas-lista li {
+            list-style: none;
+            margin-bottom: 12px;
+        }
+
+        ul.turistas-lista li a.button {
+            margin: auto;
+            display: inline-block;
+        }
+
     </style>
 </head>
 <body>
@@ -99,7 +116,7 @@
 
                     @if(count($data['turistas_adicionales']) > 0 && $data['pagina'] != 'resclis')
                         <p>Los siguientes turistas adicionales deben completar sus datos:</p>
-                        <ul>
+                        <ul class="turistas-lista">
                             @foreach($data['turistas_adicionales'] as $index => $turista)
                                 <li>
                                     <a href="{{ $turista['link'] }}" class="button">

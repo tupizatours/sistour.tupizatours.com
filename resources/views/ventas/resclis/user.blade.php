@@ -166,15 +166,21 @@
         .tab-pane .form-check-label span {
             float: right;
         }
+        #preview-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 @endsection
 
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" />
     
-    <form action="{{ route('venresclis.update', $rescli->id) }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
+    <form action="{{ route('venresclis.update.external', $rescli->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('PUT')
+        @method('POST')
 
         @php
             use App\Models\Servicio\Hotel;

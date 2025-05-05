@@ -286,6 +286,15 @@ class RescliController extends Controller
         }
     }
 
+    public function externalUpdate(Request $request, $id)
+    {
+        if ($request->pagina !== 'user_external') {
+            abort(403, 'No autorizado');
+        }
+
+        return $this->update($request, $id); // o copia el contenido completo aquí si prefieres separar
+    }
+
     /**
      * Remove the specified resource from storage.
      */

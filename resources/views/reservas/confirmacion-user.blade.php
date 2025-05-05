@@ -181,7 +181,7 @@
                     <h3 class="text-success mb-4">¡Gracias, {{ $nombre }}!</h3>
                     <p>Tu información ha sido registrada correctamente.</p>
                     <p>Te esperamos con alegría para vivir esta experiencia única.</p>
-                    <a href="{{ url('/') }}" class="btn btn-primary mt-4">Volver al sitio</a>
+                    <a href="{{ url('/tienda') }}" class="btn btn-primary mt-4">Volver al sitio</a>
                 </div>
             </div>
         </div>

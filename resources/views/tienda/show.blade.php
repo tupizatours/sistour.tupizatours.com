@@ -147,7 +147,7 @@
 @section('content')
     <link href="{{ asset('assets/plugins/bs-stepper/css/bs-stepper.css') }}" rel="stylesheet" /><!--public/-->
     
-    <form action="{{ route('reservas.store') }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
+    <form action="{{ route('reservas.store.external') }}" method="POST" class="uploader" id="file-upload-form" enctype="multipart/form-data">
         @csrf
 
         <div class="row">

@@ -74,6 +74,17 @@ class PagoController extends Controller
         $reserva->save();
     
         $pdfPath = $this->generarResumenReservaPDF($reserva, $rescli);
+
+        $turistasAdicionales = Resercliente::where('reserva_id', $reserva->id)
+                ->where('id', '!=', $rescli->id) // excluir al principal
+                ->whereNull('nombres') // o el campo que usas para determinar si está incompleto
+                ->get()
+                ->map(function ($turista) {
+            return [
+                'id' => $turista->id,
+                'link' => route('venresclisuser', $turista->id), // ruta al formulario de edición para completar
+            ];
+        })->toArray();
     
         $data = [
             'nombre' => $rescli->nombre,
@@ -86,7 +97,7 @@ class PagoController extends Controller
             'cantidad_personas' => $reserva->can_per,
             'estado' => 'Confirmada',
             'tour_id' => $reserva->id,
-            'turistas_adicionales' => [],
+            'turistas_adicionales' => $turistasAdicionales,
             'pagina' => $request->pagina,
         ];
     

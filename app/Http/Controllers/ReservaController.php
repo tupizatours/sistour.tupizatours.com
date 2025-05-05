@@ -145,6 +145,15 @@ class ReservaController extends Controller
         return view ('reservas.gracias');
     }
 
+    public function externalStore(Request $request)
+    {
+        if ($request->pagina !== 'user_external') {
+            abort(403, 'No autorizado');
+        }
+
+        return $this->store($request); // o copia manual la lógica
+    }
+
     /**
      * Display the specified resource.
      */
