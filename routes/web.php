@@ -31,6 +31,10 @@ Route::post('reservas/external/store', [App\Http\Controllers\ReservaController::
 Route::put('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
     ->name('reservas.update.external');
 
+Route::get('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
+    ->name('reservas.update.external');
+
+
 Route::get('ventas/resclis/user/{id}', 'App\Http\Controllers\Venta\RescliController@user')->name('venresclisuser');
 
 
