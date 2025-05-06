@@ -34,7 +34,7 @@ Route::put('reservas/external/update/{id}', [App\Http\Controllers\ReservaControl
 Route::get('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
     ->name('reservas.update.external');
 
-Route::get('ventas/resclis/user/{id}', 'App\Http\Controllers\Venta\RescliController@user')->name('venresclisuser');
+Route::get('ventas/resclis/user/{id}', [App\Http\Controllers\Venta\RescliController::class, 'user'])->name('venresclisuser');
 
 // Authentication Routes
 Auth::routes();
