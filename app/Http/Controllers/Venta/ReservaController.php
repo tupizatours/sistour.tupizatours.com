@@ -26,8 +26,6 @@ use DB;
 use Image;
 use Illuminate\Support\Str;
 
-use App\Services\NotificacionReservaService;
-
 
 class ReservaController extends Controller
 {
@@ -218,9 +216,6 @@ class ReservaController extends Controller
             'subtotal' => $precioUnidad * $cantidad,
             'total'    => $totalReserva,
         ]);
-
-        // Notificacion email 
-        NotificacionReservaService::enviarCorreoReservaConfirmada($reserva, $request->pagina);
      
         return redirect($esExterno ? '/tienda' : '/ventas/reservas')
        ->with('success', 'Reserva creada correctamente.');

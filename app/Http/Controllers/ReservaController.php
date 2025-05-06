@@ -12,6 +12,7 @@ use Image;
 use Illuminate\Support\Str;
 use App\Services\NotificacionReservaService;
 
+use Illuminate\Support\Facades\Mail;
 
 use App\Models\Configuracion\Link;
 use App\Models\Configuracion\Online;
@@ -154,7 +155,22 @@ class ReservaController extends Controller
         ]);
 
         // Envío de notificación con nuevo servicio
-        NotificacionReservaService::enviarCorreoReservaConfirmada($reserva, 'user_external');
+        $cliente = Resercliente::where('reserva_id', $reserva->id)
+        ->where('esPrincipal', true)
+        ->first();
+
+        // Detecta página origen
+        $pagina = $request->input('pagina') ?? 'user_external';
+
+        // Envío de notificación
+        try {
+        Mail::to($cliente->correo)->send(new ReservaTour($reserva, $cliente, $pagina));
+        } catch (\Exception $e) {
+        \Log::error('No se pudo enviar el correo de reserva: ' . $e->getMessage(), [
+            'correo' => $cliente->correo ?? 'sin correo',
+            'reserva_id' => $reserva->id,
+        ]);
+        }
 
         return view('reservas.gracias');
     }
