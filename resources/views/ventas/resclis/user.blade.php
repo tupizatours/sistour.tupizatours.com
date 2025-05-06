@@ -180,7 +180,7 @@
     
     <form action="{{ route('venresclis.update.external', $rescli->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        @method('POST')
+        @method('put')
 
         @php
             use App\Models\Servicio\Hotel;

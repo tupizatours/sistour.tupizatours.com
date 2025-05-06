@@ -31,10 +31,13 @@ Route::post('reservas/external/store', [App\Http\Controllers\ReservaController::
 Route::put('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
     ->name('reservas.update.external');
 
-Route::get('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
+Route::get('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'show'])
     ->name('reservas.update.external');
 
 Route::get('ventas/resclis/user/{id}', [App\Http\Controllers\Venta\RescliController::class, 'user'])->name('venresclisuser');
+
+Route::put('rescli/external/update/{id}', [App\Http\Controllers\Venta\RescliController::class, 'externalUpdate'])
+    ->name('venresclis.update.external');
 
 // Authentication Routes
 Auth::routes();
