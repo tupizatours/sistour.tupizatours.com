@@ -175,7 +175,7 @@
         <div class="col-md-2"></div>
 
         <div class="col-md-5">
-            <form action="{{ route('reservas.update', $reserva->id) }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
+            <form action="{{ route('reservas.update.external', $reserva->id) }}" class="uploader" method="POST" id="file-upload-form" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
