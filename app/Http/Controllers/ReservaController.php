@@ -139,20 +139,13 @@ class ReservaController extends Controller
         $data = $request->all();
         $tour_id = $request->tour_id;
 
-        $response = \Mail::to($request->email)->send(new ReservaTour($data, $store->id));
+        $response = Mail::to($request->email)->send(new ReservaTour($data, $store->id));
         //$response = \Mail::to('danielmayurilevano@gmail.com')->send(new ReservaTour($data, $tour_id));
 
         return view ('reservas.gracias');
     }
 
-    public function externalStore(Request $request)
-    {
-        if ($request->pagina !== 'user_external') {
-            abort(403, 'No autorizado');
-        }
-
-        return $this->store($request); // o copia manual la lógica
-    }
+ 
 
     /**
      * Display the specified resource.
@@ -183,33 +176,12 @@ class ReservaController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048', // Máximo 2MB
-        ]);        
-        
-        if($request->pagina == "file_email"){
+            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048',
+        ]);
 
-            if($imagen = $request->File('file')) {
-                $rutaGuardarmg = 'files_pagos';
-                $nombreOriginal = $imagen->getClientOriginalName();
-                $extension = $imagen->getClientOriginalExtension();
-                $fotoPago = "$nombreOriginal";
-    
-                if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                    // Procesar imagen
-                    $imagenResized = Image::make($imagen)->fit(300, 300);
-                    $imagenResized->save(public_path($rutaGuardarmg . '/' . $nombreOriginal));
-                } elseif ($extension === 'pdf') {
-                    // Guardar directamente el PDF
-                    $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
-                }
-            }
-
-            $in['pago'] = $fotoPago;
-            
-            $res = Reserva::find($id);
-            $res->update($in);
-
-            return view ('reservas.pago');
+        if ($request->pagina == "file_email") {
+            $this->procesarComprobantePago($request, $id);
+            return view('reservas.pago');
         }
     }
 
@@ -220,4 +192,5 @@ class ReservaController extends Controller
     {
         //
     }
+
 }
