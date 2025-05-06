@@ -79,6 +79,14 @@
             <p><strong>Estado:</strong> {{ $reserva->estado == 1 ? 'Pendiente de verificación' : 'Confirmada' }}</p>
         </div>
 
+        @if($reserva->estado == 1)
+            <p style="text-align: center;">
+                <a href="{{ route('reservas.update.external', $reserva->id) }}" class="button" style="background-color: #27ae60;">
+                    Subir comprobante de pago
+                </a>
+            </p>
+        @endif
+
         @if(isset($turistas_adicionales) && count($turistas_adicionales) > 0)
             <p>Faltan completar los datos de los siguientes turistas adicionales:</p>
             <ul class="turistas">
