@@ -89,6 +89,8 @@ class ReservaController extends Controller
 
         $store = Reserva::create($in);
 
+        
+
         $country = Country::where('iso',$request->nacionalidad)->first();
 
         // Crear registros en Resercliente
@@ -145,7 +147,7 @@ class ReservaController extends Controller
         return view ('reservas.gracias');
     }
 
- 
+
 
     /**
      * Display the specified resource.
@@ -192,5 +194,58 @@ class ReservaController extends Controller
     {
         //
     }
+
+       /**
+     * External Rute
+     */
+    public function externalStore(Request $request)
+    {
+        if ($request->pagina !== 'user_external') {
+            abort(403, 'No autorizado');
+        }
+
+        return $this->store($request); // o copia manual la lógica
+    }
+
+    public function externalUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048',
+        ]);
+
+        if ($request->input('pagina') !== 'file_email') {
+            abort(403, 'No autorizado');
+        }
+
+        $this->procesarComprobantePago($request, $id);
+
+        return view('reservas.pago');
+    }
+    
+
+    private function procesarComprobantePago(Request $request, $reservaId)
+    {
+        if ($imagen = $request->file('file')) {
+            $rutaGuardarmg = 'files_pagos';
+            $nombreOriginal = $imagen->getClientOriginalName();
+            $extension = $imagen->getClientOriginalExtension();
+            $fotoPago = $nombreOriginal;
+
+            if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
+                Image::make($imagen)->fit(300, 300)->save(public_path("$rutaGuardarmg/$nombreOriginal"));
+            } elseif ($extension === 'pdf') {
+                $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
+            }
+
+            // Actualizar reserva
+            $reserva = Reserva::findOrFail($reservaId);
+            $reserva->update(['pago' => $fotoPago]);
+
+            return true;
+        }
+
+        return false;
+    }
+
 
 }

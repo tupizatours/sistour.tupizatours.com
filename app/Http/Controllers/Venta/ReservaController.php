@@ -99,63 +99,57 @@ class ReservaController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
     public function store(Request $request)
     {
         $request->validate([
             'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048',
         ]);
-
+    
         // Datos adicionales
         $alergias = json_encode($request->alergias ?? []);
         $alimentacion = json_encode($request->alimentacion ?? []);
-
-        $tickets = json_decode($request->input('tickets_seleccionados'), true) ?? [];
-        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true) ?? [];
+    
+        $tickets     = json_decode($request->input('tickets_seleccionados'), true) ?? [];
+        $rooms       = json_decode($request->input('habitaciones_seleccionadas'), true) ?? [];
         $accessories = json_decode($request->input('accesorios_seleccionados'), true) ?? [];
-        $services = json_decode($request->input('servicios_seleccionados'), true) ?? [];
-
-        // Manejo de archivo
+        $services    = json_decode($request->input('servicios_seleccionados'), true) ?? [];
+    
+        // Manejo del archivo
         if ($imagen = $request->file('file')) {
             $rutaGuardarmg = 'files_documentos';
             $nombreOriginal = time() . '_' . $imagen->getClientOriginalName();
             $extension = $imagen->getClientOriginalExtension();
-
+    
             if (in_array($extension, ['jpg', 'jpeg', 'png', 'gif'])) {
                 Image::make($imagen)->fit(300, 300)->save(public_path("$rutaGuardarmg/$nombreOriginal"));
             } elseif ($extension === 'pdf') {
                 $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
             }
-
+    
             $fotoQr = $nombreOriginal;
         }
-
-        // 🧠 Lógica de cálculo unitaria y adicional
+    
+        // 🧠 Cálculo lógico
         $precioUnidad = floatval($request->pre_uni);
         $cantidad = intval($request->cantper);
         $esPrivado = $request->tprivado ? true : false;
-
-        $tickets = json_decode($request->input('tickets_seleccionados'), true) ?? [];
-        $rooms = json_decode($request->input('habitaciones_seleccionadas'), true) ?? [];
-        $accessories = json_decode($request->input('accesorios_seleccionados'), true) ?? [];
-        $services = json_decode($request->input('servicios_seleccionados'), true) ?? [];
-
         $adicionales = collect(array_merge($tickets, $rooms, $accessories, $services))
             ->pluck('price')
             ->sum();
-
+    
         $pre_pri = $esPrivado
             ? floatval($request->pre_tot)
             : $precioUnidad * $cantidad;
-
-        $esExterno = $request->input('pagina') === 'user_external';
-
+    
+        $esExterno = true;
         $totalReserva = 0;
-
-        // Crear reserva inicialmente sin total
+    
+        // Crear reserva
         $reserva = Reserva::create([
             'codigo'    => Str::random(10),
-            'subtotal'  => 0, // será recalculado luego
-            'total'     => 0, // será recalculado luego
+            'subtotal'  => 0,
+            'total'     => 0,
             'tour_id'   => $request->tour_id,
             'tprivado'  => $esPrivado,
             'pre_per'   => $precioUnidad,
@@ -163,21 +157,18 @@ class ReservaController extends Controller
             'pre_pri'   => $pre_pri,
             'can_pri'   => $request->max_per,
             'fecha'     => $request->fecha_limite,
-            'estado'    => $esExterno ? 1 : 2,
+            'estado'    => 1,
             'estatus'   => $request->estatus,
         ]);
-
-        // Crear turistas asociados
+    
+        // Crear clientes
         for ($i = 0; $i < $cantidad; $i++) {
             $esPrincipal = $i === 0;
-        
+    
             $sub = $precioUnidad;
-            $res_total = $esPrincipal
-                ? $precioUnidad + $adicionales  // Principal paga los adicionales
-                : $precioUnidad;                // Otros solo pagan su unidad
-        
+            $res_total = $esPrincipal ? $precioUnidad + $adicionales : $precioUnidad;
             $totalReserva += $res_total;
-        
+    
             $rescli = [
                 'codigo'      => Str::random(10),
                 'pre_per'     => $precioUnidad,
@@ -188,7 +179,7 @@ class ReservaController extends Controller
                 'estatus'     => $request->estatus,
                 'esPrincipal' => $esPrincipal,
             ];
-        
+    
             if ($esPrincipal) {
                 $rescli = array_merge($rescli, [
                     'nombres'       => $request->nombres,
@@ -209,22 +200,22 @@ class ReservaController extends Controller
                     'servicios'     => $services,
                 ]);
             }
-        
+    
             Resercliente::create($rescli);
         }
-        
-        // Actualizar totales reales
+    
+        // Actualiza totales
         $reserva->update([
             'subtotal' => $precioUnidad * $cantidad,
             'total'    => $totalReserva,
         ]);
-
-        // Notificacion email 
-        NotificacionReservaService::enviarCorreoReservaConfirmada($reserva, $request->pagina);
-     
-        return redirect($esExterno ? '/tienda' : '/ventas/reservas')
-       ->with('success', 'Reserva creada correctamente.');
+    
+        // Envío de notificación con nuevo servicio
+        NotificacionReservaService::enviarCorreoReservaConfirmada($reserva, 'user_external');
+    
+        return view('reservas.gracias');
     }
+    
 
     /**
      * Display the specified resource.
@@ -273,30 +264,7 @@ class ReservaController extends Controller
         return view('ventas.reservas.edit', compact('resclis', 'reserva', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'countries', 'hottus', 'categorias', 'servicios'));
     }
 
-    private function procesarComprobantePago(Request $request, $reservaId)
-    {
-        if ($imagen = $request->file('file')) {
-            $rutaGuardarmg = 'files_pagos';
-            $nombreOriginal = $imagen->getClientOriginalName();
-            $extension = $imagen->getClientOriginalExtension();
-            $fotoPago = $nombreOriginal;
-
-            if (in_array($extension, ['jpg', 'jpeg', 'png'])) {
-                Image::make($imagen)->fit(300, 300)->save(public_path("$rutaGuardarmg/$nombreOriginal"));
-            } elseif ($extension === 'pdf') {
-                $imagen->move(public_path($rutaGuardarmg), $nombreOriginal);
-            }
-
-            // Actualizar reserva
-            $reserva = Reserva::findOrFail($reservaId);
-            $reserva->update(['pago' => $fotoPago]);
-
-            return true;
-        }
-
-        return false;
-    }
-
+   
 
     /**
      * Update the specified resource in storage.
@@ -319,31 +287,5 @@ class ReservaController extends Controller
     {
         //
     }
-    /**
-     * External Rute
-     */
-    public function externalStore(Request $request)
-    {
-        if ($request->pagina !== 'user_external') {
-            abort(403, 'No autorizado');
-        }
-
-        return $this->store($request); // o copia manual la lógica
-    }
-
-    public function externalUpdate(Request $request, $id)
-    {
-        $request->validate([
-            'file' => 'required|mimes:jpeg,jpg,png,pdf|max:2048',
-        ]);
-
-        if ($request->input('pagina') !== 'file_email') {
-            abort(403, 'No autorizado');
-        }
-
-        $this->procesarComprobantePago($request, $id);
-
-        return view('reservas.pago');
-    }
-    
+ 
 }

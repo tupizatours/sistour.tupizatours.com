@@ -26,9 +26,9 @@ Route::group(['middleware' => ['web', 'checkblocked']], function () {
 Route::resource('archivos', App\Http\Controllers\ArchivoController::class)->names('archivos');
 Route::resource('tienda', App\Http\Controllers\TiendaController::class)->names('tienda');
 
-Route::post('reservas/external/store', [App\Http\Controllers\Venta\ReservaController::class, 'externalStore'])->name('reservas.store.external');
+Route::post('reservas/external/store', [App\Http\Controllers\ReservaController::class, 'externalStore'])->name('reservas.store.external');
 
-Route::put('reservas/external/update/{id}', [App\Http\Controllers\Venta\ReservaController::class, 'externalUpdate'])
+Route::put('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'externalUpdate'])
     ->name('reservas.update.external');
 
 Route::get('ventas/resclis/user/{id}', 'App\Http\Controllers\Venta\RescliController@user')->name('venresclisuser');
