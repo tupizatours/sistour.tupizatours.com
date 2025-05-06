@@ -32,7 +32,7 @@ Route::put('reservas/external/update/{id}', [App\Http\Controllers\ReservaControl
     ->name('reservas.update.external');
 
 Route::get('reservas/external/update/{id}', [App\Http\Controllers\ReservaController::class, 'show'])
-    ->name('reservas.update.external');
+    ->name('reservas.edit');
 
 Route::get('ventas/resclis/user/{id}', [App\Http\Controllers\Venta\RescliController::class, 'user'])->name('venresclisuser');
 
