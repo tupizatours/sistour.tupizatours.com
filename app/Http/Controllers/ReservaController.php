@@ -182,8 +182,14 @@ class ReservaController extends Controller
      */
     public function show($id)
     {
-        //
+        $reserva = Reserva::findOrFail($id);
+        $links = \App\Models\Configuracion\Link::where('estatus', 1)->get();
+        $onlines = \App\Models\Configuracion\Online::where('estatus', 1)->get();
+        $qrs = \App\Models\Configuracion\Qr::where('estatus', 1)->get();
+    
+        return view('reservas.edit', compact('reserva', 'links', 'onlines', 'qrs'));
     }
+    
 
     /**
      * Show the form for editing the specified resource.
