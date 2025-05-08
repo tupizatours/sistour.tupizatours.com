@@ -28,8 +28,9 @@ use App\Models\Configuracion\Alimentacion;
 use App\Models\Configuracion\Link;
 use App\Models\Configuracion\Online;
 use App\Models\Configuracion\Qr;
-use DB;
 use App\Models\Despacho\Gestion;
+
+use DB;
 
 class TransitoController extends Controller
 {

@@ -27,6 +27,8 @@ use Image;
 use Illuminate\Support\Str;
 use App\Mail\ReservaTour;
 use Illuminate\Support\Facades\Mail;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 class ReservaController extends Controller
 {
@@ -218,25 +220,50 @@ class ReservaController extends Controller
             'total'    => $totalReserva,
         ]);
 
-         // Envío de notificación con nuevo servicio
-         $cliente = Resercliente::where('reserva_id', $reserva->id)
+        // Envío de notificación con nuevo servicio
+        $cliente = Resercliente::where('reserva_id', $reserva->id)
          ->where('esPrincipal', true)
          ->first();
  
-         // Detecta página origen
-         $pagina = $request->input('pagina') ?? 'user_external';
+        // Detecta página origen
+        $pagina = $request->input('pagina') ?? 'user_external';
+
+        // Ruta al PDF si aplica (ajusta el método según tu lógica)
+        $pdfPath = null;
+
+        if (! $esExterno) {
+            $pdfPath = $this->generarResumenReservaPDF($reserva, $cliente);
+        }
+
+        $turistasAdicionales = Resercliente::where('reserva_id', $reserva->id)
+        ->where('esPrincipal', false)
+        ->whereNull('nombres') // puedes ajustar esta lógica según tu criterio de "datos incompletos"
+        ->get()
+        ->map(function ($turista) {
+            return [
+                'link' => route('venresclisuser', $turista->id),
+            ];
+        })
+        ->toArray();
+    
+        // Envío de notificación
+        try {
+            Mail::to($cliente->correo)->send(
+                new ReservaTour(
+                    $reserva,
+                    $cliente,
+                    $pagina,
+                    $turistasAdicionales,
+                    $pdfPath   // adjunto, opcional
+                )
+            );        
+        } catch (\Exception $e) {
+            \Log::error('No se pudo enviar el correo de reserva: ' . $e->getMessage(), [
+                'correo' => $cliente->correo ?? 'sin correo',
+                'reserva_id' => $reserva->id,
+            ]);
+        }
  
-         // Envío de notificación
-         try {
-         Mail::to($cliente->correo)->send(new ReservaTour($reserva, $cliente, $pagina));
-         } catch (\Exception $e) {
-         \Log::error('No se pudo enviar el correo de reserva: ' . $e->getMessage(), [
-             'correo' => $cliente->correo ?? 'sin correo',
-             'reserva_id' => $reserva->id,
-         ]);
-         }
- 
-     
         return redirect($esExterno ? '/tienda' : '/ventas/reservas')
        ->with('success', 'Reserva creada correctamente.');
     }
@@ -310,5 +337,67 @@ class ReservaController extends Controller
         //
     }
 
+    private function generarResumenReservaPDF($reserva, $cliente)
+    {
+        // Decodificar o usar directamente si ya es array
+        $habitacionesRaw = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : ($cliente->habitaciones ?? []);
+        $ticketsRaw = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : ($cliente->tickets ?? []);
+        $accesoriosRaw = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : ($cliente->accesorios ?? []);
+        $serviciosRaw = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : ($cliente->servicios ?? []);
+    
+        // Habitaciones con hotel
+        $habitaciones = collect($habitacionesRaw)->map(function ($item) {
+            $habit = \App\Models\Servicio\Habitacion::with('hotel')->find($item['id'] ?? 0);
+            return [
+                'hotel' => $habit?->hotel?->titulo ?? 'Hotel no especificado',
+                'name'  => $item['name'] ?? 'Habitación',
+                'price' => $item['price'] ?? 0,
+            ];
+        });
+    
+        // Resto como colecciones limpias
+        $tickets    = collect($ticketsRaw ?? []);
+        $accesorios = collect($accesoriosRaw ?? []);
+        $servicios  = collect($serviciosRaw ?? []);
+    
+        // Alergias y alimentación
+        $alergias = collect();
+        $alimentos = collect();
+    
+        $alergiaIds = is_string($cliente->alergias) ? json_decode($cliente->alergias, true) : ($cliente->alergias ?? []);
+        $alimentacionIds = is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion, true) : ($cliente->alimentacion ?? []);
+    
+        if (is_array($alergiaIds) && !empty($alergiaIds)) {
+            $alergias = \App\Models\Configuracion\Alergia::whereIn('id', $alergiaIds)->get();
+        }
+    
+        if (is_array($alimentacionIds) && !empty($alimentacionIds)) {
+            $alimentos = \App\Models\Configuracion\Alimentacion::whereIn('id', $alimentacionIds)->get();
+        }
+    
+        // Generar PDF
+        $pdf = Pdf::loadView('pdf.reserva', compact(
+            'reserva',
+            'cliente',
+            'habitaciones',
+            'tickets',
+            'accesorios',
+            'servicios',
+            'alergias',
+            'alimentos'
+        ));
+    
+        // Guardar en ruta definida
+        $folderPath = public_path('reservas');
+        if (!file_exists($folderPath)) {
+            mkdir($folderPath, 0755, true); // Crea la carpeta si no existe
+        }
+
+        $pdfPath = $folderPath . '/resumen_' . $reserva->codigo . '.pdf';
+        $pdf->save($pdfPath);
+        
+    
+        return $pdfPath;
+    }
     
 }

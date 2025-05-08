@@ -164,12 +164,12 @@ class ReservaController extends Controller
 
         // Envío de notificación
         try {
-        Mail::to($cliente->correo)->send(new ReservaTour($reserva, $cliente, $pagina));
+            Mail::to($cliente->correo)->send(new ReservaTour($reserva, $cliente, $pagina));
         } catch (\Exception $e) {
-        \Log::error('No se pudo enviar el correo de reserva: ' . $e->getMessage(), [
-            'correo' => $cliente->correo ?? 'sin correo',
-            'reserva_id' => $reserva->id,
-        ]);
+            \Log::error('No se pudo enviar el correo de reserva: ' . $e->getMessage(), [
+                'correo' => $cliente->correo ?? 'sin correo',
+                'reserva_id' => $reserva->id,
+            ]);
         }
 
         return view('reservas.gracias');

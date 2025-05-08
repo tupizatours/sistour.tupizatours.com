@@ -1,11 +1,13 @@
 <?php
+
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Content;
 
 class ReservaTour extends Mailable
 {
@@ -14,6 +16,8 @@ class ReservaTour extends Mailable
     public $reserva;
     public $cliente;
     public $pagina;
+    public $turistasAdicionales;
+    public $pdfPath;
 
     /**
      * Create a new message instance.
@@ -21,12 +25,16 @@ class ReservaTour extends Mailable
      * @param  mixed  $reserva
      * @param  mixed  $cliente
      * @param  string|null  $pagina
+     * @param  array  $turistasAdicionales
+     * @param  string|null  $pdfPath
      */
-    public function __construct($reserva, $cliente, $pagina = null)
+    public function __construct($reserva, $cliente, $pagina = null, $turistasAdicionales = [], $pdfPath = null)
     {
         $this->reserva = $reserva;
         $this->cliente = $cliente;
         $this->pagina = $pagina;
+        $this->turistasAdicionales = $turistasAdicionales;
+        $this->pdfPath = $pdfPath;
     }
 
     /**
@@ -50,17 +58,24 @@ class ReservaTour extends Mailable
                 'reserva' => $this->reserva,
                 'cliente' => $this->cliente,
                 'pagina' => $this->pagina,
+                'turistas_adicionales' => $this->turistasAdicionales,
             ]
         );
     }
 
     /**
      * Get the attachments for the message.
-     *
-     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
     public function attachments(): array
     {
+        if ($this->pdfPath) {
+            return [
+                Attachment::fromPath($this->pdfPath)
+                    ->as('Resumen_Reserva.pdf')
+                    ->withMime('application/pdf'),
+            ];
+        }
+
         return [];
     }
 }
