@@ -88,7 +88,7 @@
                                                 data-name="{{ $habitacion->titulo }}"
                                                 data-hnac="{{ number_format($habitacion->nacionales, 2, '.', '') }}"
                                                 data-hext="{{ number_format($habitacion->extranjeros, 2, '.', '') }}"
-                                                data-dia="{{ $dia + 1 }}" />
+                                                data-dia="{{ $dia }}" />
                                             <label class="form-check-label" for="form_habi_{{ $hotel->id }}_{{ $habitacion->id }}_dia{{ $dia }}">
                                                 {{ $habitacion->titulo }}
                                                 <span class="seccion-mexico hidden">Bs. {{ number_format($habitacion->nacionales, 2, '.', '') }}</span>

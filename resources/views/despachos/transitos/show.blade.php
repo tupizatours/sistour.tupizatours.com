@@ -107,20 +107,33 @@
                                 </form>
                             </dl>
                         </div>
-
+                        
                         <div class="row">
                             @if($gestion)
+                                @php
+                                    $pdfPath = public_path("despachos/transito_{$reserva->codigo}.pdf");
+                                    $pdfExists = file_exists($pdfPath);
+                                @endphp
+                        
                                 <dl class="col-md-2">
                                     <form action="{{ route('desfin.store') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
-
-                                        <input type="hidden" value="{{ $reserva->id }}" id="reserva_id" name="reserva_id">
-
-                                        <button type="submit" class="btn btn-success col-md-12">Finalizar</button>
+                                        <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
+                                        <button type="submit" class="btn btn-success col-md-12">
+                                            Finalizar
+                                        </button>
                                     </form>
                                 </dl>
+                        
+                                @if($pdfExists)
+                                    <dl class="col-md-2">
+                                        <a href="{{ asset("despachos/transito_{$reserva->codigo}.pdf") }}" target="_blank" class="btn btn-primary col-md-12">
+                                            Ver PDF
+                                        </a>
+                                    </dl>
+                                @endif
                             @endif
-                        </div>
+                        </div>                        
                     </div>
                 </div>
 
@@ -239,20 +252,23 @@
                                 <div class="row g-3 pt-3 pb-2 col-md-6">
                                     <div class="form-group mb-2 mt-2 col-md-6">
                                         <label class="mb-2">Elegir servicio</label>
-                                        <select class="form-control form-control-solid" id="servicio_id" name="servicio_id" type="select" onchange="servicioCosto()">
-                                            <option value="{{ $gestion->servicio->id }}" data-tarifa="{{ number_format($gestion->servicio->costo, 2, '.', '') }}">{{ $gestion->servicio->titulo }}</option>
+                                        <select class="form-control form-control-solid" id="servicio_id" name="servicio_id" onchange="servicioCosto()">
+                                            @if(optional($gestion->servicio)->id)
+                                                <option value="{{ $gestion->servicio->id }}" data-tarifa="{{ number_format($gestion->servicio->costo, 2, '.', '') }}">
+                                                    {{ $gestion->servicio->titulo }}
+                                                </option>
+                                            @endif
                                             <option value="">Seleccionar</option>
-                                            
+                                    
                                             @foreach($tours as $tour)
-                                                @php
-                                                    $serv_tour_id = json_decode($tour->serv_tour);
-                                                @endphp
-
+                                                @php $serv_tour_id = json_decode($tour->serv_tour); @endphp
                                                 @if($tour->id == $reserva->tour_id)
                                                     @foreach($serv_tour_id as $value)
                                                         @foreach($servicios as $servicio)
                                                             @if($value == $servicio->id)
-                                                                <option value="{{ $servicio->id }}" data-tarifa="{{ number_format($servicio->costo, 2, '.', '') }}">{{ $servicio->titulo }}</option>
+                                                                <option value="{{ $servicio->id }}" data-tarifa="{{ number_format($servicio->costo, 2, '.', '') }}">
+                                                                    {{ $servicio->titulo }}
+                                                                </option>
                                                             @endif
                                                         @endforeach
                                                     @endforeach
@@ -260,6 +276,12 @@
                                             @endforeach
                                         </select>
                                     </div>
+                                    
+                                    <div class="form-group mb-2 mt-2 col-md-6">
+                                        <label class="mb-2">Precio costo</label>
+                                        <input class="form-control form-control-solid" id="servicio_t" name="servicio_t" type="number" value="{{ $gestion->servicio_t }}" />
+                                    </div>
+                                    
 
                                     <div class="form-group mb-2 mt-2 col-md-6">
                                         <label class="mb-2">Precio costo</label>
@@ -275,159 +297,217 @@
                                             @foreach($serv_tour_id as $value)
                                                 @if($value == 100)
                                                     <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Elegir guia</label>
-
-                                                        <select class="form-control form-control-solid" id="guia_id" name="guia_id" type="text" required onchange="mostrarCosto()">
-                                                            <option value="{{ $gestion->guia->id }}" data-tarifa="{{ number_format($gestion->guia->tarifa, 2, '.', '') }}">{{ $gestion->guia->nombre.' '.$gestion->guia->apellido }}</option>
+                                                        <label class="mb-2">Elegir guía</label>
+                                                        <select class="form-control form-control-solid" id="guia_id" name="guia_id" onchange="mostrarCosto()">
+                                                            @if(optional($gestion->guia)->id)
+                                                                <option value="{{ $gestion->guia->id }}" data-tarifa="{{ number_format($gestion->guia->tarifa, 2, '.', '') }}">
+                                                                    {{ $gestion->guia->nombre.' '.$gestion->guia->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($guias as $guia)
-                                                                <option value="{{ $guia->id }}" data-tarifa="{{ number_format($guia->tarifa, 2, '.', '') }}">{{ $guia->nombre.' '.$guia->apellido }}</option>
+                                                                <option value="{{ $guia->id }}" data-tarifa="{{ number_format($guia->tarifa, 2, '.', '') }}">
+                                                                    {{ $guia->nombre.' '.$guia->apellido }}
+                                                                </option>
                                                             @endforeach    
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="guia_t" name="guia_t" type="number" value="{{ $gestion->guia_t }}" />
                                                     </div>
+                                                
                                                 @elseif($value == 101)
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Elegir traductor</label>
-
-                                                        <select class="form-control form-control-solid" id="traductor_id" name="traductor_id" type="select" onchange="traductorCosto()">
-                                                            <option value="{{ $gestion->traductor->id }}" data-tarifa="{{ number_format($gestion->traductor->tarifa, 2, '.', '') }}">{{ $gestion->traductor->nombre.' '.$gestion->traductor->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="traductor_id" name="traductor_id" onchange="traductorCosto()">
+                                                            @if(optional($gestion->traductor)->id)
+                                                                <option value="{{ $gestion->traductor->id }}" data-tarifa="{{ number_format($gestion->traductor->tarifa, 2, '.', '') }}">
+                                                                    {{ $gestion->traductor->nombre.' '.$gestion->traductor->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($traductors as $traductor)
-                                                                <option value="{{ $traductor->id }}" data-tarifa="{{ number_format($traductor->tarifa, 2, '.', '') }}">{{ $traductor->nombre.' '.$traductor->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $traductor->id }}" data-tarifa="{{ number_format($traductor->tarifa, 2, '.', '') }}">
+                                                                    {{ $traductor->nombre.' '.$traductor->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="traductor_t" name="traductor_t" type="number" value="{{ $gestion->traductor_t }}" />
                                                     </div>
+                                                    
+                                                
                                                 @elseif($value == 102)
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Elegir cocinero</label>
-
-                                                        <select class="form-control form-control-solid" id="cocinero_id" name="cocinero_id" type="select" onchange="cocineroCosto()">
-                                                            <option value="{{ $gestion->cocinero->id }}" data-tarifa="{{ number_format($gestion->cocinero->tarifa, 2, '.', '') }}">{{ $gestion->cocinero->nombre.' '.$gestion->cocinero->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="cocinero_id" name="cocinero_id" onchange="cocineroCosto()">
+                                                            @if(optional($gestion->cocinero)->id)
+                                                                <option value="{{ $gestion->cocinero->id }}" data-tarifa="{{ number_format($gestion->cocinero->tarifa, 2, '.', '') }}">
+                                                                    {{ $gestion->cocinero->nombre.' '.$gestion->cocinero->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($cocineros as $cocinero)
-                                                                <option value="{{ $cocinero->id }}" data-tarifa="{{ number_format($cocinero->tarifa, 2, '.', '') }}">{{ $cocinero->nombre.' '.$cocinero->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $cocinero->id }}" data-tarifa="{{ number_format($cocinero->tarifa, 2, '.', '') }}">
+                                                                    {{ $cocinero->nombre.' '.$cocinero->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="cocinero_t" name="cocinero_t" type="number" value="{{ $gestion->cocinero_t }}" />
                                                     </div>
+                                                    
                                                 @elseif($value == 103)
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Elegir chofer</label>
-
-                                                        <select class="form-control form-control-solid" id="chofer_id" name="chofer_id" type="select" onchange="choferCosto()">
-                                                            <option value="{{ $gestion->chofer->id }}" data-tarifa="{{ number_format($gestion->chofer->tarifa, 2, '.', '') }}">{{ $gestion->chofer->nombre.' '.$gestion->chofer->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="chofer_id" name="chofer_id" onchange="choferCosto()">
+                                                            @if(optional($gestion->chofer)->id)
+                                                                <option value="{{ $gestion->chofer->id }}" data-tarifa="{{ number_format($gestion->chofer->tarifa, 2, '.', '') }}">
+                                                                    {{ $gestion->chofer->nombre.' '.$gestion->chofer->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($chofers as $chofer)
-                                                                <option value="{{ $chofer->id }}" data-tarifa="{{ number_format($chofer->tarifa, 2, '.', '') }}">{{ $chofer->nombre.' '.$chofer->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $chofer->id }}" data-tarifa="{{ number_format($chofer->tarifa, 2, '.', '') }}">
+                                                                    {{ $chofer->nombre.' '.$chofer->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-6">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="chofer_t" name="chofer_t" type="number" value="{{ $gestion->chofer_t }}" />
                                                     </div>
+                                                    
                                                 @elseif($value == 104)
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
+                                                    <<div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir prestatario</label>
-
-                                                        <select class="form-control form-control-solid" id="provag_id" name="provag_id" type="select" required onchange="cargarVagonetas(this.value)">
-                                                            <option value="{{ $gestion->provag->id }}">{{ $gestion->provag->nombre.' '.$gestion->provag->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="provag_id" name="provag_id" onchange="cargarVagonetas(this.value)">
+                                                            @if(optional($gestion->provag)->id)
+                                                                <option value="{{ $gestion->provag->id }}">
+                                                                    {{ $gestion->provag->nombre . ' ' . $gestion->provag->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $propietario->id }}">
+                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir vagoneta</label>
-
-                                                        <select class="form-control form-control-solid" id="vagoneta_id" name="vagoneta_id" type="select" onchange="vagonetaCosto()">
-                                                            <option value="{{ $gestion->vagoneta->id }}" data-tarifa="{{ number_format($gestion->vagoneta->costo, 2, '.', '') }}">{{ $gestion->vagoneta->marca }}</option>
+                                                        <select class="form-control form-control-solid" id="vagoneta_id" name="vagoneta_id" onchange="vagonetaCosto()">
+                                                            @if(optional($gestion->vagoneta)->id)
+                                                                <option value="{{ $gestion->vagoneta->id }}" data-tarifa="{{ number_format($gestion->vagoneta->costo, 2, '.', '') }}">
+                                                                    {{ $gestion->vagoneta->marca }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($vagonetas as $vagoneta)
-                                                                <option value="{{ $vagoneta->id }}" data-tarifa="{{ number_format($vagoneta->costo, 2, '.', '') }}">{{ $vagoneta->marca }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $vagoneta->id }}" data-tarifa="{{ number_format($vagoneta->costo, 2, '.', '') }}">
+                                                                    {{ $vagoneta->marca }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="vagoneta_t" name="vagoneta_t" type="number" value="{{ $gestion->vagoneta_t }}" />
                                                     </div>
+                                                    
                                                 @elseif($value == 105)
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir prestatario</label>
-
-                                                        <select class="form-control form-control-solid" id="procab_id" name="procab_id" type="select" required onchange="cargarCaballos(this.value)">
-                                                            <option value="{{ $gestion->procab->id }}">{{ $gestion->procab->nombre.' '.$gestion->procab->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="procab_id" name="procab_id" onchange="cargarCaballos(this.value)">
+                                                            @if(optional($gestion->procab)->id)
+                                                                <option value="{{ $gestion->procab->id }}">
+                                                                    {{ $gestion->procab->nombre . ' ' . $gestion->procab->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $propietario->id }}">
+                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir caballo</label>
-
-                                                        <select class="form-control form-control-solid" id="caballo_id" name="caballo_id" type="select" onchange="caballoCosto()">
-                                                            <option value="{{ $gestion->caballo->id }}" data-tarifa="{{ number_format($gestion->caballo->costo, 2, '.', '') }}">{{ $gestion->caballo->nombre }}</option>
+                                                        <select class="form-control form-control-solid" id="caballo_id" name="caballo_id" onchange="caballoCosto()">
+                                                            @if(optional($gestion->caballo)->id)
+                                                                <option value="{{ $gestion->caballo->id }}" data-tarifa="{{ number_format($gestion->caballo->costo, 2, '.', '') }}">
+                                                                    {{ $gestion->caballo->nombre }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($caballos as $caballo)
-                                                                <option value="{{ $caballo->id }}" data-tarifa="{{ number_format($caballo->costo, 2, '.', '') }}">{{ $caballo->nombre }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $caballo->id }}" data-tarifa="{{ number_format($caballo->costo, 2, '.', '') }}">
+                                                                    {{ $caballo->nombre }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="caballo_t" name="caballo_t" type="number" value="{{ $gestion->caballo_t }}" />
                                                     </div>
+                                                
                                                 @elseif($value == 106)
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir prestatario</label>
-
-                                                        <select class="form-control form-control-solid" id="probic_id" name="probic_id" type="select" required onchange="cargarBicicletas(this.value)">
-                                                            <option value="{{ $gestion->probic->id }}">{{ $gestion->probic->nombre.' '.$gestion->probic->apellido }}</option>
+                                                        <select class="form-control form-control-solid" id="probic_id" name="probic_id" onchange="cargarBicicletas(this.value)">
+                                                            @if(optional($gestion->probic)->id)
+                                                                <option value="{{ $gestion->probic->id }}">
+                                                                    {{ $gestion->probic->nombre . ' ' . $gestion->probic->apellido }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">{{ $propietario->nombre.' '.$propietario->apellido }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $propietario->id }}">
+                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Elegir bicicleta</label>
-
-                                                        <select class="form-control form-control-solid" id="bicicleta_id" name="bicicleta_id" type="select" onchange="bicicletaCosto()">
-                                                            <option value="{{ $gestion->bicicleta->id }}" data-tarifa="{{ number_format($gestion->bicicleta->costo, 2, '.', '') }}">{{ $gestion->bicicleta->nombre }}</option>
+                                                        <select class="form-control form-control-solid" id="bicicleta_id" name="bicicleta_id" onchange="bicicletaCosto()">
+                                                            @if(optional($gestion->bicicleta)->id)
+                                                                <option value="{{ $gestion->bicicleta->id }}" data-tarifa="{{ number_format($gestion->bicicleta->costo, 2, '.', '') }}">
+                                                                    {{ $gestion->bicicleta->nombre }}
+                                                                </option>
+                                                            @endif
                                                             <option value="">Seleccionar</option>
                                                             @foreach($bicicletas as $bicicleta)
-                                                                <option value="{{ $bicicleta->id }}" data-tarifa="{{ number_format($bicicleta->costo, 2, '.', '') }}">{{ $bicicleta->nombre }}</option>
-                                                            @endforeach    
+                                                                <option value="{{ $bicicleta->id }}" data-tarifa="{{ number_format($bicicleta->costo, 2, '.', '') }}">
+                                                                    {{ $bicicleta->nombre }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
                                                     </div>
-
+                                                    
                                                     <div class="form-group mb-2 mt-2 col-md-4">
                                                         <label class="mb-2">Precio costo</label>
                                                         <input class="form-control form-control-solid" id="bicicleta_t" name="bicicleta_t" type="number" value="{{ $gestion->bicicleta_t }}" />
                                                     </div>
+                                                
                                                 @endif
                                             @endforeach
                                         @endif

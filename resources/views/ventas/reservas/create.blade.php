@@ -417,4 +417,19 @@
             });
         });
     </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const selectAllTickets = document.getElementById('select_all_tickets');
+            const ticketCheckboxes = document.querySelectorAll('.ticket-checkbox');
+    
+            if (selectAllTickets) {
+                selectAllTickets.addEventListener('change', function () {
+                    ticketCheckboxes.forEach(cb => cb.checked = this.checked);
+                    
+                    // Disparar evento manualmente para que se actualice el total
+                    ticketCheckboxes.forEach(cb => cb.dispatchEvent(new Event('change')));
+                });
+            }
+        });
+    </script>    
 @endsection

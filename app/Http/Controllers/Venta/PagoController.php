@@ -34,7 +34,7 @@ class PagoController extends Controller
     {
         $request->validate([
             'metodo' => 'required|string',
-            'monto' => 'required|numeric|min:1',
+            'monto' => 'required|numeric|min:0',
         ]);
     
         $rescli = Resercliente::find($request->rescli_id);

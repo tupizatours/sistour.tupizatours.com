@@ -29,6 +29,8 @@ use App\Models\Configuracion\Link;
 use App\Models\Configuracion\Online;
 use App\Models\Configuracion\Qr;
 use App\Models\Despacho\Gestion;
+use Barryvdh\DomPDF\Facade\Pdf;
+
 
 use DB;
 
@@ -62,21 +64,68 @@ class TransitoController extends Controller
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        if($request->pagina == "transitos"){
-            
-        }else{
-            $res = Reserva::find($request->reserva_id);
-            $res->estado = 4;
-            $res->save();
-    
-            return redirect('despachos/transitos/'.$request->reserva_id);
+        if ($request->pagina === "transitos") {
+            // ... posible lógica futura
+        } else {
+            $reserva = Reserva::find($request->reserva_id);
+            $reserva->estado = 4;
+            $reserva->save();
+
+            $cliente = Resercliente::where('reserva_id', $reserva->id)
+                ->where('esPrincipal', true)
+                ->first();
+
+            $resclis = Resercliente::where('reserva_id', $reserva->id)->get();
+            $gestion = Gestion::where('reserva_id', $reserva->id)->first();
+
+            // Decodificación segura
+            $habitaciones = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : ($cliente->habitaciones ?? []);
+            $tickets = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : ($cliente->tickets ?? []);
+            $accesorios = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : ($cliente->accesorios ?? []);
+            $servicios = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : ($cliente->servicios ?? []);
+
+            $alergiasIds = is_string($cliente->alergias) ? json_decode($cliente->alergias, true) : ($cliente->alergias ?? []);
+            $alimentosIds = is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion, true) : ($cliente->alimentacion ?? []);
+
+            $alergiasIds = $cliente->alergias;
+
+            if (is_string($alergiasIds)) {
+                $alergiasIds = json_decode($alergiasIds, true);
+            }
+
+            $alergias = Alergia::whereIn('id', is_array($alergiasIds) ? $alergiasIds : [])->pluck('titulo');
+
+            $alimentosIds = $cliente->alimentacion;
+
+            if (is_string($alimentosIds)) {
+                $alimentosIds = json_decode($alimentosIds, true);
+            }
+
+            $alimentos = Alimentacion::whereIn('id', is_array($alimentosIds) ? $alimentosIds : [])->pluck('titulo');
+
+            // Generar PDF
+            $pdf = PDF::loadView('pdf.resumen_transito', compact(
+                'reserva',
+                'cliente',
+                'resclis',
+                'gestion',
+                'habitaciones',
+                'tickets',
+                'accesorios',
+                'servicios',
+                'alergias',
+                'alimentos'
+            ));
+
+            $pdf->save(public_path("despachos/transito_{$reserva->codigo}.pdf"));
+
+            return redirect('despachos/transitos/' . $reserva->id);
         }
     }
+
+
 
     /**
      * Display the specified resource.
