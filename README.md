@@ -1,4 +1,4 @@
-## Laravel Auth Tupiza
+## Tupiza Tour
 
 #### Laravel Auth is a Complete Build of Laravel 10 with Email Registration Verification, Social Authentication, User Roles and Permissions, User Profiles, and Admin restricted user management system. Built on Bootstrap 4.
 
