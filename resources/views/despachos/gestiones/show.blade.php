@@ -390,7 +390,7 @@
 
                                 <div class="row g-3 pt-3 pb-2 col-md-12">
                                     <div class="form-group mb-2 mt-2 col-md-12">
-                                        <button type="submit" class="btn btn-success col-md-12 font-14">ACTUALIZAR</button>
+                                        <button type="submit" class="btn btn-primary col-md-12 font-14">ACTUALIZAR</button>
                                     </div>
                                 </div>
                             </form>
