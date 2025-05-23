@@ -82,7 +82,7 @@
                                 <div class="col-12 col-xl-7 col-xxl-8 auth-cover-left justify-content-center d-none d-xl-flex">
                                     <div class="card shadow-none shadow-none rounded-0 mb-0">
                                         <div class="card-body">
-                                            <img src="https://tours.oeo.com.bo/files/system/system_file654a9cc48cfa4-page-bg.png" class="img-fluid auth-img-cover-login" width="550" alt=""/>
+                                            <img src="https://cdn.pixabay.com/photo/2019/02/22/17/47/jeep-4014043_1280.jpg" class="img-fluid auth-img-cover-login" width="550" alt=""/>
                                         </div>
                                     </div>
                                 </div>
