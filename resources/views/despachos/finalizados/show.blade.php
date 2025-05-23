@@ -32,21 +32,15 @@
     </style>
 @endsection
 
-@extends('layouts.app')
-
-@section('template_title')
-    Detalles de Despacho Finalizado
-@endsection
-
 @section('content')
 <div class="main-body">
     <div class="row">
         <div class="col-lg-12">
 
-            {{-- RESERVA --}}
+            {{-- INFORMACIÓN DE LA RESERVA --}}
             <div class="card mb-4">
-                <div class="card-header bg-transparent">
-                    <h6 class="mb-0 title_page">Información de la Reserva</h6>
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Datos de la Reserva</h6>
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -70,12 +64,12 @@
 
             {{-- TURISTAS --}}
             <div class="card mb-4">
-                <div class="card-header bg-transparent">
-                    <h6 class="mb-0 title_page">Listado de Turistas</h6>
+                <div class="card-header bg-light">
+                    <h6 class="mb-0">Turistas Registrados</h6>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-sm table-bordered">
+                        <table class="table table-sm table-bordered mb-0">
                             <thead class="thead-light text-center">
                                 <tr>
                                     <th>#</th>
@@ -107,9 +101,9 @@
                                         <td>{{ $r->edad ?? '-' }}</td>
                                         <td>{{ $r->celular }}</td>
                                         <td>{{ $r->correo }}</td>
-                                        <td>Bs. {{ number_format($total, 2, '.', ',') }}</td>
-                                        <td>Bs. {{ number_format($pagado, 2, '.', ',') }}</td>
-                                        <td>Bs. {{ number_format($saldo, 2, '.', ',') }}</td>
+                                        <td class="text-right">Bs. {{ number_format($total, 2, '.', ',') }}</td>
+                                        <td class="text-right">Bs. {{ number_format($pagado, 2, '.', ',') }}</td>
+                                        <td class="text-right">Bs. {{ number_format($saldo, 2, '.', ',') }}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -120,9 +114,9 @@
 
             {{-- GESTIÓN OPERATIVA --}}
             @if($gestion)
-                <div class="card">
-                    <div class="card-header bg-transparent">
-                        <h6 class="mb-0 title_page">Gestión Operativa</h6>
+                <div class="card mb-4">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Gestión Operativa</h6>
                     </div>
                     <div class="card-body">
                         <table class="table table-sm table-bordered">
@@ -138,7 +132,7 @@
                                         <th>Chofer</th>
                                         <td>
                                             {{ optional($gestion->chofer)->nombre }}
-                                            @if(optional($gestion->chofer)->licencia)
+                                            @if($gestion->chofer->licencia)
                                                 <br><small class="text-muted">Licencia: {{ $gestion->chofer->licencia }}</small>
                                             @endif
                                         </td>
@@ -149,10 +143,10 @@
                                         <th>Vagoneta</th>
                                         <td>
                                             {{ optional($gestion->vagoneta)->marca }}
-                                            @if(optional($gestion->vagoneta)->patente)
+                                            @if($gestion->vagoneta->patente)
                                                 <br><small class="text-muted">Patente: {{ $gestion->vagoneta->patente }}</small>
                                             @endif
-                                            @if(optional($gestion->provag))
+                                            @if($gestion->provag)
                                                 <br><small class="text-muted">Prestatario: {{ $gestion->provag->nombre }} {{ $gestion->provag->apellido }}</small>
                                             @endif
                                         </td>
@@ -163,7 +157,7 @@
                                         <th>Caballo</th>
                                         <td>
                                             {{ optional($gestion->caballo)->nombre }}
-                                            @if(optional($gestion->procab))
+                                            @if($gestion->procab)
                                                 <br><small class="text-muted">Prestatario: {{ $gestion->procab->nombre }} {{ $gestion->procab->apellido }}</small>
                                             @endif
                                         </td>
@@ -174,7 +168,7 @@
                                         <th>Bicicleta</th>
                                         <td>
                                             {{ optional($gestion->bicicleta)->nombre }}
-                                            @if(optional($gestion->probic))
+                                            @if($gestion->probic)
                                                 <br><small class="text-muted">Prestatario: {{ $gestion->probic->nombre }} {{ $gestion->probic->apellido }}</small>
                                             @endif
                                         </td>
@@ -190,7 +184,6 @@
     </div>
 </div>
 @endsection
-
 
 @section('footer_scripts')
     
