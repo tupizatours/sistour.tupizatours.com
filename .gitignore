@@ -37,6 +37,7 @@ package-lock.json
 yarn.lock
 
 ### Assets ###
+/deploy
 /node_modules
 /public/hot
 /public/storage
