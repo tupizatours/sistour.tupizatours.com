@@ -67,57 +67,46 @@ class TransitoController extends Controller
     public function store(Request $request)
     {
         if ($request->pagina === "transitos") {
-            // ... posible lógica futura
+            // lógica futura aquí
         } else {
-            $reserva = Reserva::find($request->reserva_id);
+            $reserva = Reserva::findOrFail($request->reserva_id);
             $reserva->estado = 4;
             $reserva->save();
 
-            $cliente = Resercliente::where('reserva_id', $reserva->id)
-                ->where('esPrincipal', true)
-                ->first();
-
-            $resclis = Resercliente::where('reserva_id', $reserva->id)->get();
             $gestion = Gestion::where('reserva_id', $reserva->id)->first();
 
-            // Decodificación segura
-            $habitaciones = is_string($cliente->habitaciones) ? json_decode($cliente->habitaciones, true) : ($cliente->habitaciones ?? []);
-            $tickets = is_string($cliente->tickets) ? json_decode($cliente->tickets, true) : ($cliente->tickets ?? []);
-            $accesorios = is_string($cliente->accesorios) ? json_decode($cliente->accesorios, true) : ($cliente->accesorios ?? []);
-            $servicios = is_string($cliente->servicios) ? json_decode($cliente->servicios, true) : ($cliente->servicios ?? []);
+            $resclis = Resercliente::where('reserva_id', $reserva->id)->get();
 
-            $alergiasIds = is_string($cliente->alergias) ? json_decode($cliente->alergias, true) : ($cliente->alergias ?? []);
-            $alimentosIds = is_string($cliente->alimentacion) ? json_decode($cliente->alimentacion, true) : ($cliente->alimentacion ?? []);
+            // Mapeamos todos los turistas con sus campos
+            $resclis_mapeados = $resclis->map(function ($t) {
+                return [
+                    'nombres'      => $t->nombres,
+                    'apellidos'    => $t->apellidos,
+                    'documento'    => $t->documento,
+                    'nacionalidad' => $t->nacionalidad,
+                    'edad'         => $t->edad,
+                    'celular'      => $t->celular,
+                    'correo'       => $t->correo,
+                    'nota'         => $t->nota,
+                    'nacionalidad' => $t->nacionalidad,
 
-            $alergiasIds = $cliente->alergias;
 
-            if (is_string($alergiasIds)) {
-                $alergiasIds = json_decode($alergiasIds, true);
-            }
+                    'tickets'      => $this->decodeField($t->tickets),
+                    'habitaciones' => $this->decodeField($t->habitaciones),
+                    'accesorios'   => $this->decodeField($t->accesorios),
+                    'servicios'    => $this->decodeField($t->servicios),
 
-            $alergias = Alergia::whereIn('id', is_array($alergiasIds) ? $alergiasIds : [])->pluck('titulo');
-
-            $alimentosIds = $cliente->alimentacion;
-
-            if (is_string($alimentosIds)) {
-                $alimentosIds = json_decode($alimentosIds, true);
-            }
-
-            $alimentos = Alimentacion::whereIn('id', is_array($alimentosIds) ? $alimentosIds : [])->pluck('titulo');
+                    'alergias'     => $this->decodeField($t->alergias),
+                    'alimentacion' => $this->decodeField($t->alimentacion),
+                ];
+            });
 
             // Generar PDF
-            $pdf = PDF::loadView('pdf.resumen_transito', compact(
-                'reserva',
-                'cliente',
-                'resclis',
-                'gestion',
-                'habitaciones',
-                'tickets',
-                'accesorios',
-                'servicios',
-                'alergias',
-                'alimentos'
-            ));
+            $pdf = PDF::loadView('pdf.resumen_transito', [
+                'reserva' => $reserva,
+                'resclis' => $resclis_mapeados,
+                'gestion' => $gestion,
+            ]);
 
             $pdf->save(public_path("despachos/transito_{$reserva->codigo}.pdf"));
 
@@ -126,35 +115,50 @@ class TransitoController extends Controller
     }
 
 
+    private function decodeField($value)
+    {
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return is_array($value) ? $value : [];
+    }
 
     /**
      * Display the specified resource.
      */
     public function show($id)
     {
-        $reserva = Reserva::find($id);
-        $resclis = Resercliente::where('reserva_id', $id)->get(); // Filtrar Resercliente por reserva_id
+        $reserva = Reserva::findOrFail($id);
         $gestion = Gestion::where('reserva_id', $id)->first();
-        $tours = Tour::all();
-        $hottus = HotelTour::all();
-        $categorias = Categoria::all();
-        $servicios = Servicio::all();
-        $alergias = Alergia::all();
-        $alimentos = Alimentacion::all();
-        $habitaciones = Habitacion::all();
-        $links = Link::all();
-        $onlines = Online::all();
-        $qrs = Qr::all();
-        $guias = Guia::all();
-        $traductors = Traductor::all();
-        $chofers = Chofer::all();
-        $cocineros = Cocinero::all();
-        $propietarios = Propietario::all();
-        $vagonetas = Vagoneta::all();
-        $bicicletas = Bicicleta::all();
-        $caballos = Caballo::all();
-        
-        return view('despachos.transitos.show', compact('gestion', 'caballos', 'bicicletas', 'vagonetas', 'propietarios', 'cocineros', 'chofers', 'traductors', 'guias', 'resclis', 'reserva', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'hottus', 'categorias', 'servicios'));
+
+        $resclis = Resercliente::where('reserva_id', $id)->get();
+
+        // ✅ Mapeamos cada turista con sus valores decodificados
+        $resclis = $resclis->map(function ($t) {
+            $decode = fn($f) => is_string($f) ? json_decode($f, true) ?? [] : ($f ?? []);
+
+            return (object) [
+                'nombres'      => $t->nombres,
+                'apellidos'    => $t->apellidos,
+                'documento'    => $t->documento,
+                'nacionalidad' => $t->nacionalidad,
+                'edad'         => $t->edad,
+                'celular'      => $t->celular,
+                'correo'       => $t->correo,
+                'nota'         => $t->nota,
+                'esPrincipal'  => $t->esPrincipal,
+
+                'tickets'      => $decode($t->tickets),
+                'habitaciones' => $decode($t->habitaciones),
+                'accesorios'   => $decode($t->accesorios),
+                'servicios'    => $decode($t->servicios),
+                'alergias'     => $decode($t->alergias),
+                'alimentacion' => $decode($t->alimentacion),
+            ];
+        });
+
+        return view('despachos.transitos.show', compact('reserva', 'resclis', 'gestion'));
     }
 
     /**

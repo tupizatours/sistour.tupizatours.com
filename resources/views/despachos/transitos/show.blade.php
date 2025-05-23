@@ -6,521 +6,179 @@
 
 @section('estilos')
     <style>
-        h4.title_dir {
-            font-size: 18px;
-            font-weight: 700;
-            color: rgb(63, 66, 87);
-        }
-        .bg-moradito {
-            border: 1px dashed rgb(98, 95, 241);
-        }
-        .card-infos, dt {
-            text-transform: uppercase;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .form_cantidad {
-            max-width: 60px;
-        }
-        .input-spinner .btn-white {
-            width: 40px;
-        }
-        .form_tran .form-control {
-            pointer-events: none;
-        }
+        h4.title_dir { font-size: 18px; font-weight: 700; color: rgb(63, 66, 87); }
+        .bg-moradito { border: 1px dashed rgb(98, 95, 241); }
+        .card-infos, dt { text-transform: uppercase; }
+        .text-right { text-align: right; }
+        .form_cantidad { max-width: 60px; }
+        .input-spinner .btn-white { width: 40px; }
+        .form_tran .form-control { pointer-events: none; }
     </style>
 @endsection
 
 @section('content')
-    <div class="main-body">
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card">
-                    <div class="card-header bg-transparent pt-3 pb-3">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h6 class="mb-0 title_page">RESERVA</h6>
-                            </div>
-                        </div>
-                    </div>
+    <div class="card mt-4">
+        <div class="card-header bg-transparent">
+            <div class="d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 title_page">Resumen de Turistas</h6>
 
-                    <?php
-                        use App\Models\Venta\Pago;
-                    ?>
+                @if($gestion)
+                    @php
+                        $pdfPath = public_path("despachos/transito_{$reserva->codigo}.pdf");
+                        $pdfExists = file_exists($pdfPath);
+                    @endphp
 
-                    <div class="card-body">
-                        <h6 class="card-title mb-4">
-                            Salida del tour: {{ $reserva->fecha }}
-                        </h6>
+                    <div class="d-flex gap-2">
+                        <form action="{{ route('desfin.store') }}" method="POST" class="mr-2">
+                            @csrf
+                            <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
+                            <button type="submit" class="btn btn-success btn-sm">Finalizar</button>
+                        </form>
 
-                        <div class="row mt-4">
-                            <dl class="col-md-2">
-                                <dt class="col-sm-12">Código de reserva</dt>
-                                <dd class="col-sm-12">{{ $reserva->codigo }}</dd>
-                            </dl>
-
-                            <dl class="col-md-3">
-                                <dt class="col-sm-12">Nombre del tour</dt>
-                                <dd class="col-sm-12">{{ $reserva->tour->titulo }}</dd>
-                            </dl>
-
-                            <dl class="col-md-2">
-                                <dt class="col-sm-12">Capacidad Min/Max</dt>
-                                <dd class="col-sm-12">
-                                    {{ $reserva->tour->min_per.'/' }}
-                                    <span id="aumen_pers">{{ $reserva->can_pri }}</span>
-                                </dd>
-                            </dl>
-
-                            <dl class="col-md-2">
-                                <dt class="col-sm-12">Total Pagado</dt>
-                                <dd class="col-sm-12">
-                                    @php $tot_dir = 0; @endphp
-
-                                    @foreach($resclis as $rescli)
-                                        @if($rescli->estatus == "1")
-                                            @php
-                                                $sumaMonto = Pago::where('rescli_id', $rescli->id)
-                                                                ->where('estatus', 1)
-                                                                ->sum('conversion');
-
-                                                $tot_dir += $sumaMonto;
-                                            @endphp
-                                        @endif
-                                    @endforeach
-
-                                    {{ 'Bs. '.number_format($tot_dir, 2, '.', ',') }}
-                                </dd>
-                            </dl>
-
-                            <dl class="col-md-3">
-                                <form action="{{ route('venreservas.update', $reserva->id) }}" method="POST">
-                                    @csrf
-                                    @method('PUT')
-                                
-                                    <dt class="col-sm-12">Capacidad</dt>
-                                    <dd class="col-sm-12">{{ $reserva->can_pri.' personas' }}</dd>
-
-                                    <input type="hidden" value="{{ $reserva->id }}" id="reserva_id" name="reserva_id" />
-                                    <input type="hidden" value="reservas" id="reservas" name="reservas" />
-                                </form>
-                            </dl>
-                        </div>
-                        
-                        <div class="row">
-                            @if($gestion)
-                                @php
-                                    $pdfPath = public_path("despachos/transito_{$reserva->codigo}.pdf");
-                                    $pdfExists = file_exists($pdfPath);
-                                @endphp
-                        
-                                <dl class="col-md-2">
-                                    <form action="{{ route('desfin.store') }}" method="POST" enctype="multipart/form-data">
-                                        @csrf
-                                        <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
-                                        <button type="submit" class="btn btn-success col-md-12">
-                                            Finalizar
-                                        </button>
-                                    </form>
-                                </dl>
-                        
-                                @if($pdfExists)
-                                    <dl class="col-md-2">
-                                        <a href="{{ asset("despachos/transito_{$reserva->codigo}.pdf") }}" target="_blank" class="btn btn-primary col-md-12">
-                                            Ver PDF
-                                        </a>
-                                    </dl>
-                                @endif
-                            @endif
-                        </div>                        
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-header bg-transparent pt-3 pb-3">
-                        <div class="d-flex align-items-center">
-                            <div>
-                                <h6 class="mb-0 title_page">LISTADO DE TURISTAS</h6>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table id="example2" class="table">
-                                <thead class="">
-                                    <tr>
-                                        <th>Codigo</th>
-                                        <th>Solicitud</th>
-                                        <th>Nombres y apellidos</th>
-                                        <th>Nacionalidad</th>
-                                        <th>Edad</th>
-                                        <th>Sexo</th>
-                                        <th>Telefono</th>
-                                        <th>Correo</th>
-                                        <th>Total</th>
-                                        <th>Pagado</th>
-                                        <th>Saldo</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    @foreach($resclis as $rescli)
-                                        @if($rescli->estatus == "1")
-                                            @php
-                                                $originalDate = $rescli->created_at;
-                                                $newDate = date("d-m-Y", strtotime($originalDate));
-                                            @endphp
-
-                                            <tr>
-                                                <td style="text-transform: uppercase;">
-                                                    @if($rescli->estado == 1)
-                                                        {{ $reserva->codigo }}
-                                                    @elseif($rescli->estado == 2)
-                                                        {{ $rescli->codigo }}
-                                                    @endif
-                                                </td>
-
-                                                <td>{{ $newDate }}</td>
-                                                <td>{{ $rescli->nombres.' '.$rescli->apellidos }}</td>
-                                                <td>{{ $rescli->nacionalidad }}</td>
-                                                <td>@if($rescli->edad) {{ $rescli->edad.' años' }} @endif</td>
-                                                <td>{{ $rescli->sexo }}</td>
-                                                <td>{{ $rescli->celular }}</td>
-                                                <td>{{ $rescli->correo }}</td>
-                                                
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
-                                                            $pagado = $pag_tot - $rescli->pagado;
-                                                        @endphp
-
-                                                        {{ 'Bs. '.number_format($pag_tot, 2, '.', ',') }}
-                                                    @else
-                                                        @if($rescli->total)
-                                                            {{ 'Bs. '.number_format($rescli->total, 2, '.', ',') }}
-                                                        @else
-                                                            {{ 'Bs. '.number_format($rescli->pre_per, 2, '.', ',') }}
-                                                        @endif
-                                                    @endif
-                                                </td>
-
-                                                @php
-                                                    $sumaMonto = Pago::where('rescli_id', $rescli->id)->sum('conversion');
-                                                @endphp
-
-                                                <td>{{ 'Bs. '.number_format($sumaMonto, 2, '.', ',') }}</td>
-                                                
-                                                <td>
-                                                    @if($rescli->esPrincipal)
-                                                        @php
-                                                            $pag_tot = ($reserva->total - (($reserva->can_per - 1) * $reserva->pre_per));
-                                                            $pagado = $pag_tot - $rescli->pagado;
-                                                        @endphp
-
-                                                        {{ 'Bs. '.number_format($pag_tot - $sumaMonto, 2, '.', ',') }}
-                                                    @else
-                                                        @if($rescli->total)
-                                                            {{ 'Bs. '.number_format($rescli->total - $sumaMonto, 2, '.', ',') }}
-                                                        @else
-                                                            {{ 'Bs. '.number_format($rescli->pre_per - $sumaMonto, 2, '.', ',') }}
-                                                        @endif
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @endif
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-body">
-                        @if($gestion)
-                            <form action="{{ route('desges.update', $gestion->id) }}" class="form_tran" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                @method('PUT')
-
-                                <input type="hidden" value="gestions" name="pagina" id="pagina" />
-                                <input type="hidden" value="{{ $reserva->id }}" name="reserva_id" id="reserva_id" />
-                                <input type="hidden" value="{{ $reserva->tour_id }}" name="tour_id" id="tour_id" />
-                            
-                                <div class="row g-3 pt-3 pb-2 col-md-6">
-                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                        <label class="mb-2">Elegir servicio</label>
-                                        <select class="form-control form-control-solid" id="servicio_id" name="servicio_id" onchange="servicioCosto()">
-                                            @if(optional($gestion->servicio)->id)
-                                                <option value="{{ $gestion->servicio->id }}" data-tarifa="{{ number_format($gestion->servicio->costo, 2, '.', '') }}">
-                                                    {{ $gestion->servicio->titulo }}
-                                                </option>
-                                            @endif
-                                            <option value="">Seleccionar</option>
-                                    
-                                            @foreach($tours as $tour)
-                                                @php $serv_tour_id = json_decode($tour->serv_tour); @endphp
-                                                @if($tour->id == $reserva->tour_id)
-                                                    @foreach($serv_tour_id as $value)
-                                                        @foreach($servicios as $servicio)
-                                                            @if($value == $servicio->id)
-                                                                <option value="{{ $servicio->id }}" data-tarifa="{{ number_format($servicio->costo, 2, '.', '') }}">
-                                                                    {{ $servicio->titulo }}
-                                                                </option>
-                                                            @endif
-                                                        @endforeach
-                                                    @endforeach
-                                                @endif
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                        <label class="mb-2">Precio costo</label>
-                                        <input class="form-control form-control-solid" id="servicio_t" name="servicio_t" type="number" value="{{ $gestion->servicio_t }}" />
-                                    </div>
-                                    
-
-                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                        <label class="mb-2">Precio costo</label>
-                                        <input class="form-control form-control-solid" id="servicio_t" name="servicio_t" type="number" value="{{ $gestion->servicio_t }}" />
-                                    </div>
-
-                                    @foreach($tours as $tour)
-                                        @php
-                                            $serv_tour_id = json_decode($tour->serv_tour);
-                                        @endphp
-
-                                        @if($tour->id == $reserva->tour_id)
-                                            @foreach($serv_tour_id as $value)
-                                                @if($value == 100)
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Elegir guía</label>
-                                                        <select class="form-control form-control-solid" id="guia_id" name="guia_id" onchange="mostrarCosto()">
-                                                            @if(optional($gestion->guia)->id)
-                                                                <option value="{{ $gestion->guia->id }}" data-tarifa="{{ number_format($gestion->guia->tarifa, 2, '.', '') }}">
-                                                                    {{ $gestion->guia->nombre.' '.$gestion->guia->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($guias as $guia)
-                                                                <option value="{{ $guia->id }}" data-tarifa="{{ number_format($guia->tarifa, 2, '.', '') }}">
-                                                                    {{ $guia->nombre.' '.$guia->apellido }}
-                                                                </option>
-                                                            @endforeach    
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="guia_t" name="guia_t" type="number" value="{{ $gestion->guia_t }}" />
-                                                    </div>
-                                                
-                                                @elseif($value == 101)
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Elegir traductor</label>
-                                                        <select class="form-control form-control-solid" id="traductor_id" name="traductor_id" onchange="traductorCosto()">
-                                                            @if(optional($gestion->traductor)->id)
-                                                                <option value="{{ $gestion->traductor->id }}" data-tarifa="{{ number_format($gestion->traductor->tarifa, 2, '.', '') }}">
-                                                                    {{ $gestion->traductor->nombre.' '.$gestion->traductor->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($traductors as $traductor)
-                                                                <option value="{{ $traductor->id }}" data-tarifa="{{ number_format($traductor->tarifa, 2, '.', '') }}">
-                                                                    {{ $traductor->nombre.' '.$traductor->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="traductor_t" name="traductor_t" type="number" value="{{ $gestion->traductor_t }}" />
-                                                    </div>
-                                                    
-                                                
-                                                @elseif($value == 102)
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Elegir cocinero</label>
-                                                        <select class="form-control form-control-solid" id="cocinero_id" name="cocinero_id" onchange="cocineroCosto()">
-                                                            @if(optional($gestion->cocinero)->id)
-                                                                <option value="{{ $gestion->cocinero->id }}" data-tarifa="{{ number_format($gestion->cocinero->tarifa, 2, '.', '') }}">
-                                                                    {{ $gestion->cocinero->nombre.' '.$gestion->cocinero->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($cocineros as $cocinero)
-                                                                <option value="{{ $cocinero->id }}" data-tarifa="{{ number_format($cocinero->tarifa, 2, '.', '') }}">
-                                                                    {{ $cocinero->nombre.' '.$cocinero->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="cocinero_t" name="cocinero_t" type="number" value="{{ $gestion->cocinero_t }}" />
-                                                    </div>
-                                                    
-                                                @elseif($value == 103)
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Elegir chofer</label>
-                                                        <select class="form-control form-control-solid" id="chofer_id" name="chofer_id" onchange="choferCosto()">
-                                                            @if(optional($gestion->chofer)->id)
-                                                                <option value="{{ $gestion->chofer->id }}" data-tarifa="{{ number_format($gestion->chofer->tarifa, 2, '.', '') }}">
-                                                                    {{ $gestion->chofer->nombre.' '.$gestion->chofer->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($chofers as $chofer)
-                                                                <option value="{{ $chofer->id }}" data-tarifa="{{ number_format($chofer->tarifa, 2, '.', '') }}">
-                                                                    {{ $chofer->nombre.' '.$chofer->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-6">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="chofer_t" name="chofer_t" type="number" value="{{ $gestion->chofer_t }}" />
-                                                    </div>
-                                                    
-                                                @elseif($value == 104)
-                                                    <<div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir prestatario</label>
-                                                        <select class="form-control form-control-solid" id="provag_id" name="provag_id" onchange="cargarVagonetas(this.value)">
-                                                            @if(optional($gestion->provag)->id)
-                                                                <option value="{{ $gestion->provag->id }}">
-                                                                    {{ $gestion->provag->nombre . ' ' . $gestion->provag->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">
-                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir vagoneta</label>
-                                                        <select class="form-control form-control-solid" id="vagoneta_id" name="vagoneta_id" onchange="vagonetaCosto()">
-                                                            @if(optional($gestion->vagoneta)->id)
-                                                                <option value="{{ $gestion->vagoneta->id }}" data-tarifa="{{ number_format($gestion->vagoneta->costo, 2, '.', '') }}">
-                                                                    {{ $gestion->vagoneta->marca }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($vagonetas as $vagoneta)
-                                                                <option value="{{ $vagoneta->id }}" data-tarifa="{{ number_format($vagoneta->costo, 2, '.', '') }}">
-                                                                    {{ $vagoneta->marca }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="vagoneta_t" name="vagoneta_t" type="number" value="{{ $gestion->vagoneta_t }}" />
-                                                    </div>
-                                                    
-                                                @elseif($value == 105)
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir prestatario</label>
-                                                        <select class="form-control form-control-solid" id="procab_id" name="procab_id" onchange="cargarCaballos(this.value)">
-                                                            @if(optional($gestion->procab)->id)
-                                                                <option value="{{ $gestion->procab->id }}">
-                                                                    {{ $gestion->procab->nombre . ' ' . $gestion->procab->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">
-                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir caballo</label>
-                                                        <select class="form-control form-control-solid" id="caballo_id" name="caballo_id" onchange="caballoCosto()">
-                                                            @if(optional($gestion->caballo)->id)
-                                                                <option value="{{ $gestion->caballo->id }}" data-tarifa="{{ number_format($gestion->caballo->costo, 2, '.', '') }}">
-                                                                    {{ $gestion->caballo->nombre }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($caballos as $caballo)
-                                                                <option value="{{ $caballo->id }}" data-tarifa="{{ number_format($caballo->costo, 2, '.', '') }}">
-                                                                    {{ $caballo->nombre }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="caballo_t" name="caballo_t" type="number" value="{{ $gestion->caballo_t }}" />
-                                                    </div>
-                                                
-                                                @elseif($value == 106)
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir prestatario</label>
-                                                        <select class="form-control form-control-solid" id="probic_id" name="probic_id" onchange="cargarBicicletas(this.value)">
-                                                            @if(optional($gestion->probic)->id)
-                                                                <option value="{{ $gestion->probic->id }}">
-                                                                    {{ $gestion->probic->nombre . ' ' . $gestion->probic->apellido }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($propietarios as $propietario)
-                                                                <option value="{{ $propietario->id }}">
-                                                                    {{ $propietario->nombre . ' ' . $propietario->apellido }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Elegir bicicleta</label>
-                                                        <select class="form-control form-control-solid" id="bicicleta_id" name="bicicleta_id" onchange="bicicletaCosto()">
-                                                            @if(optional($gestion->bicicleta)->id)
-                                                                <option value="{{ $gestion->bicicleta->id }}" data-tarifa="{{ number_format($gestion->bicicleta->costo, 2, '.', '') }}">
-                                                                    {{ $gestion->bicicleta->nombre }}
-                                                                </option>
-                                                            @endif
-                                                            <option value="">Seleccionar</option>
-                                                            @foreach($bicicletas as $bicicleta)
-                                                                <option value="{{ $bicicleta->id }}" data-tarifa="{{ number_format($bicicleta->costo, 2, '.', '') }}">
-                                                                    {{ $bicicleta->nombre }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    
-                                                    <div class="form-group mb-2 mt-2 col-md-4">
-                                                        <label class="mb-2">Precio costo</label>
-                                                        <input class="form-control form-control-solid" id="bicicleta_t" name="bicicleta_t" type="number" value="{{ $gestion->bicicleta_t }}" />
-                                                    </div>
-                                                
-                                                @endif
-                                            @endforeach
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </form>
+                        @if($pdfExists)
+                            <a href="{{ asset("despachos/transito_{$reserva->codigo}.pdf") }}" target="_blank" class="btn btn-primary btn-sm">
+                                Ver PDF
+                            </a>
                         @endif
                     </div>
-                </div>
+                @endif
             </div>
+        </div>
+
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered">
+                    <thead class="thead-light text-center">
+                        <tr>
+                            <th>#</th>
+                            <th>Nombre</th>
+                            <th>Doc</th>
+                            <th>País</th>
+                            <th>Alergias</th>
+                            <th>Comida</th>
+                            <th>Tickets</th>
+                            <th>Habitaciones</th>
+                            <th>Accesorios</th>
+                            <th>Servicios</th>
+                            <th>Nota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($resclis as $i => $t)
+                            <tr>
+                                <td>{{ $i + 1 }}</td>
+                                <td>{{ $t->nombres }} {{ $t->apellidos }}</td>
+                                <td>{{ $t->documento ?? '-' }}</td>
+                                <td>{{ $t->nacionalidad ?? '-' }}</td>
+
+                                <td>
+                                    @forelse($t->alergias ?? [] as $a)
+                                        {{ $a }}@if (!$loop->last), @endif
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>
+                                    @forelse($t->alimentacion ?? [] as $a)
+                                        {{ $a }}@if (!$loop->last), @endif
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>
+                                    @forelse($t->tickets ?? [] as $ti)
+                                        {{ $ti['name'] ?? '-' }}@if (!$loop->last), @endif
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>
+                                    @forelse($t->habitaciones ?? [] as $h)
+                                        Día {{ $h['dia'] }}: {{ $h['name'] }}<br>
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>
+                                    @forelse($t->accesorios ?? [] as $a)
+                                        {{ $a['name'] ?? '-' }}@if (!$loop->last), @endif
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>
+                                    @forelse($t->servicios ?? [] as $s)
+                                        {{ $s['name'] ?? '-' }}@if (!$loop->last), @endif
+                                    @empty - @endforelse
+                                </td>
+
+                                <td>{{ $t->nota ?? '-' }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            {{-- Gestión Operativa --}}
+            @if($gestion)
+                <h6 class="mt-4 mb-2">Gestión Operativa</h6>
+                <table class="table table-sm table-bordered">
+                    <tbody>
+                        @if($gestion->guia_id)
+                            <tr><th>Guía</th><td>{{ optional($gestion->guia)->nombre }}</td></tr>
+                        @endif
+                        @if($gestion->traductor_id)
+                            <tr><th>Traductor</th><td>{{ optional($gestion->traductor)->nombre }}</td></tr>
+                        @endif
+                        @if($gestion->chofer_id)
+                            <tr>
+                                <th>Chofer</th>
+                                <td>
+                                    {{ optional($gestion->chofer)->nombre }}
+                                    @if(optional($gestion->chofer)->licencia)
+                                        <br><small class="text-muted">Licencia: {{ $gestion->chofer->licencia }}</small>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+                        @if($gestion->vagoneta_id)
+                            <tr>
+                                <th>Vagoneta</th>
+                                <td>
+                                    {{ optional($gestion->vagoneta)->marca }}
+                                    @if(optional($gestion->vagoneta)->patente)
+                                        <br><small class="text-muted">Patente: {{ $gestion->vagoneta->patente }}</small>
+                                    @endif
+                                    @if(optional($gestion->provag)->nombre)
+                                        <br><small class="text-muted">Prestatario: {{ $gestion->provag->nombre }} {{ $gestion->provag->apellido }}</small>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+                        @if($gestion->caballo_id)
+                            <tr>
+                                <th>Caballo</th>
+                                <td>
+                                    {{ optional($gestion->caballo)->nombre }}
+                                    @if(optional($gestion->procab)->nombre)
+                                        <br><small class="text-muted">Prestatario: {{ $gestion->procab->nombre }} {{ $gestion->procab->apellido }}</small>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+                        @if($gestion->bicicleta_id)
+                            <tr>
+                                <th>Bicicleta</th>
+                                <td>
+                                    {{ optional($gestion->bicicleta)->nombre }}
+                                    @if(optional($gestion->probic)->nombre)
+                                        <br><small class="text-muted">Prestatario: {{ $gestion->probic->nombre }} {{ $gestion->probic->apellido }}</small>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endif
+                    </tbody>
+                </table>
+            @endif
         </div>
     </div>
 @endsection
+
 
 @section('footer_scripts')
     

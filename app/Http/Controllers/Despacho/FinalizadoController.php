@@ -82,30 +82,48 @@ class FinalizadoController extends Controller
      */
     public function show($id)
     {
-        $reserva = Reserva::find($id);
-        $resclis = Resercliente::where('reserva_id', $id)->get(); // Filtrar Resercliente por reserva_id
-        $gestion = Gestion::where('reserva_id', $id)->first();
-        $tours = Tour::all();
-        $hottus = HotelTour::all();
-        $categorias = Categoria::all();
-        $servicios = Servicio::all();
-        $alergias = Alergia::all();
-        $alimentos = Alimentacion::all();
-        $habitaciones = Habitacion::all();
-        $links = Link::all();
-        $onlines = Online::all();
-        $qrs = Qr::all();
-        $guias = Guia::all();
-        $traductors = Traductor::all();
-        $chofers = Chofer::all();
-        $cocineros = Cocinero::all();
-        $propietarios = Propietario::all();
-        $vagonetas = Vagoneta::all();
-        $bicicletas = Bicicleta::all();
-        $caballos = Caballo::all();
-        
-        return view('despachos.finalizados.show', compact('gestion', 'caballos', 'bicicletas', 'vagonetas', 'propietarios', 'cocineros', 'chofers', 'traductors', 'guias', 'resclis', 'reserva', 'links', 'onlines', 'qrs', 'habitaciones', 'alimentos', 'alergias', 'tours', 'hottus', 'categorias', 'servicios'));
+        $reserva = Reserva::with('tour')->findOrFail($id);
+        $gestion = Gestion::with([
+            'guia', 'traductor', 'chofer', 'cocinero',
+            'vagoneta', 'caballo', 'bicicleta',
+            'provag', 'procab', 'probic', 'servicio'
+        ])->where('reserva_id', $id)->first();
+
+        $resclis = Resercliente::where('reserva_id', $id)->get();
+
+        // Decodificación limpia
+        $resclis = $resclis->map(function ($t) {
+            $decode = fn($value) => is_string($value) ? json_decode($value, true) ?? [] : ($value ?? []);
+
+            return (object)[
+                'id'           => $t->id,
+                'nombres'      => $t->nombres,
+                'apellidos'    => $t->apellidos,
+                'documento'    => $t->documento,
+                'nacionalidad' => $t->nacionalidad,
+                'edad'         => $t->edad,
+                'sexo'         => $t->sexo,
+                'celular'      => $t->celular,
+                'correo'       => $t->correo,
+                'esPrincipal'  => $t->esPrincipal,
+                'pre_per'      => $t->pre_per,
+                'total'        => $t->total,
+                'nota'         => $t->nota,
+                'estado'       => $t->estado,
+                'estatus'      => $t->estatus,
+
+                'tickets'      => $decode($t->tickets),
+                'habitaciones' => $decode($t->habitaciones),
+                'accesorios'   => $decode($t->accesorios),
+                'servicios'    => $decode($t->servicios),
+                'alergias'     => $decode($t->alergias),
+                'alimentacion' => $decode($t->alimentacion),
+            ];
+        });
+
+        return view('despachos.finalizados.show', compact('reserva', 'gestion', 'resclis'));
     }
+
 
     /**
      * Show the form for editing the specified resource.

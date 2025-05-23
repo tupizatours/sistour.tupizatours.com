@@ -73,7 +73,7 @@ class Gestion extends Model
     }
 
     public function chofer() {
-        return $this->belongsTo('App\Models\Propietario\Traductor', 'chofer_id', 'id');
+        return $this->belongsTo('App\Models\Propietario\Chofer', 'chofer_id', 'id');
     }
 
     public function bicicleta() {
