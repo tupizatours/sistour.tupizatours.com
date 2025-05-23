@@ -36,7 +36,7 @@
                         </form>
 
                         @if($pdfExists)
-                            <a href="{{ asset("despachos/transito_{$reserva->codigo}.pdf") }}" target="_blank" class="btn btn-primary btn-sm">
+                            <a href="{{ asset("public/despachos/transito_{$reserva->codigo}.pdf") }}" target="_blank" class="btn btn-primary btn-sm">
                                 Ver PDF
                             </a>
                         @endif
