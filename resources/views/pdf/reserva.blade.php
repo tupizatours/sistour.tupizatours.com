@@ -18,7 +18,7 @@
 </head>
 <body>
 
-    <img src="{{ public_path('assets/images/logo-icon.png') }}" class="logo" alt="Logo">
+    <img src="{{ public_path('assets/images/logo-img.png') }}" class="logo" alt="Logo">
 
     <h2>Resumen de Reserva: {{ $reserva->codigo }}</h2>
 

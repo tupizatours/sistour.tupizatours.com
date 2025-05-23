@@ -40,13 +40,13 @@
 
     {{-- LOGO Y ENCABEZADO --}}
     <div class="text-center mb-2">
-        <img src="{{ public_path('assets/images/logo-icon.png') }}" style="width: 110px;" alt="Logo">
+        <img src="{{ public_path('assets/images/logo-img.png') }}" style="width: 110px;" alt="Logo">
     </div>
 
     <div class="header-info">
         <p>AV. CHICHAS N° 187 - TUPIZA - BOLIVIA</p>
         <p>TELF: 00591-2-6943001 / 6943003 · FAX: 00591-2-6944816</p>
-        <p>Email: HOLA@TUPOZATOURS.COM · Web: www.tupizatours.com</p>
+        <p>Email: hola@tupizatours.com · Web: www.tupizatours.com</p>
         <p>Placa </p>
     </div>
 
