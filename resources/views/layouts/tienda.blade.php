@@ -18,27 +18,27 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-        <link href="{{ asset('public/assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
-        <link href="{{ asset('public/assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
-        <link href="{{ asset('public/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
-        <link href="{{ asset('public/assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('assets/plugins/vectormap/jquery-jvectormap-2.0.2.css') }}" rel="stylesheet"/>
+        <link href="{{ asset('assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet"/>
         <!-- loader-->
-        <link href="{{ asset('public/assets/css/pace.min.css') }}" rel="stylesheet"/>
-        <script src="{{ asset('public/assets/js/pace.min.js') }}"></script>
+        <link href="{{ asset('assets/css/pace.min.css') }}" rel="stylesheet"/>
+        <script src="{{ asset('assets/js/pace.min.js') }}"></script>
         <!-- Bootstrap CSS -->
-        <link href="{{ asset('public/assets/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" />
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" />
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/app.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
         <!-- Theme Style CSS -->
-        <link rel="stylesheet" href="{{ asset('public/assets/css/dark-theme.css') }}"/>
-        <link rel="stylesheet" href="{{ asset('public/assets/css/semi-dark.css') }}"/>
-        <link rel="stylesheet" href="{{ asset('public/assets/css/header-colors.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('assets/css/dark-theme.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('assets/css/semi-dark.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('assets/css/header-colors.css') }}"/>
 
-        <link href="{{ asset('public/assets/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/datatable/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet" />
 
         @yield('estilos')
         
@@ -125,24 +125,24 @@
             @include('partials.footer')
         </div>
 
-        <script src="{{ asset('public/assets/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
 
-        <script src="{{ asset('public/assets/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/metismenu/js/metisMenu.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/vectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/chartjs/js/chart.js') }}"></script>
-        <script src="{{ asset('public/assets/js/index.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/metismenu/js/metisMenu.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
+        <script src="{{ asset('assets/plugins/vectormap/jquery-jvectormap-2.0.2.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/vectormap/jquery-jvectormap-world-mill-en.js') }}"></script>
+        <script src="{{ asset('assets/plugins/chartjs/js/chart.js') }}"></script>
+        <script src="{{ asset('assets/js/index.js') }}"></script>
         
-        <script src="{{ asset('public/assets/js/app.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
 
-        <script src="{{ asset('public/assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/datatable/js/jquery.dataTables.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/datatable/js/dataTables.bootstrap5.min.js') }}"></script>
 
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script src="{{ asset('public/assets/plugins/select2/js/select2-custom.js?v=9876') }}"></script>
+        <script src="{{ asset('assets/plugins/select2/js/select2-custom.js?v=9876') }}"></script>
 
         <script>
             new PerfectScrollbar(".app-container")

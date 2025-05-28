@@ -8,7 +8,7 @@
 
 <div class="card mt-4">
     <div class="card-body">
-        <form action="{{ route('caja.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('cajaop.store') }}" method="POST" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="pagina" value="gestions">
             <input type="hidden" name="reserva_id" value="{{ $reserva->id }}">
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const mainForm = document.querySelector('form[action="{{ route('caja.store') }}"]');
+        const mainForm = document.querySelector('form[action="{{ route('cajaop.store') }}"]');
         const sombra = document.getElementById('form-totalidades-sombra');
 
         mainForm.addEventListener('submit', function () {

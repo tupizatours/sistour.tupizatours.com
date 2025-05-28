@@ -263,23 +263,18 @@
 
         <ul>
             <li>
-                <a href="{{ url('caja/ingresos') }}" aria-expanded="true">
-                    <i class="bx bx-radio-circle"></i>
-                    Ingresos
+                <a href="{{ route('caja.index') }}">
+                    <i class="bx bx-folder-open"></i> Apertura / Cierre
                 </a>
             </li>
-
             <li>
-                <a href="{{ url('caja/gastos') }}" aria-expanded="true">
-                    <i class="bx bx-radio-circle"></i>
-                    Gastos
+                <a href="{{ route('caja.movimientos') }}">
+                    <i class="bx bx-transfer"></i> Movimientos
                 </a>
             </li>
-
             <li>
-                <a href="{{ url('caja/categorias') }}" aria-expanded="true">
-                    <i class="bx bx-radio-circle"></i>
-                    Categorías
+                <a href="{{ route('cuentas.index') }}">
+                    <i class="bx bx-book-content"></i> Cuentas Contables
                 </a>
             </li>
         </ul>

@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Caja;
 
 use Illuminate\Http\Request;
 use App\Models\Caja\Porpago;
 use App\Models\Caja\Anticipo;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\Controller;
 
-class CajaController extends Controller
+class CajaOperacionesController extends Controller
 {
 
     public function store(Request $request)

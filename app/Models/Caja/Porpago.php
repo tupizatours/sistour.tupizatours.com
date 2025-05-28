@@ -20,7 +20,6 @@ class Porpago extends Model
         'es_prestatario',    // Boolean para distinguir si es un servicio de prestatario
         'estado',            // Estado del pago (ej: pendiente, pagado)
         'user_id',           // ← Nuevo: quien registra el movimiento
-
     ];
 
     protected $casts = [
