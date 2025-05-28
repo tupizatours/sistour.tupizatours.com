@@ -18,18 +18,18 @@
             <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
         <![endif]-->
 
-        <link href="{{ asset('public/assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
-        <link href="{{ asset('public/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
-        <link href="{{ asset('public/assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/simplebar/css/simplebar.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css') }}" rel="stylesheet" />
+        <link href="{{ asset('assets/plugins/metismenu/css/metisMenu.min.css') }}" rel="stylesheet" />
         <!-- loader-->
-        <link href="{{ asset('public/assets/css/pace.min.css') }}" rel="stylesheet" />
-        <script src="{{ asset('public/assets/js/pace.min.js') }}"></script>
+        <link href="{{ asset('assets/css/pace.min.css') }}" rel="stylesheet" />
+        <script src="{{ asset('assets/js/pace.min.js') }}"></script>
         <!-- Bootstrap CSS -->
-        <link href="{{ asset('public/assets/css/bootstrap.min.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/bootstrap-extended.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/bootstrap-extended.css') }}" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/app.css') }}" rel="stylesheet">
-        <link href="{{ asset('public/assets/css/icons.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/app.css') }}" rel="stylesheet">
+        <link href="{{ asset('assets/css/icons.css') }}" rel="stylesheet">
 
         @yield('template_linked_fonts')
         @yield('template_linked_css')
@@ -82,7 +82,7 @@
                                 <div class="col-12 col-xl-7 col-xxl-8 auth-cover-left justify-content-center d-none d-xl-flex">
                                     <div class="card shadow-none shadow-none rounded-0 mb-0">
                                         <div class="card-body">
-                                            <img src="https://cdn.pixabay.com/photo/2019/02/22/17/47/jeep-4014043_1280.jpg" class="img-fluid auth-img-cover-login" width="550" alt=""/>
+                                            <img src="https://tours.oeo.com.bo/files/system/system_file654a9cc48cfa4-page-bg.png" class="img-fluid auth-img-cover-login" width="550" alt=""/>
                                         </div>
                                     </div>
                                 </div>
@@ -95,13 +95,13 @@
             </main>
         </div>
 
-        <script src="{{ asset('public/assets/js/bootstrap.bundle.min.js') }}"></script>
+        <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
         
-        <script src="{{ asset('public/assets/js/jquery.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/metismenu/js/metisMenu.min.js') }}"></script>
-        <script src="{{ asset('public/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
+        <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/simplebar/js/simplebar.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/metismenu/js/metisMenu.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js') }}"></script>
         
-        <script src="{{ asset('public/assets/js/app.js') }}"></script>
+        <script src="{{ asset('assets/js/app.js') }}"></script>
     </body>
 </html>
