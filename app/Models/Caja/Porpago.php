@@ -2,6 +2,14 @@
 
 namespace App\Models\Caja;
 
+use App\Models\Propietario;
+use App\Models\Propietario\Chofer;
+use App\Models\Propietario\Cocinero;
+use App\Models\Propietario\Guia;
+use App\Models\Propietario\Traductor;
+use App\Models\Servicio\Bicicleta;
+use App\Models\Servicio\Caballo;
+use App\Models\Servicio\Vagoneta;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -12,18 +20,21 @@ class Porpago extends Model
     protected $fillable = [
         'reserva_id',
         'tour_id',
-        'tipo_servicio',     // Ej: 'guia', 'caballo', 'bicicleta'
-        'servicio_id',       // ID del guía/traductor o prestatario
-        'pres_serv_id',      // ID del elemento físico (caballo, vagoneta, etc.)
-        'anticipo_id',       // FK a anticipos si se ha entregado anticipo
-        'costo',             // Monto total asignado
-        'es_prestatario',    // Boolean para distinguir si es un servicio de prestatario
-        'estado',            // Estado del pago (ej: pendiente, pagado)
-        'user_id',           // ← Nuevo: quien registra el movimiento
+        'tipo_servicio',
+        'servicio_id',
+        'pres_serv_id',
+        'anticipo_id',
+        'costo',
+        'es_prestatario',
+        'estado',
+        'user_id',
+        'con_bienes',
     ];
+    
 
     protected $casts = [
         'es_prestatario' => 'boolean',
+        'con_bienes' => 'boolean', 
         'costo' => 'decimal:2',
     ];
 
@@ -58,4 +69,35 @@ class Porpago extends Model
     public function user() {
         return $this->belongsTo('App\Models\User', 'user_id', 'id');
     }
+
+    public function servicio()
+    {
+        return match ($this->tipo_servicio) {
+            'guia' => $this->belongsTo(Guia::class, 'servicio_id'),
+            'chofer' => $this->belongsTo(Chofer::class, 'servicio_id'),
+            'traductor' => $this->belongsTo(Traductor::class, 'servicio_id'),
+            'cocinero' => $this->belongsTo(Cocinero::class, 'servicio_id'),
+            'vagoneta' => $this->belongsTo(Vagoneta::class, 'servicio_id'),
+            'bicicleta' => $this->belongsTo(Bicicleta::class, 'servicio_id'),
+            'caballo' => $this->belongsTo(Caballo::class, 'servicio_id'),
+            default => null,
+        };
+    }
+
+    public function getNombrePrestatarioAttribute()
+    {
+        $servicio = $this->servicio;
+
+        // Si es un servicio con bienes (vagoneta, caballo, bicicleta)
+        if (in_array($this->tipo_servicio, ['vagoneta', 'bicicleta', 'caballo'])) {
+            $prop = $servicio?->propietario;
+            return $prop ? trim("{$prop->nombre} {$prop->apellido}") : 'Sin nombre';
+        }
+
+        // Servicios normales: guia, chofer, etc.
+        return trim("{$servicio?->nombre} {$servicio?->apellido}");
+    }
+
+
 }
+

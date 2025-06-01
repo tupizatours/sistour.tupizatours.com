@@ -7,35 +7,65 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Caja\CuentaCaja;
 use App\Models\Caja\Caja;
 
+namespace App\Models\Caja;
+
+use Illuminate\Database\Eloquent\Model;
+use App\Models\Caja\CuentaCaja;
+use App\Models\Caja\Caja;
+use App\Models\User;
+
 class MovimientoCaja extends Model
 {
     protected $table = 'movimientos_caja';
 
     protected $fillable = [
         'caja_id',
-        'cuenta_id',
-        'tipo',       // ingreso | egreso
+        'cuenta_caja_id',
+        'tipo',         // ingreso | egreso
+        'subtipo',      // caja | billetera | porpago | anticipo | trabajador | otro
+        'origen_id',    // ID externo relacionado (opcional)
         'monto',
-        'detalle',
-        'origen_id',  // puede ser reserva_id, gestion_id, etc.
-        'origen_tipo' // clase relacionada
+        'descripcion',
+        'user_id',
     ];
 
-    // 🔁 Relación con la caja
+    /**
+     * Relación con la caja.
+     */
     public function caja()
     {
         return $this->belongsTo(Caja::class);
     }
 
-    // 🔁 Relación con la cuenta
+    /**
+     * Relación con la cuenta contable.
+     */
     public function cuenta()
     {
-        return $this->belongsTo(CuentaCaja::class, 'cuenta_id');
+        return $this->belongsTo(CuentaCaja::class, 'cuenta_caja_id');
     }
 
-    // 🔁 Polimorfismo para vincular a reservas u otras entidades
-    public function origen()
+    /**
+     * Relación con el usuario.
+     */
+    public function usuario()
     {
-        return $this->morphTo('origen');
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Determinar si es ingreso.
+     */
+    public function esIngreso()
+    {
+        return $this->tipo === 'ingreso';
+    }
+
+    /**
+     * Determinar si es egreso.
+     */
+    public function esEgreso()
+    {
+        return $this->tipo === 'egreso';
     }
 }

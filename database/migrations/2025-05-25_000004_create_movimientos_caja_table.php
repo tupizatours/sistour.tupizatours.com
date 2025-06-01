@@ -11,12 +11,13 @@ return new class extends Migration {
 
         Schema::create('movimientos_caja', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('caja_id')->constrained('cajas')->onDelete('cascade');
-            $table->foreignId('cuenta_caja_id')->constrained('cuentas_caja');
+            $table->foreignId('caja_id')->constrained()->onDelete('cascade');
+            $table->foreignId('cuenta_caja_id')->constrained('cuentas_caja')->onDelete('restrict');
             $table->enum('tipo', ['ingreso', 'egreso']);
+            $table->unsignedBigInteger('origen_id')->nullable(); // ID externo relacionado
             $table->decimal('monto', 10, 2);
-            $table->string('origen')->nullable(); // ejemplo: reserva, gasto, etc.
             $table->text('descripcion')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamps();
         });
         

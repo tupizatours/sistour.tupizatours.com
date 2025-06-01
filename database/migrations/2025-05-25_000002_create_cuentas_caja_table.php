@@ -13,7 +13,7 @@ return new class extends Migration {
             $table->id();
             $table->string('nombre');
             $table->enum('tipo', ['ingreso', 'egreso']);
-            $table->boolean('es_automatica')->default(false); // protegidas
+            $table->boolean('sistema')->default(false); // <- corregido aquí
             $table->timestamps();
         });
         

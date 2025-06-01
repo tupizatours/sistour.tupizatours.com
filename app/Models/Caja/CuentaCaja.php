@@ -12,17 +12,18 @@ class CuentaCaja extends Model
 
     protected $fillable = [
         'nombre',
-        'tipo',     // ingreso | egreso
-        'sistema',  // true si es protegida
+        'tipo',            // ingreso | egreso
+        'es_automatica',   // true si es protegida
     ];
 
     protected $casts = [
-        'sistema' => 'boolean',
+        'es_automatica' => 'boolean',  // ✅ nombre corregido para que coincida con fillable y migración
     ];
 
     // 🔁 Una cuenta puede tener muchos movimientos
     public function movimientos()
     {
-        return $this->hasMany(MovimientoCaja::class, 'cuenta_id');
+        return $this->hasMany(MovimientoCaja::class, 'cuenta_caja_id');
     }
 }
+

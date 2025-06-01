@@ -272,11 +272,6 @@
                     <i class="bx bx-transfer"></i> Movimientos
                 </a>
             </li>
-            <li>
-                <a href="{{ route('cuentas.index') }}">
-                    <i class="bx bx-book-content"></i> Cuentas Contables
-                </a>
-            </li>
         </ul>
     </li>
 

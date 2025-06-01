@@ -18,16 +18,6 @@ use App\Models\Propietario\Chofer;
 use App\Models\Propietario\Cocinero;
 use App\Models\Propietario\Guia;
 use App\Models\Propietario\Traductor;
-use App\Models\Servicio\Ticket;
-use App\Models\Servicio\Turista;
-use App\Models\Servicio\Accesorio;
-use App\Models\Servicio\Hotel;
-use App\Models\Servicio\Habitacion;
-use App\Models\Configuracion\Alergia;
-use App\Models\Configuracion\Alimentacion;
-use App\Models\Configuracion\Link;
-use App\Models\Configuracion\Online;
-use App\Models\Configuracion\Qr;
 use App\Models\Despacho\Gestion;
 use Barryvdh\DomPDF\Facade\Pdf;
 

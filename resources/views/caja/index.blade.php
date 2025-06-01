@@ -46,7 +46,7 @@
                             <button type="submit" class="btn btn-danger btn-block">Cerrar Caja</button>
                         </form>
 
-                        <a href="{{ route('caja.show', $cajaAbierta->id) }}" class="btn btn-outline-secondary btn-block mt-2">
+                        <a href="{{ route('caja.movimientos') }}" class="btn btn-outline-secondary btn-block mt-2">
                             Ver Detalles / Movimientos
                         </a>
 

@@ -97,22 +97,62 @@ class CajaController extends Controller
     /**
      * Mostrar movimientos.
      */
-    public function movimientos()
-    {
-        $caja = Caja::where('cerrada', false)->latest()->first();
+
+     public function movimientos()
+     {
+        $userId = auth()->id();
+    
+        // Buscar la caja abierta asociada al usuario actual
+        $caja = Caja::where('user_id', $userId)->where('cerrada', false)->latest()->first();
     
         if (!$caja) {
-            return redirect()->route('caja.index')->with('error', 'Debe abrir una caja primero.');
+            return redirect()->route('caja.index')->with('error', 'Debes abrir una caja primero.');
         }
     
-        $tipo = request('tipo');
-
+        $tipo = request('tipo'); // ingreso | egreso | null
+    
         $movimientos = $caja->movimientos()
             ->when($tipo, fn($q) => $q->where('tipo', $tipo))
             ->latest()
             ->paginate(10);
+    
+        $cuentas = CuentaCaja::all(); // No filtrar por tipo para el modal
 
     
-        return view('caja.movimientos', compact('caja', 'movimientos'));
+        return view('caja.movimientos', compact('caja', 'movimientos', 'cuentas'));
     }
+     
+    
+
+    public function registrarMovimiento(Request $request)
+    {
+        $request->validate([
+            'tipo' => 'required|in:ingreso,egreso',
+            'cuenta_caja_id' => 'required|exists:cuentas_caja,id',
+            'subtipo' => 'nullable|string|max:50',
+            'monto' => 'required|numeric|min:0.01',
+            'descripcion' => 'nullable|string|max:255',
+            'origen_id' => 'nullable|integer',
+        ]);
+    
+        $caja = \App\Models\Caja\Caja::where('cerrada', false)->latest()->first();
+    
+        if (!$caja) {
+            return redirect()->back()->with('error', 'Debe abrir una caja para registrar movimientos.');
+        }
+    
+        MovimientoCaja::create([
+            'caja_id'        => $caja->id,
+            'cuenta_caja_id' => $request->cuenta_caja_id,
+            'tipo'           => $request->tipo,
+            'subtipo'        => $request->subtipo ?? 'otro',
+            'origen_id'      => $request->origen_id,
+            'monto'          => $request->monto,
+            'descripcion'    => $request->descripcion,
+            'user_id'        => auth()->id(),
+        ]);
+    
+        return redirect()->back()->with('success', 'Movimiento registrado correctamente.');
+    }
+    
 }    

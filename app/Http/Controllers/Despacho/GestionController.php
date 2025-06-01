@@ -30,7 +30,6 @@ use App\Models\Configuracion\Online;
 use App\Models\Configuracion\Qr;
 use DB;
 use App\Models\Despacho\Gestion;
-use App\Models\Caja\Porcobro;
 use App\Models\Caja\Porpago;
 use App\Models\Venta\Pago;
 
@@ -430,17 +429,17 @@ class GestionController extends Controller
             'guia' => [
                 'servicio_id'   => $request->guia_id,
                 'costo'         => $request->guia_t,
-                'es_prestatario' => false,
+                'es_prestatario' => true,
             ],
             'traductor' => [
                 'servicio_id'   => $request->traductor_id,
                 'costo'         => $request->traductor_t,
-                'es_prestatario' => false,
+                'es_prestatario' => true,
             ],
             'cocinero' => [
                 'servicio_id'   => $request->cocinero_id,
                 'costo'         => $request->cocinero_t,
-                'es_prestatario' => false,
+                'es_prestatario' => true,
             ],
             'chofer' => [
                 'servicio_id'   => $request->chofer_id,

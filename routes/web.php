@@ -189,15 +189,15 @@ Route::group(['middleware' => ['auth', 'activated', 'activity', 'twostep', 'chec
 
     Route::get('caja/index', [App\Http\Controllers\Caja\CajaController::class, 'index'])->name('caja.index');
     Route::get('caja/movimientos', [App\Http\Controllers\Caja\CajaController::class, 'movimientos'])->name('caja.movimientos');
-    Route::get('caja/{caja}', [App\Http\Controllers\Caja\CajaController::class, 'show'])->name('caja.show');
 
     Route::post('caja/abrir', [App\Http\Controllers\Caja\CajaController::class, 'abrir'])->name('caja.abrir');
     Route::post('caja/cerrar', [App\Http\Controllers\Caja\CajaController::class, 'cerrar'])->name('caja.cerrar');
 
-    Route::post('caja/ingreso', [App\Http\Controllers\Caja\CajaController::class, 'registrarIngreso'])->name('caja.ingreso');
-    Route::post('caja/egreso', [App\Http\Controllers\Caja\CajaController::class, 'registrarEgreso'])->name('caja.egreso');
+    Route::post('caja/movimiento', [App\Http\Controllers\Caja\CajaController::class, 'registrarMovimiento'])->name('caja.movimiento');
 
     Route::resource('caja/cuentas', App\Http\Controllers\Caja\CuentaCajaController::class)->names('cuentas');
+
+    Route::get('/api/porpagos-disponibles', [App\Http\Controllers\Caja\MovimientoAjaxController::class, 'porpagosDisponibles']);
 
 });
 
