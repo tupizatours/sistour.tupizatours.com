@@ -129,7 +129,6 @@ class CajaController extends Controller
         $request->validate([
             'tipo' => 'required|in:ingreso,egreso',
             'cuenta_caja_id' => 'required|exists:cuentas_caja,id',
-            'subtipo' => 'nullable|string|max:50',
             'monto' => 'required|numeric|min:0.01',
             'descripcion' => 'nullable|string|max:255',
             'origen_id' => 'nullable|integer',
@@ -145,7 +144,6 @@ class CajaController extends Controller
             'caja_id'        => $caja->id,
             'cuenta_caja_id' => $request->cuenta_caja_id,
             'tipo'           => $request->tipo,
-            'subtipo'        => $request->subtipo ?? 'otro',
             'origen_id'      => $request->origen_id,
             'monto'          => $request->monto,
             'descripcion'    => $request->descripcion,
